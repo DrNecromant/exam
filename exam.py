@@ -117,7 +117,7 @@ if options.exam:
 		if j == 1 and values:
 			answer = raw_input("Want to save unknown words? y/(n)? ")
 			if answer:
-				xls.dump(s.getFullPath("Translate/%s", testname), values)
+				xls.dump(s.getFullPath("Translate/%s" % testname), values)
 			print
 				
 	end = time()
