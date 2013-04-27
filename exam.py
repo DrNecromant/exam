@@ -43,7 +43,7 @@ if word:
 		i += 1
 
 if options.list:
-	db.printFileList()
+	h.printFiles(db.getFiles())
 
 if options.sync:
 	files = s.getFiles(subdir = "Translate", fext = ".xls", exceptions = [testname])
@@ -70,7 +70,7 @@ if options.exam:
 	if findices:
 		fs = map(lambda i: int(i.strip()), findices.split())
 
-	db.printFileList(files = fs)
+	h.printFiles(db.getFiles(files = fs))
 	values = db.getValues(files = fs)
 	length = len(values)
 	print "words count: %s" % length

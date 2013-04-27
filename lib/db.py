@@ -41,7 +41,8 @@ class DB():
 			self.con.commit()
 			self.changes = self._blank_changes()
 
-	def printFileList(self, files = None):
+	def getFiles(self, files = None):
+		data = dict()
 		if not files:
 			files = map(lambda a: a[0], self.cur.execute("SELECT id FROM file").fetchall())
 			file_count = self.cur.execute("SELECT count(*) from file").fetchone()[0]
@@ -49,12 +50,14 @@ class DB():
 		else:
 			file_count = len(files)
 			word_count = self.cur.execute("SELECT count(*) FROM word WHERE file in (%s)" % ", ".join(["?"] * len(files)), files).fetchone()[0]
-
-		print "files %s, words %s" % (file_count, word_count)
+		data["files"] = file_count
+		data["words"] = word_count
+		data["filelist"] = list()
 		for fileid in files:
 			word_count = self.cur.execute("SELECT count(*) FROM word WHERE file=?", (fileid,)).fetchone()[0]
 			fname = self.cur.execute("SELECT name FROM file WHERE id=?", (fileid,)).fetchone()[0]
-			print "%s) %s %s" % (fileid, fname, word_count)
+			data["filelist"].append([fileid, fname, word_count])
+		return data
 
 	def getWord(self, word):
 		return self.cur.execute("SELECT eng, rus, file.name from word " + \
