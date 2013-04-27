@@ -12,14 +12,10 @@ from lib import *
 parser = OptionParser()
 parser.add_option("-l", "--list", action="store_true",
 	dest="list", help="show list of files")
-parser.add_option("-c", "--check", action="store_true",
-	dest="check", help="check duplicates")
 parser.add_option("-e", "--exam", action="store_true",
 	dest="exam", help="exam yourself")
 parser.add_option("-s", "--sync", action="store_true",
 	dest="sync", help="sync with database")
-parser.add_option("-j", "--join", action="store_true",
-	dest="join", help="combine several files in one")
 parser.add_option("-f", "--find", dest="word",
 	help="find word or part of word")
 
