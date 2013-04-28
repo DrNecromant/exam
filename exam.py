@@ -14,6 +14,8 @@ parser.add_option("-l", "--list", action="store_true",
 	dest="list", help="show list of files")
 parser.add_option("-e", "--exam", action="store_true",
 	dest="exam", help="exam yourself")
+parser.add_option("-j", "--join", action="store_true",
+	dest="join", help="join files for test")
 parser.add_option("-s", "--sync", action="store_true",
 	dest="sync", help="sync with database")
 parser.add_option("-f", "--find", dest="word",
@@ -40,6 +42,16 @@ if word:
 
 if options.list:
 	h.printFiles(db.getFiles())
+
+if options.join:
+	findices = raw_input("Files you want to check? (all)/numbers: ")
+	if findices:
+		fs = map(lambda i: int(i.strip()), findices.split())
+		h.printFiles(db.getFiles(files = fs))
+		xls.dump(s.getFullPath("Translate/%s" % testname), db.getValues(files = fs))
+		print "Results have been saved into %s" % testname
+	else:
+		print "No files to store"
 
 if options.sync:
 	files = s.getFiles(subdir = "Translate", fext = ".xls", exceptions = [testname])
@@ -114,6 +126,7 @@ if options.exam:
 			answer = raw_input("Want to save unknown words? y/(n)? ")
 			if answer:
 				xls.dump(s.getFullPath("Translate/%s" % testname), values)
+				print "Results have been saved into %s" % testname
 			print
 				
 	end = time()
