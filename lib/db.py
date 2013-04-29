@@ -3,13 +3,11 @@ import sqlite3
 class DB():
 	def __init__(self, dbpath):
 		self.p = dbpath
-		print "Connect to database %s" % self.p
 		self.con = sqlite3.connect(self.p)
 		self.cur = self.con.cursor()
 		self.changes = self._blank_changes()
 
 	def quit(self):
-		print "Close database connection"
 		self.con.close()
 
 	def commit(self):
@@ -90,7 +88,7 @@ class DB():
 			"CREATE TABLE IF NOT EXISTS word(id INTEGER PRIMARY KEY, eng STRING, " + \
 				"rus STRING, file INTEGER, count INTEGER DEFAULT 0, " + \
 				"success INTEGER DEFAULT 0, FOREIGN KEY(file) REFERENCES file(id));")
-	
+
 		for eng, rus, filename in values:
 			self.cur.execute("SELECT id FROM file WHERE name=?", (filename,))
 			fileid = self.cur.fetchone()
