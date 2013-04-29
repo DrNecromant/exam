@@ -1,2 +1,3 @@
 unknown: , left format
-run separate option
+separate option rus
+choose words by their stats
