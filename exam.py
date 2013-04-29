@@ -82,22 +82,16 @@ if options.exam:
 
 	h.printFiles(db.getFiles(files = fs))
 	values = db.getValues(files = fs)
-	length = len(values)
-	print "words count: %s" % length
 
 	count = raw_input("Count of words you want to check? (all)/number: ")
 	if count:
 		count = int(count)
 		values = sample(values, count)
 	else:
-		count = length
+		count = len(values)
 
-	start = time()
-	time_str = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
-	ret = []
 	j = 0
 	while values:
-		ret.append(len(values))
 		test = list(values)
 		j += 1
 		l = len(test)
