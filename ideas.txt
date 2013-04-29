@@ -1,2 +1,3 @@
 unknown: , left format
 choose words by their stats
+improve changes output from results routine
