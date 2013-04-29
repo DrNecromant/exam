@@ -70,7 +70,7 @@ if options.sync:
 			print "\t%s" % s[1].encode("utf8")
 
 	if not check:
-		db.sync(values)
+		db.syncValues(values)
 
 if options.exam:
 	print "\n=========="
