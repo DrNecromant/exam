@@ -14,6 +14,8 @@ parser.add_option("-l", "--list", action="store_true",
 	dest="list", help="show list of files")
 parser.add_option("-e", "--exam", action="store_true",
 	dest="exam", help="exam yourself")
+parser.add_option("-r", "--rus", action="store_true",
+	dest="rus", help="exam rus words")
 parser.add_option("-j", "--join", action="store_true",
 	dest="join", help="join files for test")
 parser.add_option("-s", "--sync", action="store_true",
@@ -90,15 +92,6 @@ if options.exam:
 	else:
 		count = length
 
-	lang = raw_input("Lang you want to check? (en)/rus: ")
-	if lang:
-		x = 1
-		y = 0
-	else:
-		x = 0
-		y = 1
-
-
 	start = time()
 	time_str = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
 	ret = []
@@ -111,16 +104,19 @@ if options.exam:
 		i = 0
 		while test:
 			index = randint(0, len(test) - 1)
-			word = test.pop(index)
+			q_word, a_word, fname = word = test.pop(index)
+			eng = q_word
+			if options.rus:
+				q_word, a_word = a_word, q_word
 			i += 1
 			print "===== %s attempt: %s from %s" %(j, i, l)
-			raw_input(word[x].encode("utf8"))
-			print "%s" % word[2].encode("utf8")
-			answer = raw_input("%s\nDo you know? (y)/n: " % word[y].encode("utf8"))
+			raw_input(q_word.encode("utf8"))
+			print "%s" % eng.encode("utf8")
+			answer = raw_input("%s\nDo you know? (y)/n: " % a_word.encode("utf8"))
 			if not answer:
 				values.remove(word)
-				db.updateCounter(word[0], "success")
-			db.updateCounter(word[0], "count")
+				db.updateCounter(eng, "success")
+			db.updateCounter(eng, "count")
 			print
 		if j == 1 and values:
 			answer = raw_input("Want to save unknown words? y/(n)? ")
