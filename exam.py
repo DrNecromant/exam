@@ -94,11 +94,9 @@ if options.exam:
 	if lang:
 		x = 1
 		y = 0
-		resultfile = "results_ru.csv"
 	else:
 		x = 0
 		y = 1
-		resultfile = "results_en.csv"
 
 
 	start = time()
@@ -121,6 +119,8 @@ if options.exam:
 			answer = raw_input("%s\nDo you know? (y)/n: " % word[y].encode("utf8"))
 			if not answer:
 				values.remove(word)
+				db.updateCounter(word[0], "success")
+			db.updateCounter(word[0], "count")
 			print
 		if j == 1 and values:
 			answer = raw_input("Want to save unknown words? y/(n)? ")
@@ -128,28 +128,7 @@ if options.exam:
 				xls.dump(s.getFullPath("Translate/%s" % testname), values)
 				print "Results have been saved into %s" % testname
 			print
-				
-	end = time()
-	t = end - start
-	h = int(t)/3600
-	m = (int(t)/60)%60
-	s = int(t)%60
-	print "result %s" % ret
-	print "time: %sh %sm %ss" %(h, m, s)
-	print "speed: %s words/hour" % int((count/t) * 3600)
-	print "debug: %s seconds" % t
-	# Save date, lenght, count, first result, time (seconds)
-	print "\n=========="
-	answer = raw_input("Want to save result? y/(n)? ")
-	if answer:
-		fd = open(resultfile, "a")
-		w = csv.writer(fd)
-		if len(ret) > 1:
-			unknown = ret[1]
-		else:
-			unknown = 0
-		w.writerow([time_str, length, count, unknown, int(t)])
-		fd.close()
-		print "Results have been saved into %s" % resultfile
+
+	db.commit()
 
 db.quit()

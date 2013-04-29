@@ -12,6 +12,12 @@ class DB():
 		print "Close database connection"
 		self.con.close()
 
+	def commit(self):
+		if not self._is_blank_changes():
+			self._apply_changes()
+		else:
+			print "There is nothing to sync"
+
 	def _blank_changes(self):
 		return {
             "create": list(),
@@ -72,7 +78,13 @@ class DB():
 			"left join file on word.file = file.id " + \
 			"where file in (%s)" % ", ".join(["?"] * len(files)), files).fetchall()
 
-	def sync(self, values):
+	def updateCounter(self, eng, counter):
+		count = self.cur.execute("SELECT %s FROM word WHERE eng=?" % counter, (eng,)).fetchone()[0]
+		count += 1
+		self.cur.execute("UPDATE word SET %s=? WHERE eng=?" % counter, (count, eng))
+		self.changes["update"].append("%s %s %s" % (eng, counter, count))
+
+	def syncValues(self, values):
 		self.cur.executescript("PRAGMA foreign_keys=ON;" + \
 			"CREATE TABLE IF NOT EXISTS file(id INTEGER PRIMARY KEY, name STRING);" + \
 			"CREATE TABLE IF NOT EXISTS word(id INTEGER PRIMARY KEY, eng STRING, " + \
@@ -113,7 +125,4 @@ class DB():
 				self.cur.execute("DELETE FROM file WHERE name=?", (base_file,))
 				self.changes["delete"].append("%s" % base_file)
 
-		if not self._is_blank_changes():
-			self._apply_changes()
-		else:
-			print "There is nothing to sync"
+		self.commit()
