@@ -105,7 +105,7 @@ if options.exam:
 			i += 1
 			print "===== %s attempt: %s from %s" %(j, i, l)
 			raw_input(q_word.encode("utf8"))
-			print "%s" % eng.encode("utf8")
+			print "%s" % fname.encode("utf8")
 			answer = raw_input("%s\nDo you know? (y)/n: " % a_word.encode("utf8"))
 			if not answer:
 				values.remove(word)
