@@ -2,3 +2,6 @@ unknown: , left format
 choose words by their stats
 improve changes output from results routine
 separate function syncValues
+button yes
+find files by name
+advanced list
