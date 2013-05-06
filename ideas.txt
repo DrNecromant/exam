@@ -6,3 +6,4 @@ button yes
 find files by name
 advanced list
 sync by date modified
+move all helper tp helpers
