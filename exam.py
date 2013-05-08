@@ -32,15 +32,7 @@ db = DB(dbpath)
 
 word = options.word
 if word:
-	words = db.getWord(word)
-	if not words:
-		print "Could not find"
-	i = 0
-	for eng, rus, fname in words:
-		print "%s) %s" % (i, eng.encode("utf8"))
-		print "\t%s" % rus.encode("utf8")
-		print "\t%s" % fname.encode("utf8")
-		i += 1
+	h.printValues(db.findValues(word))
 
 if options.list:
 	h.printFiles(db.getFiles())

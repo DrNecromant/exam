@@ -63,7 +63,7 @@ class DB():
 			data["filelist"].append([fileid, fname, word_count])
 		return data
 
-	def getWord(self, word):
+	def findValues(self, word):
 		return self.cur.execute("SELECT eng, rus, file.name from word " + \
 			"left join file on word.file = file.id " + \
 			"where eng like ?", ("%" + word + "%",)).fetchall()
