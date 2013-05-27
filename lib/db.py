@@ -118,8 +118,6 @@ class DB():
 		base_files = map(lambda a: a[0], self.cur.execute("SELECT name from file").fetchall())
 		for base_file in base_files:
 			if not base_file in files:
-				print files
-				print base_file
 				self.cur.execute("DELETE FROM file WHERE name=?", (base_file,))
 				self.changes["delete"].append("%s" % base_file)
 
