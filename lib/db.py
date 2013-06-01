@@ -104,18 +104,19 @@ class DB():
 				self.cur.execute("INSERT INTO word(eng, rus, file) VALUES(?, ?, ?)", (eng, rus, fileid))
 				self.changes["create"].append("%s | %s" % (eng, fileid))
 			elif word[0] != rus:
-				self.cur.execute("UPDATE word SET rus=? WHERE file=? and eng=?", (rus, fileid, eng))
-				self.changes["update"].append("%s | %s" % (eng, fileid))
+				self.cur.execute("UPDATE word SET rus=? WHERE file=? AND eng=?", (rus, fileid, eng))
+		base_engs = self.cur.execute("SELECT eng, file.name FROM word LEFT JOIN file ON file.id = word.file").fetchall()
 
 		engs, russ, files = zip(*values)
-		base_engs = map(lambda a: a[0], self.cur.execute("SELECT eng FROM word").fetchall())
+		base_engs = self.cur.execute("SELECT eng, file.name FROM word LEFT JOIN file ON file.id = word.file").fetchall()
 		for base_eng in base_engs:
-			if not base_eng in engs:
-				self.cur.execute("DELETE FROM word WHERE eng=?", (base_eng,))
-				self.changes["delete"].append("%s" % base_eng)
+			if not base_eng in zip(engs, files):
+				fileid = self.cur.execute("SELECT id FROM file WHERE name=?", (base_eng[1],)).fetchone()[0]
+				self.cur.execute("DELETE FROM word WHERE eng=? AND file=?", (base_eng[0], fileid))
+				self.changes["delete"].append("%s | %s" % base_eng)
 
 		files = list(set(files))
-		base_files = map(lambda a: a[0], self.cur.execute("SELECT name from file").fetchall())
+		base_files = map(lambda a: a[0], self.cur.execute("SELECT name FROM file").fetchall())
 		for base_file in base_files:
 			if not base_file in files:
 				self.cur.execute("DELETE FROM file WHERE name=?", (base_file,))
