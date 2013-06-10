@@ -105,7 +105,7 @@ class DB():
 				self.changes["create"].append("%s | %s" % (eng, fileid))
 			elif word[0] != rus:
 				self.cur.execute("UPDATE word SET rus=? WHERE file=? AND eng=?", (rus, fileid, eng))
-		base_engs = self.cur.execute("SELECT eng, file.name FROM word LEFT JOIN file ON file.id = word.file").fetchall()
+				self.changes["update"].append("%s | %s" % (eng, rus))
 
 		engs, russ, files = zip(*values)
 		base_engs = self.cur.execute("SELECT eng, file.name FROM word LEFT JOIN file ON file.id = word.file").fetchall()
