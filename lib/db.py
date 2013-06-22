@@ -109,8 +109,9 @@ class DB():
 
 		engs, russ, files = zip(*values)
 		base_engs = self.cur.execute("SELECT eng, file.name FROM word LEFT JOIN file ON file.id = word.file").fetchall()
+		engfiles = zip(engs, files)
 		for base_eng in base_engs:
-			if not base_eng in zip(engs, files):
+			if not base_eng in engfiles:
 				fileid = self.cur.execute("SELECT id FROM file WHERE name=?", (base_eng[1],)).fetchone()[0]
 				self.cur.execute("DELETE FROM word WHERE eng=? AND file=?", (base_eng[0], fileid))
 				self.changes["delete"].append("%s | %s" % base_eng)

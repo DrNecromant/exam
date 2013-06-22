@@ -5,7 +5,6 @@ import csv
 from datetime import datetime
 from random import randint, sample
 from optparse import OptionParser
-from time import time
 
 from lib import *
 
