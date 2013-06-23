@@ -14,7 +14,7 @@ class DB():
 		if not self._is_blank_changes():
 			self._apply_changes()
 		else:
-			print "There is nothing to sync"
+			print "There is nothing to commit"
 
 	def _blank_changes(self):
 		return {
@@ -44,6 +44,10 @@ class DB():
 			print "Apply database changes"
 			self.con.commit()
 			self.changes = self._blank_changes()
+
+	def getAllFiles(self):
+		files = self.cur.execute("SELECT name from file").fetchall()
+		return files
 
 	def getFiles(self, files = None):
 		data = dict()
@@ -82,9 +86,18 @@ class DB():
 		self.cur.execute("UPDATE word SET %s=? WHERE eng=?" % counter, (count, eng))
 		self.changes["update"].append("%s %s %s" % (eng, counter, count))
 
+	def deleteFile(self, name):
+		pass
+
+	def createFile(self, name):
+		pass
+
+	def getSha(self, name):
+		return "nosha"
+
 	def syncValues(self, values):
 		self.cur.executescript("PRAGMA foreign_keys=ON;" + \
-			"CREATE TABLE IF NOT EXISTS file(id INTEGER PRIMARY KEY, name STRING);" + \
+			"CREATE TABLE IF NOT EXISTS file(id INTEGER PRIMARY KEY, name STRING, sha STRING DEFAULT 'nosha');" + \
 			"CREATE TABLE IF NOT EXISTS word(id INTEGER PRIMARY KEY, eng STRING, " + \
 				"rus STRING, file INTEGER, count INTEGER DEFAULT 0, " + \
 				"success INTEGER DEFAULT 0, FOREIGN KEY(file) REFERENCES file(id));")

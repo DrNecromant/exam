@@ -25,3 +25,6 @@ class Storage():
 					continue
 				result.append(path.join(p, f))
 		return result
+
+	def getSha(self, filename):
+		return "nosha"

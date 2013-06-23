@@ -47,6 +47,22 @@ if options.join:
 		print "No files to store"
 
 if options.sync:
+	xls_file_names = map(s.getShortPath, s.getFiles(subdir = "Translate", fext = ".xls", exceptions = [testname]))
+	xls_set = set(xls_file_names)
+	db_file_names = map(lambda a: a[0], db.getAllFiles())
+	db_set = set(db_file_names)
+	old_file_names = list(db_set - xls_set)
+	new_file_names = list(xls_set - db_set)
+	upd_file_names = list(xls_set & db_set)
+
+	for old_file_name in old_file_names:
+		db.removeFile(old_file_name)
+	for new_file_name in new_file_names:
+		db.createFile(new_file_name)
+	for upd_file_name in upd_file_names:
+		if db.getSha(upd_file_name) != s.getSha(upd_file_name):
+			pass
+
 	files = s.getFiles(subdir = "Translate", fext = ".xls", exceptions = [testname])
 	values = map(lambda x: (x[0], x[1], s.getShortPath(x[2])), xls.load(files))
 	engs = zip(*values)[0]
