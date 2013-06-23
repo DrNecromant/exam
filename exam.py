@@ -60,7 +60,12 @@ if options.sync:
 	for new_file_name in new_file_names:
 		db.createFile(new_file_name)
 	for upd_file_name in upd_file_names:
-		if db.getSha(upd_file_name) != s.getSha(upd_file_name):
+		db_sha = db.getSha(upd_file_name)
+		sha = h.getSha(s.getFullPath(upd_file_name))
+		if db_sha != sha:
+			print upd_file_name
+			print db_sha
+			print sha
 			pass
 
 	files = s.getFiles(subdir = "Translate", fext = ".xls", exceptions = [testname])

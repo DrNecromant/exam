@@ -92,9 +92,6 @@ class DB():
 	def createFile(self, name):
 		pass
 
-	def getSha(self, name):
-		return "nosha"
-
 	def syncValues(self, values):
 		self.cur.executescript("PRAGMA foreign_keys=ON;" + \
 			"CREATE TABLE IF NOT EXISTS file(id INTEGER PRIMARY KEY, name STRING, sha STRING DEFAULT 'nosha');" + \
