@@ -47,26 +47,42 @@ if options.join:
 		print "No files to store"
 
 if options.sync:
-	xls_file_names = map(s.getShortPath, s.getFiles(subdir = "Translate", fext = ".xls", exceptions = [testname]))
+	xls_file_paths = s.getFiles(subdir = "Translate", fext = ".xls", exceptions = [testname])
+	xls_file_names = map(s.getShortPath, xls_file_paths)
 	xls_set = set(xls_file_names)
-	db_file_names = map(lambda a: a[0], db.getAllFiles())
+	db_file_names = db.getAllFiles()
 	db_set = set(db_file_names)
-	old_file_names = list(db_set - xls_set)
-	new_file_names = list(xls_set - db_set)
-	upd_file_names = list(xls_set & db_set)
+	old_file_names = db_set - xls_set
+	new_file_names = xls_set - db_set
+	upd_file_names = xls_set & db_set
 
 	for old_file_name in old_file_names:
-		db.removeFile(old_file_name)
+		db.deleteFile(old_file_name)
 	for new_file_name in new_file_names:
-		db.createFile(new_file_name)
+		new_file_path = s.getFullPath(new_file_name)
+		xls_words = xls.loadData(new_file_path)
+		db.createFile(new_file_name, xls_words)
 	for upd_file_name in upd_file_names:
+		upd_file_path = s.getFullPath(upd_file_name)
 		db_sha = db.getSha(upd_file_name)
-		sha = h.getSha(s.getFullPath(upd_file_name))
+		sha = h.getSha(upd_file_path)
 		if db_sha != sha:
-			print upd_file_name
-			print db_sha
-			print sha
-			pass
+			db.updateSha(upd_file_name, sha)
+			xls_words = xls.loadData(upd_file_path)
+			xls_engs = zip(*xls_words)[0]
+			db_words = db.loadData(upd_file_name)
+			db_engs = zip(*db_words)[0]
+			xls_set = set(xls_words)
+			db_set = set(db_words)
+			old_words = set([word for word in db_set - xls_set if word[0] not in xls_engs])
+			new_words = set([word for word in xls_set - db_set if word[0] not in db_engs])
+			upd_words = (xls_set ^ db_set) - new_words - old_words
+			for old_word in old_words:
+				db.deleteWord(old_word)
+			for new_word in new_words:
+				db.createWord(upd_file_name, new_word)
+			for upd_word in upd_words:
+				db.updateWord(upd_file_name, upd_word)
 
 	files = s.getFiles(subdir = "Translate", fext = ".xls", exceptions = [testname])
 	values = map(lambda x: (x[0], x[1], s.getShortPath(x[2])), xls.load(files))

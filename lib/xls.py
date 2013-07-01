@@ -23,3 +23,7 @@ class XLS():
 			for sheet in sheets(fname) \
 			for row in range(sheet.nrows)]
 		return values
+
+	def loadData(self, filename):
+		sheet = open_workbook(filename).sheet_by_index(0)
+		return [tuple(sheet.row_values(rownum)[:2]) for rownum in range(sheet.nrows)]

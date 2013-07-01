@@ -47,6 +47,8 @@ class DB():
 
 	def getAllFiles(self):
 		files = self.cur.execute("SELECT name from file").fetchall()
+		if files:
+			files = map(lambda a: a[0], files)
 		return files
 
 	def getFiles(self, files = None):
@@ -90,6 +92,26 @@ class DB():
 		pass
 
 	def createFile(self, name):
+		pass
+
+	def getSha(self, name):
+		sha = self.cur.execute("SELECT sha FROM file WHERE name = ?", (name,)).fetchone()[0]
+		return sha
+
+	def updateSha(self, fpath, sha):
+		pass
+
+	def loadData(self, name):
+		data = self.cur.execute("SELECT eng, rus FROM word LEFT JOIN file ON file.id = word.file WHERE file.name = ?", (name,)).fetchall()
+		return data
+
+	def deleteWord(self, word):
+		pass
+
+	def createWord(self, fname, word):
+		pass
+
+	def updateWord(self, fname, word):
 		pass
 
 	def syncValues(self, values):
