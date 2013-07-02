@@ -78,7 +78,7 @@ if options.sync:
 			new_words = set([word for word in xls_set - db_set if word[0] not in db_engs])
 			upd_words = (xls_set ^ db_set) - new_words - old_words
 			for old_word in old_words:
-				db.deleteWord(old_word)
+				db.deleteWord(upd_file_name, old_word)
 			for new_word in new_words:
 				db.createWord(upd_file_name, new_word)
 			for upd_word in upd_words:

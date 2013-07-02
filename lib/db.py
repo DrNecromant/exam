@@ -105,7 +105,7 @@ class DB():
 		data = self.cur.execute("SELECT eng, rus FROM word LEFT JOIN file ON file.id = word.file WHERE file.name = ?", (name,)).fetchall()
 		return data
 
-	def deleteWord(self, word):
+	def deleteWord(self, fname, word):
 		pass
 
 	def createWord(self, fname, word):
