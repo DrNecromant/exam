@@ -91,7 +91,7 @@ class DB():
 	def deleteFile(self, name):
 		pass
 
-	def createFile(self, name):
+	def createFile(self, name, words):
 		pass
 
 	def getSha(self, name):

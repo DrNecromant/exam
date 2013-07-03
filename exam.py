@@ -66,23 +66,25 @@ if options.sync:
 		upd_file_path = s.getFullPath(upd_file_name)
 		db_sha = db.getSha(upd_file_name)
 		sha = h.getSha(upd_file_path)
-		if db_sha != sha:
-			db.updateSha(upd_file_name, sha)
-			xls_words = xls.loadData(upd_file_path)
-			xls_engs = zip(*xls_words)[0]
-			db_words = db.loadData(upd_file_name)
-			db_engs = zip(*db_words)[0]
-			xls_set = set(xls_words)
-			db_set = set(db_words)
-			old_words = set([word for word in db_set - xls_set if word[0] not in xls_engs])
-			new_words = set([word for word in xls_set - db_set if word[0] not in db_engs])
-			upd_words = (xls_set ^ db_set) - new_words - old_words
-			for old_word in old_words:
-				db.deleteWord(upd_file_name, old_word)
-			for new_word in new_words:
-				db.createWord(upd_file_name, new_word)
-			for upd_word in upd_words:
-				db.updateWord(upd_file_name, upd_word)
+		if db_sha == sha:
+			# file is up to date
+			continue
+		db.updateSha(upd_file_name, sha)
+		xls_words = xls.loadData(upd_file_path)
+		xls_engs = zip(*xls_words)[0]
+		db_words = db.loadData(upd_file_name)
+		db_engs = zip(*db_words)[0]
+		xls_set = set(xls_words)
+		db_set = set(db_words)
+		old_words = set([word for word in db_set - xls_set if word[0] not in xls_engs])
+		new_words = set([word for word in xls_set - db_set if word[0] not in db_engs])
+		upd_words = (xls_set ^ db_set) - new_words - old_words
+		for old_word in old_words:
+			db.deleteWord(upd_file_name, old_word)
+		for new_word in new_words:
+			db.createWord(upd_file_name, new_word)
+		for upd_word in upd_words:
+			db.updateWord(upd_file_name, upd_word)
 
 	files = s.getFiles(subdir = "Translate", fext = ".xls", exceptions = [testname])
 	values = map(lambda x: (x[0], x[1], s.getShortPath(x[2])), xls.load(files))
