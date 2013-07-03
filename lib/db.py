@@ -88,31 +88,37 @@ class DB():
 		self.cur.execute("UPDATE word SET %s=? WHERE eng=?" % counter, (count, eng))
 		self.changes["update"].append("%s %s %s" % (eng, counter, count))
 
-	def deleteFile(self, name):
-		pass
+	def deleteFile(self, fname):
+		print deleteFile
+		print fname
 
-	def createFile(self, name, words):
-		pass
+	def createFile(self, fname, words):
+		print "CreateFile"
+		print fname, words
 
 	def getSha(self, name):
 		sha = self.cur.execute("SELECT sha FROM file WHERE name = ?", (name,)).fetchone()[0]
 		return sha
 
-	def updateSha(self, fpath, sha):
-		pass
+	def updateSha(self, fname, sha):
+		self.changes["update"].append("%s %s" % (fname, sha))
+		self.cur.execute("UPDATE file SET sha=? WHERE name=?", (sha, fname))
 
 	def loadData(self, name):
 		data = self.cur.execute("SELECT eng, rus FROM word LEFT JOIN file ON file.id = word.file WHERE file.name = ?", (name,)).fetchall()
 		return data
 
 	def deleteWord(self, fname, word):
-		pass
+		print "deleteWord"
+		print fname, word
 
 	def createWord(self, fname, word):
-		pass
+		print "createWord"
+		print fname, word
 
 	def updateWord(self, fname, word):
-		pass
+		print "updateWord"
+		print fname, word
 
 	def syncValues(self, values):
 		self.cur.executescript("PRAGMA foreign_keys=ON;" + \

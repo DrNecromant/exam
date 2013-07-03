@@ -47,6 +47,7 @@ if options.join:
 		print "No files to store"
 
 if options.sync:
+	print "================== NEW SYNC BEG ====================="
 	xls_file_paths = s.getFiles(subdir = "Translate", fext = ".xls", exceptions = [testname])
 	xls_file_names = map(s.getShortPath, xls_file_paths)
 	xls_set = set(xls_file_names)
@@ -63,19 +64,18 @@ if options.sync:
 		xls_words = xls.loadData(new_file_path)
 		db.createFile(new_file_name, xls_words)
 	for upd_file_name in upd_file_names:
-		upd_file_path = s.getFullPath(upd_file_name)
 		db_sha = db.getSha(upd_file_name)
-		sha = h.getSha(upd_file_path)
-		if db_sha == sha:
+		xls_sha = s.getSha(upd_file_name)
+		if db_sha == xls_sha:
 			# file is up to date
 			continue
-		db.updateSha(upd_file_name, sha)
-		xls_words = xls.loadData(upd_file_path)
+		db.updateSha(upd_file_name, xls_sha)
+		xls_words = xls.loadData(s.getFullPath(upd_file_name))
+		xls_set = set(xls_words)
 		xls_engs = zip(*xls_words)[0]
 		db_words = db.loadData(upd_file_name)
-		db_engs = zip(*db_words)[0]
-		xls_set = set(xls_words)
 		db_set = set(db_words)
+		db_engs = zip(*db_words)[0]
 		old_words = set([word for word in db_set - xls_set if word[0] not in xls_engs])
 		new_words = set([word for word in xls_set - db_set if word[0] not in db_engs])
 		upd_words = (xls_set ^ db_set) - new_words - old_words
@@ -85,6 +85,7 @@ if options.sync:
 			db.createWord(upd_file_name, new_word)
 		for upd_word in upd_words:
 			db.updateWord(upd_file_name, upd_word)
+	print "================== NEW SYNC END ====================="
 
 	files = s.getFiles(subdir = "Translate", fext = ".xls", exceptions = [testname])
 	values = map(lambda x: (x[0], x[1], s.getShortPath(x[2])), xls.load(files))

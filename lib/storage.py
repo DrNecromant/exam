@@ -1,4 +1,5 @@
 from os import walk, path
+import hashlib
 
 class Storage():
 	def __init__(self, storage_path):
@@ -26,5 +27,13 @@ class Storage():
 				result.append(path.join(p, f))
 		return result
 
-	def getSha(self, filename):
-		return "nosha"
+	def getSha(self, filename, blocksize = 65536):
+		filepath = self.getFullPath(filename)
+		hasher = hashlib.md5()
+		fd = open(filepath)
+		buf = fd.read(blocksize)
+		while buf:
+			hasher.update(buf)
+			buf = fd.read(blocksize)
+		fd.close()
+		return hasher.hexdigest()
