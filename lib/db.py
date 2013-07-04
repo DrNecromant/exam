@@ -89,7 +89,7 @@ class DB():
 		self.changes["update"].append("%s %s %s" % (eng, counter, count))
 
 	def deleteFile(self, fname):
-		print deleteFile
+		print "deleteFile"
 		print fname
 
 	def createFile(self, fname, words):
