@@ -5,24 +5,15 @@ class XLS():
 	def __init__(self):
 		pass
 
-	def dump(self, dst, values):
+	def dumpData(self, dst, words):
 		wb = Workbook()
 		ws = wb.add_sheet("test")
 		row = 0
-		for v in values:
-			ws.write(row, 0, v[0]) 
-			ws.write(row, 1, v[1]) 
+		for w in words:
+			ws.write(row, 0, w[0]) 
+			ws.write(row, 1, w[1]) 
 			row += 1
 		wb.save(dst)
-
-	def load(self, files):
-		data = lambda f, s, r: [s.cell(r, 0).value, s.cell(r, 1).value, f]
-		sheets = lambda f: open_workbook(f).sheets()
-		values = [data(fname, sheet, row) \
-			for fname in files \
-			for sheet in sheets(fname) \
-			for row in range(sheet.nrows)]
-		return values
 
 	def loadData(self, filename):
 		sheet = open_workbook(filename).sheet_by_index(0)
