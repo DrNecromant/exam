@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-from os import path
-
 import csv
 from datetime import datetime
 from random import randint, sample
