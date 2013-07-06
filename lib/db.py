@@ -117,3 +117,9 @@ class DB():
 		self.cur.execute("SELECT id FROM file WHERE name=?", (fname,))
 		file_id = self.cur.fetchone()[0]
 		self.cur.execute("UPDATE word SET rus=? WHERE file=? AND eng=?", (rus2, file_id, eng))
+
+	def getStats(self):
+		stats = dict()
+		stats["count"] = self.cur.execute("SELECT count, count(eng) FROM word GROUP BY count").fetchall()
+		stats["success"] = self.cur.execute("SELECT success, count(eng) FROM word GROUP BY success").fetchall()
+		return stats

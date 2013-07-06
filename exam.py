@@ -9,11 +9,13 @@ from optparse import OptionParser
 from lib import *
 
 parser = OptionParser()
-parser.add_option("-r", "--rus", action="store_true",
+parser.add_option("--rus", action="store_true",
 	dest="rus", help="exam rus words")
+parser.add_option("--stats", action="store_true",
+	dest="stats", help="show stats")
 parser.add_option("--hard", action="store_true",
 	dest="hard", help="exam hard words")
-parser.add_option("-f", "--find", dest="eng",
+parser.add_option("--find", dest="eng",
 	help="find word or part of word")
 
 (options, args) = parser.parse_args()
@@ -74,6 +76,11 @@ else:
 eng = options.eng
 if eng:
 	h.printWords(db.findWords(eng))
+	sys.exit(0)
+
+stats = options.stats
+if stats:
+	h.printStats(db.getStats())
 	sys.exit(0)
 
 words = db.getAllWords()
