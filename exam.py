@@ -3,7 +3,7 @@ import sys
 
 import csv
 from datetime import datetime
-from random import randint, sample
+from random import randint, sample, shuffle
 from optparse import OptionParser
 
 from lib import *
@@ -90,6 +90,7 @@ if count:
 		words = words[:int(count)]
 	else:
 		words = sample(words, int(count))
+shuffle(words)
 
 j = 0
 while words:
