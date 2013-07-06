@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import sys
+
 import csv
 from datetime import datetime
 from random import randint, sample
@@ -7,12 +9,8 @@ from optparse import OptionParser
 from lib import *
 
 parser = OptionParser()
-parser.add_option("-e", "--exam", action="store_true",
-	dest="exam", help="exam yourself")
 parser.add_option("-r", "--rus", action="store_true",
 	dest="rus", help="exam rus words")
-parser.add_option("-s", "--sync", action="store_true",
-	dest="sync", help="sync with database")
 parser.add_option("-f", "--find", dest="eng",
 	help="find word or part of word")
 
@@ -26,8 +24,9 @@ db = DB(dbpath)
 eng = options.eng
 if eng:
 	h.printWords(db.findWords(eng))
+	sys.exit()
 
-if options.sync:
+def sync():
 	xls_file_paths = s.getFiles(subdir = "Translate", fext = ".xls", exceptions = [testname])
 	xls_file_names = map(s.getShortPath, xls_file_paths)
 	xls_set = set(xls_file_names)
@@ -74,7 +73,7 @@ if options.sync:
 	else:
 		db.commit()
 
-if options.exam:
+def exam():
 	words = db.getAllWords()
 
 	count = raw_input("Count of words you want to check? (all)/number: ")
@@ -114,4 +113,10 @@ if options.exam:
 
 	db.commit()
 
-db.quit()
+if __name__ == '__main__':
+	print "Sync data base..."
+	sync()
+	print "Start an exam..."
+	exam()
+	print "Bye!"
+	db.quit()
