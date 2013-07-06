@@ -11,6 +11,8 @@ from lib import *
 parser = OptionParser()
 parser.add_option("-r", "--rus", action="store_true",
 	dest="rus", help="exam rus words")
+parser.add_option("--hard", action="store_true",
+	dest="hard", help="exam hard words")
 parser.add_option("-f", "--find", dest="eng",
 	help="find word or part of word")
 
@@ -77,7 +79,10 @@ if eng:
 words = db.getAllWords()
 count = raw_input("Count of words you want to check? (all)/number: ")
 if count:
-	words = sample(words, int(count))
+	if options.hard:
+		words = words[:int(count)]
+	else:
+		words = sample(words, int(count))
 
 j = 0
 while words:

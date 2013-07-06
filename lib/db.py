@@ -46,7 +46,7 @@ class DB():
 		else:
 			print "Apply database changes"
 			self.con.commit()
-			self.changes = self.blank_changes
+			self.changes = {"create": list(), "update": list(), "delete": list()}
 
 	def getAllFiles(self):
 		files = self.cur.execute("SELECT name from file").fetchall()
@@ -66,7 +66,7 @@ class DB():
 
 	def getAllWords(self):
 		return self.cur.execute("SELECT eng, rus, file.name from word " + \
-			"left join file on word.file = file.id").fetchall()
+			"left join file on word.file = file.id order by count, success - count").fetchall()
 
 	def updateCounter(self, eng, counter):
 		count = self.cur.execute("SELECT %s FROM word WHERE eng=?" % counter, (eng,)).fetchone()[0]
