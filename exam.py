@@ -17,6 +17,8 @@ parser.add_option("--hard", action="store_true",
 	dest="hard", help="exam hard words")
 parser.add_option("--find", dest="eng",
 	help="find word or part of word")
+parser.add_option("--count", dest="count",
+	help="number of word to exam", type = "int")
 
 (options, args) = parser.parse_args()
 
@@ -84,12 +86,12 @@ if stats:
 	sys.exit(0)
 
 words = db.getAllWords()
-count = raw_input("Count of words you want to check? (all)/number: ")
+count = options.count
 if count:
 	if options.hard:
-		words = words[:int(count)]
+		words = words[:count]
 	else:
-		words = sample(words, int(count))
+		words = sample(words, count)
 shuffle(words)
 
 j = 0
