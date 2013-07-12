@@ -25,6 +25,10 @@ class DB():
 		articles = self.cur.execute("SELECT eng from word where eng like 'a %' or eng like 'the %'").fetchall()
 		if articles:
 			errors["articles"] = map(lambda a: a[0], articles)
+		engs = self.cur.execute("SELECT eng from word").fetchall()
+		rus_letters = [s[0] for s in engs if not all(ord(c) < 128 for c in s[0])]
+		if rus_letters:
+			errors["rus_letters"] = rus_letters
 		return errors
 
 	def quit(self):
@@ -119,7 +123,13 @@ class DB():
 		self.cur.execute("UPDATE word SET rus=? WHERE file=? AND eng=?", (rus2, file_id, eng))
 
 	def getStats(self):
-		stats = dict()
-		stats["count"] = self.cur.execute("SELECT count, count(eng) FROM word GROUP BY count").fetchall()
-		stats["success"] = self.cur.execute("SELECT success, count(eng) FROM word GROUP BY success").fetchall()
-		return stats
+		table = self.cur.execute("SELECT eng, count, success, name FROM word join file on word.file = file.id").fetchall()
+		result_table = [["eng", "count", "success", "file", "type"]]
+		for row in table:
+			row = list(row)
+			if " " in row[0]:
+				row.append("complex")
+			else:
+				row.append("single")
+			result_table.append(row)
+		return result_table
