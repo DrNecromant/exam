@@ -70,7 +70,7 @@ class DB():
 
 	def getAllWords(self):
 		return self.cur.execute("SELECT eng, rus, file.name from word " + \
-			"left join file on word.file = file.id order by count, success - count").fetchall()
+			"left join file on word.file = file.id order by success / cast(count as real)").fetchall()
 
 	def updateCounter(self, eng, counter):
 		count = self.cur.execute("SELECT %s FROM word WHERE eng=?" % counter, (eng,)).fetchone()[0]
