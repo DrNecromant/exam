@@ -124,9 +124,10 @@ class DB():
 
 	def getStats(self):
 		table = self.cur.execute("SELECT eng, count, success, name FROM word join file on word.file = file.id").fetchall()
-		result_table = [["eng", "count", "success", "file", "type"]]
+		result_table = [["eng", "count", "success", "file", "source", "type"]]
 		for row in table:
 			row = list(row)
+			row.append(row[3].split("/")[1])
 			if " " in row[0]:
 				row.append("complex")
 			else:
