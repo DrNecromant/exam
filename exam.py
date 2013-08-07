@@ -13,8 +13,8 @@ parser.add_option("--rus", action="store_true",
 	dest="rus", help="exam rus words")
 parser.add_option("--stats", action="store_true",
 	dest="stats", help="show stats")
-parser.add_option("--hard", action="store_true",
-	dest="hard", help="exam hard words")
+parser.add_option("--difficulty", "-d", dest="d",
+	default = "mixed", help="exam difficulty")
 parser.add_option("--find", dest="eng",
 	help="find word or part of word")
 parser.add_option("--count", dest="count",
@@ -93,10 +93,11 @@ if stats:
 words = db.getAllWords()
 count = options.count
 if count:
-	if options.hard:
-		words = words[:count]
-	else:
-		words = sample(words, count)
+	if options.d == "hard":
+		words = words[:count * 2]
+	elif options.d == "mixed":
+		words = words[:count] + sample(words[count:], count)
+	words = sample(words, count)
 shuffle(words)
 
 j = 0
