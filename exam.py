@@ -9,16 +9,16 @@ from optparse import OptionParser
 from lib import *
 
 parser = OptionParser()
-parser.add_option("--rus", action="store_true",
+parser.add_option("--rus", "-r", action="store_true",
 	dest="rus", help="exam rus words")
-parser.add_option("--stats", action="store_true",
+parser.add_option("--stats", "-s", action="store_true",
 	dest="stats", help="show stats")
 parser.add_option("--difficulty", "-d", dest="d",
 	default = "mixed", help="exam difficulty")
-parser.add_option("--find", dest="eng",
+parser.add_option("--find", "-f", dest="eng",
 	help="find word or part of word")
-parser.add_option("--count", dest="count",
-	help="number of word to exam", type = "int")
+parser.add_option("--count", "-c", dest="count",
+	default = 10, type = "int", help="number of word to exam")
 
 (options, args) = parser.parse_args()
 
