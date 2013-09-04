@@ -29,6 +29,9 @@ class DB():
 		rus_letters = [s[0] for s in engs if not all(ord(c) < 128 for c in s[0])]
 		if rus_letters:
 			errors["rus_letters"] = rus_letters
+		signs = [s[0] for s in engs if "?" in s[0] or "!" in s[0] or "." in s[0] or "," in s[0] or "(" in s[0] or ")" in s[0]]
+		if signs:
+			errors["unused_signs"] = signs
 		return errors
 
 	def quit(self):
