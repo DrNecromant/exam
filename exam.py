@@ -18,7 +18,7 @@ parser.add_option("--difficulty", "-d", dest="d",
 parser.add_option("--find", "-f", dest="eng",
 	help="find word or part of word")
 parser.add_option("--count", "-c", dest="count",
-	default = 10, type = "int", help="number of word to exam")
+	default = 20, type = "int", help="number of word to exam")
 
 (options, args) = parser.parse_args()
 
