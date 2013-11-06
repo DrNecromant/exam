@@ -100,31 +100,30 @@ if count:
 	words = sample(words, count)
 shuffle(words)
 
-j = 0
+saved = False
 while words:
 	test = list(words)
-	j += 1
 	l = len(test)
-	i = 0
 	while test:
 		index = randint(0, len(test) - 1)
 		q_word, a_word, fname = word = test.pop(index)
 		eng = q_word
 		if options.rus:
 			q_word, a_word = a_word, q_word
-		i += 1
-		print "===== %s attempt: %s from %s" %(j, i, l)
+		print "= %s words left = " % l
 		raw_input(q_word.encode("utf8"))
 		print "%s" % fname.encode("utf8")
 		answer = raw_input("%s\nDo you know? (y)/n: " % a_word.encode("utf8"))
 		if not answer:
 			words.remove(word)
 			db.updateCounter(eng, "success")
+			l -= 1
 		db.updateCounter(eng, "count")
 		print
-	if j == 1 and words:
+	if not saved and words:
 		answer = raw_input("Want to save unknown words? y/(n)? ")
 		if answer:
 			xls.dumpData(s.getFullPath("Translate/%s" % testname), words)
+			saved = True
 			print "Results have been saved into %s" % testname
 db.commit()
