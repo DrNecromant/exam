@@ -97,7 +97,7 @@ if count:
 		words = words[:count * 2]
 	elif options.d == "mixed":
 		words = words[:count] + sample(words[count:], count)
-	words = sample(words, count)
+	words = word[0] + sample(words[1:], count - 1)
 shuffle(words)
 
 saved = False
