@@ -2,7 +2,7 @@
 import sys
 
 import csv
-from datetime import datetime
+from datetime import date
 from random import randint, sample, shuffle
 from optparse import OptionParser
 
@@ -100,7 +100,6 @@ if count:
 	words = [words[0]] + sample(words[1:], count - 1)
 shuffle(words)
 
-saved = False
 while words:
 	test = list(words)
 	l = len(test)
@@ -120,10 +119,10 @@ while words:
 			l -= 1
 		db.updateCounter(eng, "count")
 		print
-	if not saved and words:
-		answer = raw_input("Want to save unknown words? y/(n)? ")
-		if answer:
-			xls.dumpData(s.getFullPath("Translate/%s" % testname), words)
-			saved = True
-			print "Results have been saved into %s" % testname
+	if words:
+		prefix = "%s_%s_" % (testname, date.today().isoformat())
+		suffix = ".xls"
+		fname = s.mkfile(prifix = prefix, suffix = suffix, dir = "Translate")
+		xls.dumpData(fname, words)
+		print "Results have been saved into %s" % fname
 db.commit()

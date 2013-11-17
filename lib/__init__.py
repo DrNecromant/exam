@@ -6,7 +6,7 @@ from db import DB
 import helpers as h
 
 dbname = "translate.db"
-testname = "test.xls"
+testname = "test"
 
 def getDropboxPath():
 	if platform == "linux2":

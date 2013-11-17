@@ -1,5 +1,6 @@
-from os import walk, path
+from os import path, walk
 import hashlib
+import tempfile
 
 class Storage():
 	def __init__(self, storage_path):
@@ -22,7 +23,7 @@ class Storage():
 			for f in files:
 				if fext and not f.endswith(fext):
 					continue
-				if f in exceptions:
+				if [e for e in exceptions if f.startswith(e)]:
 					continue
 				result.append(path.join(p, f))
 		return result
@@ -37,3 +38,7 @@ class Storage():
 			buf = fd.read(blocksize)
 		fd.close()
 		return hasher.hexdigest()
+
+	def mkfile(self, prifix = "", suffix = "", dir = ""):
+		name = tempfile.mktemp(prefix = prifix, suffix = suffix, dir = self.getFullPath(dir))
+		return name
