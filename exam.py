@@ -100,29 +100,27 @@ if count:
 	words = [words[0]] + sample(words[1:], count - 1)
 shuffle(words)
 
+unknown_words = list()
 while words:
-	test = list(words)
-	l = len(test)
-	while test:
-		index = randint(0, len(test) - 1)
-		q_word, a_word, fname = word = test.pop(index)
-		eng = q_word
-		if options.rus:
-			q_word, a_word = a_word, q_word
-		print "= %s words left = " % l
-		raw_input(q_word.encode("utf8"))
-		print "%s" % fname.encode("utf8")
-		answer = raw_input("%s\nDo you know? (y)/n: " % a_word.encode("utf8"))
-		if not answer:
-			words.remove(word)
-			db.updateCounter(eng, "success")
-			l -= 1
-		db.updateCounter(eng, "count")
-		print
-	if words:
-		prefix = "%s_%s_" % (testname, date.today().isoformat())
-		suffix = ".xls"
-		fname = s.mkfile(prifix = prefix, suffix = suffix, dir = "Translate")
-		xls.dumpData(fname, words)
-		print "Results have been saved into %s" % fname
+	l = len(words)
+	index = randint(0, l - 1)
+	q_word, a_word, fname = word = words.pop(index)
+	eng = q_word
+	if options.rus:
+		q_word, a_word = a_word, q_word
+	print "\n= %s words left = " % l
+	raw_input(q_word.encode("utf8"))
+	print "%s" % fname.encode("utf8")
+	answer = raw_input("%s\nDo you know? (y)/n: " % a_word.encode("utf8"))
+	if not answer:
+		db.updateCounter(q_word.encode("utf8"), "success")
+	else:
+		unknown_words.append(word)
+	db.updateCounter(eng, "count")
+if unknown_words:
+	prefix = "%s_%s_" % (testname, date.today().isoformat())
+	suffix = ".xls"
+	fname = s.mkfile(prifix = prefix, suffix = suffix, dir = "Translate")
+	xls.dumpData(fname, unknown_words)
+	print "Results have been saved into %s" % fname
 db.commit()
