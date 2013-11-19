@@ -19,7 +19,7 @@ class DB():
 		duplicates = self.cur.execute("SELECT eng from word group by eng having count(rus) > 1").fetchall()
 		if duplicates:
 			errors["duplicates"] = map(lambda a: a[0], duplicates)
-		spaces = self.cur.execute("SELECT eng from word where eng like ' %' or eng like '% '").fetchall()
+		spaces = self.cur.execute("SELECT eng from word where eng like ' %' or eng like '% ' or eng like '%  %'").fetchall()
 		if spaces:
 			errors["spaces"] = map(lambda a: a[0], spaces)
 		articles = self.cur.execute("SELECT eng from word where eng like 'a %' or eng like 'the %'").fetchall()
