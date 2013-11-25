@@ -82,12 +82,14 @@ if eng:
 
 stats = options.stats
 if stats:
-	csv_file = s.getFullPath("DB/translate.csv")
-	fd = open(csv_file, "w+")
+	prefix = "stats_%s_" % date.today().isoformat()
+	suffix = ".csv"
+	fname = s.mkfile(prifix = prefix, suffix = suffix, dir = "Stats")
+	fd = open(fname, "w+")
 	writer = csv.writer(fd)
 	writer.writerows(db.getStats())
 	fd.close()
-	print "Stats saved into %s" % csv_file
+	print "Stats saved into %s" % fname
 	sys.exit(0)
 
 words = db.getAllWords()
