@@ -112,9 +112,8 @@ while words:
 	raw_input(q_word.encode("utf8"))
 	print "%s" % fname.encode("utf8")
 	answer = raw_input("%s\nDo you know? (y)/n: " % a_word.encode("utf8"))
-	if not answer:
-		db.updateCounter(q_word.encode("utf8"), "success")
-	else:
+	if answer:
+		db.updateCounter(q_word.encode("utf8"), "fail")
 		unknown_words.append(word)
 	db.updateCounter(eng, "count")
 if unknown_words:

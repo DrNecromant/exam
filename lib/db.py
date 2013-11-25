@@ -11,7 +11,7 @@ class DB():
 			"CREATE TABLE IF NOT EXISTS file(id INTEGER PRIMARY KEY, name STRING, sha STRING DEFAULT 'nosha');" + \
 			"CREATE TABLE IF NOT EXISTS word(id INTEGER PRIMARY KEY, eng STRING, " + \
 				"rus STRING, file INTEGER, count INTEGER DEFAULT 0, " + \
-				"success INTEGER DEFAULT 0, FOREIGN KEY(file) REFERENCES file(id));")
+				"fail INTEGER DEFAULT 0, FOREIGN KEY(file) REFERENCES file(id));")
 		self.con.commit()
 
 	def getErrors(self):
@@ -73,7 +73,7 @@ class DB():
 
 	def getAllWords(self):
 		return self.cur.execute("SELECT eng, rus, file.name from word " + \
-			"left join file on word.file = file.id order by success / cast(count as real)").fetchall()
+			"left join file on word.file = file.id order by (count - fail) / cast(count as real)").fetchall()
 
 	def updateCounter(self, eng, counter):
 		count = self.cur.execute("SELECT %s FROM word WHERE eng=?" % counter, (eng,)).fetchone()[0]
@@ -126,14 +126,15 @@ class DB():
 		self.cur.execute("UPDATE word SET rus=? WHERE file=? AND eng=?", (rus2, file_id, eng))
 
 	def getStats(self):
-		table = self.cur.execute("SELECT eng, count, success, name FROM word join file on word.file = file.id").fetchall()
-		result_table = [["eng", "count", "success", "file", "source", "type"]]
+		table = self.cur.execute("SELECT eng, word.id, count, fail, file.id, file.name FROM word join file on word.file = file.id").fetchall()
+		result_table = [["word_id", "source", "file_id", "single", "count", "fail"]]
 		for row in table:
-			row = list(row)
-			row.append(row[3].split("/")[1])
-			if " " in row[0]:
-				row.append("complex")
+			eng, word_id, count, fail, file_id, filename = row
+			source = filename.split("/")[1]
+			name = "/".join(filename.split("/")[2:])
+			if " " in eng:
+				single = 1
 			else:
-				row.append("single")
-			result_table.append(row)
+				single = 0
+			result_table.append([word_id, source, file_id, single, count, fail])
 		return result_table
