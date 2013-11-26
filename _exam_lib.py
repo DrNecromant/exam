@@ -59,10 +59,10 @@ class Exam:
 			h.printErrors(errors, self.db.getWords)
 			return False
 		else:
-			self.applyDBChanges()
+			self.processDBChanges()
 			return True
 
-	def applyDBChanges(self):
+	def processyDBChanges(self):
 		changes = self.db.getChanges()
 		if changes == self.db.getBlankChanges():
 			print "There is nothing to commit"
@@ -114,7 +114,7 @@ class Exam:
 				self.db.updateCounter(q_word.encode("utf8"), "fail")
 				unknown_words.append(word)
 			self.db.updateCounter(eng, "count")
-		self.applyDBChanges()
+		self.processDBChanges()
 		self.saveStats()
 		if unknown_words:
 			self.saveTestWords(unknown_words)
