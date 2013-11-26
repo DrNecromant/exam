@@ -83,8 +83,12 @@ class Exam:
 	def applyDBChanges(self):
 		self.db.commit(fake = self.debug)
 
-	def findDBWords(self, word):
-		return self.db.findWords(word)
+	def processDBWord(self, word):
+		words = self.db.findWords(word)
+		if not words:
+			print "No word found"
+		else:
+			h.printWords(words)
 
 	def getDBWords(self, word):
 		return self.db.getWords(word)
@@ -143,6 +147,6 @@ exam.sync()
 if not exam.processDBErrors():
 	pass
 elif options.find:
-	h.printWords(exam.findDBWords(options.find))
+	exam.processDBWord(options.find)
 else:
 	exam.doExam(options.count)
