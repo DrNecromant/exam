@@ -1,10 +1,26 @@
 # -*- coding: utf-8 -*-
 import csv
 from datetime import date
+import types
 
 from lib import *
 
+class DecoMeta(type):
+	def __new__(cls, name, bases, attrs):
+		for attr_name, attr_value in attrs.iteritems():
+			if isinstance(attr_value, types.FunctionType):
+				attrs[attr_name] = cls.deco(attr_value)
+		return super(DecoMeta, cls).__new__(cls, name, bases, attrs)
+
+	@classmethod
+	def deco(cls, func):
+		def wrapper(*args, **kwargs):
+			print "%s..." % func.__name__
+			func(*args, **kwargs)
+		return wrapper
+
 class Exam:
+	__metaclass__ = DecoMeta
 	def __init__(self, debug = False):
 		self.s = Storage(getDropboxPath())
 		self.xls = XLS()
@@ -13,7 +29,6 @@ class Exam:
 		self.debug = debug
 
 	def sync(self):
-		print "Sync data base..."
 		xls_file_paths = self.s.getFiles(subdir = "Translate", fext = ".xls", exceptions = [testname])
 		xls_file_names = map(self.s.getShortPath, xls_file_paths)
 		xls_set = set(xls_file_names)
@@ -52,7 +67,6 @@ class Exam:
 					self.db.updateWord(upd_file_name, eng, db_rus, xls_rus)
 
 	def processDBErrors(self):
-		print "Process db errors..."
 		errors = self.db.getErrors()
 		if errors:
 			h.printErrors(errors, self.db.getWords)
@@ -61,7 +75,7 @@ class Exam:
 			self.processDBChanges()
 			return True
 
-	def processyDBChanges(self):
+	def processDBChanges(self):
 		changes = self.db.getChanges()
 		if changes == self.db.getBlankChanges():
 			print "There is nothing to commit"
@@ -95,7 +109,7 @@ class Exam:
 			eng = q_word
 			if rus:
 				q_word, a_word = a_word, q_word
-			print "\n= #%s = " % words.index(word) + 1
+			print "\n= #%s = " % (words.index(word) + 1)
 			raw_input(q_word.encode("utf8"))
 			print "%s" % fname.encode("utf8")
 			answer = raw_input("%s\nDo you know? (y)/n: " % a_word.encode("utf8"))

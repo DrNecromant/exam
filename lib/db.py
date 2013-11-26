@@ -5,7 +5,7 @@ class DB():
 		self.p = dbpath
 		self.con = sqlite3.connect(self.p)
 		self.cur = self.con.cursor()
-		self.changes = getBlankChanges()
+		self.changes = self.getBlankChanges()
 		self.cur.executescript("PRAGMA foreign_keys=ON;" + \
 			"CREATE TABLE IF NOT EXISTS file(id INTEGER PRIMARY KEY, name STRING, sha STRING DEFAULT 'nosha');" + \
 			"CREATE TABLE IF NOT EXISTS word(id INTEGER PRIMARY KEY, eng STRING, " + \

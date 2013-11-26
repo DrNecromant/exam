@@ -22,7 +22,7 @@ def printChanges(changes):
 
 
 def smartSelection(l, c):
-	l = l[:count] + sample(l[count:], c)
+	l = l[:c] + sample(l[c:], c)
 	i = c / 4
 	l = l[:i] + sample(l[i:], c - i)
 	shuffle(l)
