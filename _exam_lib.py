@@ -56,7 +56,7 @@ class Exam:
 		print "Process db errors..."
 		errors = self.db.getErrors()
 		if errors:
-			h.printErrors(errors, self.getDBWords)
+			h.printErrors(errors, self.db.getWords)
 			return False
 		else:
 			self.applyDBChanges()
@@ -76,9 +76,6 @@ class Exam:
 			print "No word found"
 		else:
 			h.printWords(words)
-
-	def getDBWords(self, word):
-		return self.db.getWords(word)
 
 	def saveStats(self):
 		prefix = "stats_%s_" % date.today().isoformat()
