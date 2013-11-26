@@ -24,7 +24,7 @@ class Exam:
 	def __init__(self, debug = False):
 		self.s = Storage(getDropboxPath())
 		self.xls = XLS()
-		dbpath = self.s.getFullPath("DB/translate.db")
+		dbpath = self.s.getFullPath("DB/%s" % dbname)
 		self.db = DB(dbpath)
 		self.debug = debug
 
