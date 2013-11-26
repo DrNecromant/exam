@@ -7,8 +7,6 @@ parser.add_option("--rus", "-r", action="store_true",
 	dest="rus", help="exam rus words")
 parser.add_option("--debug", "-d", action="store_true",
 	dest="debug", help="dry run")
-parser.add_option("--find", "-f", dest="find",
-	help="find word or part of word")
 parser.add_option("--count", "-c", dest="count",
 	default = 20, type = "int", help="number of word to exam")
 
@@ -17,8 +15,4 @@ parser.add_option("--count", "-c", dest="count",
 exam = Exam(debug = options.debug)
 exam.sync()
 if not exam.processDBErrors():
-	pass
-elif options.find:
-	exam.processDBWord(options.find)
-else:
 	exam.doExam(options.count, options.rus)
