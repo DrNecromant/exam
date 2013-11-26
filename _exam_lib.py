@@ -1,26 +1,10 @@
 # -*- coding: utf-8 -*-
 import csv
 from datetime import date
-import types
-
 from lib import *
 
-class DecoMeta(type):
-	def __new__(cls, name, bases, attrs):
-		for attr_name, attr_value in attrs.iteritems():
-			if isinstance(attr_value, types.FunctionType):
-				attrs[attr_name] = cls.deco(attr_value)
-		return super(DecoMeta, cls).__new__(cls, name, bases, attrs)
-
-	@classmethod
-	def deco(cls, func):
-		def wrapper(*args, **kwargs):
-			print "%s..." % func.__name__
-			func(*args, **kwargs)
-		return wrapper
-
 class Exam:
-	__metaclass__ = DecoMeta
+	__metaclass__ = h.DecoMeta
 	def __init__(self, debug = False):
 		self.s = Storage(getDropboxPath())
 		self.xls = XLS()
