@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import csv
 from datetime import date
-from random import randint, sample, shuffle
 
 from lib import *
 
@@ -91,14 +90,12 @@ class Exam:
 		print "=== words count %s ===" % count
 		unknown_words = list()
 		words = h.smartSelection(self.db.getAllWords(), count)
-		while words:
-			l = len(words)
-			index = randint(0, l - 1)
-			q_word, a_word, fname = word = words.pop(index)
+		for word in words:
+			q_word, a_word, fname = word
 			eng = q_word
 			if rus:
 				q_word, a_word = a_word, q_word
-			print "\n= %s words left = " % l
+			print "\n= #%s = " % words.index(word) + 1
 			raw_input(q_word.encode("utf8"))
 			print "%s" % fname.encode("utf8")
 			answer = raw_input("%s\nDo you know? (y)/n: " % a_word.encode("utf8"))
