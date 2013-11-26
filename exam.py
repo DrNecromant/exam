@@ -68,6 +68,7 @@ class Exam:
 					self.db.updateWord(upd_file_name, eng, db_rus, xls_rus)
 
 	def processDBErrors(self):
+		print "Process db errors..."
 		errors = self.db.getErrors()
 		if errors:
 			for error_type in errors:
