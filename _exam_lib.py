@@ -28,7 +28,7 @@ class Exam:
 			new_file_path = self.s.getFullPath(new_file_name)
 			xls_words = self.xls.loadData(new_file_path)
 			sha = self.s.getSha(new_file_name)
-			db.createFile(new_file_name, sha, xls_words)
+			self.db.createFile(new_file_name, sha, xls_words)
 		for upd_file_name in upd_file_names:
 			db_sha = self.db.getSha(upd_file_name)
 			xls_sha = self.s.getSha(upd_file_name)
