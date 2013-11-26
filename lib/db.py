@@ -5,8 +5,7 @@ class DB():
 		self.p = dbpath
 		self.con = sqlite3.connect(self.p)
 		self.cur = self.con.cursor()
-		self.blank_changes = {"create": list(), "update": list(), "delete": list()}
-		self.changes = {"create": list(), "update": list(), "delete": list()}
+		self.changes = getBlankChanges()
 		self.cur.executescript("PRAGMA foreign_keys=ON;" + \
 			"CREATE TABLE IF NOT EXISTS file(id INTEGER PRIMARY KEY, name STRING, sha STRING DEFAULT 'nosha');" + \
 			"CREATE TABLE IF NOT EXISTS word(id INTEGER PRIMARY KEY, eng STRING, " + \
@@ -34,26 +33,23 @@ class DB():
 			errors["unused_signs"] = signs
 		return errors
 
+	def getChanges(self):
+		return dict(self.changes)
+
+	def getBlankChanges(self):
+		return {"create": list(), "update": list(), "delete": list()}
+
 	def quit(self):
 		self.con.close()
 
 	def commit(self, fake = False):
-		if self.changes == self.blank_changes:
-			print "There is nothing to commit"
-			return
-			
-		for ctype in self.changes:
-			print "========== %s ===========" % ctype
-			for c in self.changes[ctype]:
-				print "==> %s" % c
-
 		if fake:
 			print "Cannot apply database changes - fake mode"
 			self.con.rollback()
 		else:
 			print "Apply database changes"
 			self.con.commit()
-		self.changes = {"create": list(), "update": list(), "delete": list()}
+		self.changes = self.getBlankChanges()
 
 	def getAllFiles(self):
 		files = self.cur.execute("SELECT name from file").fetchall()

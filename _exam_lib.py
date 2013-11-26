@@ -56,17 +56,19 @@ class Exam:
 		print "Process db errors..."
 		errors = self.db.getErrors()
 		if errors:
-			for error_type in errors:
-				print "========== ERROR %s ==========" % error_type
-				for eng in errors[error_type]:
-					h.printWords(self.getDBWords(eng))
+			h.printErrors(errors, self.getDBWords)
 			return False
 		else:
 			self.applyDBChanges()
 			return True
 
 	def applyDBChanges(self):
-		self.db.commit(fake = self.debug)
+		changes = self.db.getChanges()
+		if changes == self.db.getBlankChanges():
+			print "There is nothing to commit"
+		else:
+			h.printChanges(changes)
+			self.db.commit(fake = self.debug)
 
 	def processDBWord(self, word):
 		words = self.db.findWords(word)

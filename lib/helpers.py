@@ -5,3 +5,16 @@ def printWords(words):
 	for eng, rus, fname in words:
 		print "%s | %s" % (eng.encode("utf8"), rus.encode("utf8"))
 		print "\t%s" % fname
+
+def printErrors(errors, mapper):
+	for error_type in errors:
+		print "========== ERROR %s ==========" % error_type
+		for eng in errors[error_type]:
+			printWords(mapper(eng))
+
+def printChanges(changes):
+	for ctype in changes:
+		print "========== %s ===========" % ctype
+		for c in changes[ctype]:
+			print "==> %s" % c
+
