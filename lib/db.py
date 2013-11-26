@@ -37,7 +37,7 @@ class DB():
 	def quit(self):
 		self.con.close()
 
-	def commit(self):
+	def commit(self, fake = False):
 		if self.changes == self.blank_changes:
 			print "There is nothing to commit"
 			return
@@ -47,13 +47,13 @@ class DB():
 			for c in self.changes[ctype]:
 				print "==> %s" % c
 
-		answer = raw_input("Want to apply database changes? y/(n)? ")
-		if not answer:
+		if fake:
+			print "Cannot apply database changes - fake mode"
 			self.con.rollback()
 		else:
 			print "Apply database changes"
 			self.con.commit()
-			self.changes = {"create": list(), "update": list(), "delete": list()}
+		self.changes = {"create": list(), "update": list(), "delete": list()}
 
 	def getAllFiles(self):
 		files = self.cur.execute("SELECT name from file").fetchall()

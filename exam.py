@@ -11,117 +11,137 @@ from lib import *
 parser = OptionParser()
 parser.add_option("--rus", "-r", action="store_true",
 	dest="rus", help="exam rus words")
-parser.add_option("--stats", "-s", action="store_true",
-	dest="stats", help="show stats")
-parser.add_option("--difficulty", "-d", dest="d",
-	default = "mixed", help="exam difficulty")
-parser.add_option("--find", "-f", dest="eng",
+parser.add_option("--debug", "-d", action="store_true",
+	dest="debug", help="dry run")
+parser.add_option("--find", "-f", dest="find",
 	help="find word or part of word")
 parser.add_option("--count", "-c", dest="count",
 	default = 20, type = "int", help="number of word to exam")
 
 (options, args) = parser.parse_args()
 
-s = Storage(getDropboxPath())
-xls = XLS()
-dbpath = s.getFullPath("DB/translate.db")
-db = DB(dbpath)
+class Exam:
+	def __init__(self, debug = False):
+		self.s = Storage(getDropboxPath())
+		self.xls = XLS()
+		dbpath = self.s.getFullPath("DB/translate.db")
+		self.db = DB(dbpath)
+		self.debug = debug
 
-print "Sync data base..."
-xls_file_paths = s.getFiles(subdir = "Translate", fext = ".xls", exceptions = [testname])
-xls_file_names = map(s.getShortPath, xls_file_paths)
-xls_set = set(xls_file_names)
-db_file_names = db.getAllFiles()
-db_set = set(db_file_names)
-old_file_names = db_set - xls_set
-new_file_names = xls_set - db_set
-upd_file_names = xls_set & db_set
+	def sync(self):
+		print "Sync data base..."
+		xls_file_paths = self.s.getFiles(subdir = "Translate", fext = ".xls", exceptions = [testname])
+		xls_file_names = map(self.s.getShortPath, xls_file_paths)
+		xls_set = set(xls_file_names)
+		db_file_names = self.db.getAllFiles()
+		db_set = set(db_file_names)
+		old_file_names = db_set - xls_set
+		new_file_names = xls_set - db_set
+		upd_file_names = xls_set & db_set
 
-for old_file_name in old_file_names:
-	db.deleteFile(old_file_name)
-for new_file_name in new_file_names:
-	new_file_path = s.getFullPath(new_file_name)
-	xls_words = xls.loadData(new_file_path)
-	sha = s.getSha(new_file_name)
-	db.createFile(new_file_name, sha, xls_words)
-for upd_file_name in upd_file_names:
-	db_sha = db.getSha(upd_file_name)
-	xls_sha = s.getSha(upd_file_name)
-	if db_sha == xls_sha:
-		continue
-	db.updateSha(upd_file_name, xls_sha)
-	xls_words = xls.loadData(s.getFullPath(upd_file_name))
-	xls_dict = dict(xls_words)
-	db_words = db.loadData(upd_file_name)
-	db_dict = dict(db_words)
-	engs = set(xls_dict.keys()) | set(db_dict.keys())
-	for eng in engs:
-		xls_rus = xls_dict.get(eng)
-		db_rus = db_dict.get(eng)
-		if not xls_rus:
-			db.deleteWord(upd_file_name, eng)
-		elif not db_rus:
-			db.createWord(upd_file_name, eng, xls_rus)
-		elif xls_rus != db_rus:
-			db.updateWord(upd_file_name, eng, db_rus, xls_rus)
+		for old_file_name in old_file_names:
+			self.db.deleteFile(old_file_name)
+		for new_file_name in new_file_names:
+			new_file_path = self.s.getFullPath(new_file_name)
+			xls_words = self.xls.loadData(new_file_path)
+			sha = self.s.getSha(new_file_name)
+			db.createFile(new_file_name, sha, xls_words)
+		for upd_file_name in upd_file_names:
+			db_sha = self.db.getSha(upd_file_name)
+			xls_sha = self.s.getSha(upd_file_name)
+			if db_sha == xls_sha:
+				continue
+			self.db.updateSha(upd_file_name, xls_sha)
+			xls_words = self.xls.loadData(self.s.getFullPath(upd_file_name))
+			xls_dict = dict(xls_words)
+			db_words = self.db.loadData(upd_file_name)
+			db_dict = dict(db_words)
+			engs = set(xls_dict.keys()) | set(db_dict.keys())
+			for eng in engs:
+				xls_rus = xls_dict.get(eng)
+				db_rus = db_dict.get(eng)
+				if not xls_rus:
+					self.db.deleteWord(upd_file_name, eng)
+				elif not db_rus:
+					self.db.createWord(upd_file_name, eng, xls_rus)
+				elif xls_rus != db_rus:
+					self.db.updateWord(upd_file_name, eng, db_rus, xls_rus)
 
-errors = db.getErrors()
-if errors:
-	for error_type in errors:
-		print "========== ERROR %s ==========" % error_type
-		for eng in errors[error_type]:
-			h.printWords(db.getWords(eng))
-	sys.exit(0)
-else:
-	db.commit()
+	def processDBErrors(self):
+		errors = self.db.getErrors()
+		if errors:
+			for error_type in errors:
+				print "========== ERROR %s ==========" % error_type
+				for eng in errors[error_type]:
+					h.printWords(exam.getDBWords(eng))
+			return False
+		else:
+			exam.applyDBChanges()
+			return True
 
-eng = options.eng
-if eng:
-	h.printWords(db.findWords(eng))
-	sys.exit(0)
+	def applyDBChanges(self):
+		self.db.commit(fake = self.debug)
 
-stats = options.stats
-if stats:
-	prefix = "stats_%s_" % date.today().isoformat()
-	suffix = ".csv"
-	fname = s.mkfile(prifix = prefix, suffix = suffix, dir = "Stats")
-	fd = open(fname, "w+")
-	writer = csv.writer(fd)
-	writer.writerows(db.getStats())
-	fd.close()
-	print "Stats saved into %s" % fname
-	sys.exit(0)
+	def findDBWords(self, word):
+		return self.db.findWords(word)
 
-words = db.getAllWords()
-count = options.count
-if count:
-	if options.d == "hard":
-		words = words[:count * 2]
-	elif options.d == "mixed":
+	def getDBWords(self, word):
+		return self.db.getWords(word)
+
+	def saveStats(self):
+		prefix = "stats_%s_" % date.today().isoformat()
+		suffix = ".csv"
+		fname = self.s.mkfile(prifix = prefix, suffix = suffix, dir = "Stats")
+		fd = open(fname, "w+")
+		writer = csv.writer(fd)
+		writer.writerows(self.db.getStats())
+		fd.close()
+		print "Stats have been saved into %s" % fname
+
+	def getWords(self, count):
+		words = self.db.getAllWords()
 		words = words[:count] + sample(words[count:], count)
-	words = [words[0]] + sample(words[1:], count - 1)
-shuffle(words)
+		index = count / 4
+		words = words[:index] + sample(words[index:], count - index)
+		shuffle(words)
+		return words
 
-unknown_words = list()
-while words:
-	l = len(words)
-	index = randint(0, l - 1)
-	q_word, a_word, fname = word = words.pop(index)
-	eng = q_word
-	if options.rus:
-		q_word, a_word = a_word, q_word
-	print "\n= %s words left = " % l
-	raw_input(q_word.encode("utf8"))
-	print "%s" % fname.encode("utf8")
-	answer = raw_input("%s\nDo you know? (y)/n: " % a_word.encode("utf8"))
-	if answer:
-		db.updateCounter(q_word.encode("utf8"), "fail")
-		unknown_words.append(word)
-	db.updateCounter(eng, "count")
-if unknown_words:
-	prefix = "%s_%s_" % (testname, date.today().isoformat())
-	suffix = ".xls"
-	fname = s.mkfile(prifix = prefix, suffix = suffix, dir = "Translate")
-	xls.dumpData(fname, unknown_words)
-	print "Results have been saved into %s" % fname
-db.commit()
+	def doExam(self, count):
+		print "=== words count %s ===" % count
+		unknown_words = list()
+		words = self.getWords(count)
+		while words:
+			l = len(words)
+			index = randint(0, l - 1)
+			q_word, a_word, fname = word = words.pop(index)
+			eng = q_word
+			if options.rus:
+				q_word, a_word = a_word, q_word
+			print "\n= %s words left = " % l
+			raw_input(q_word.encode("utf8"))
+			print "%s" % fname.encode("utf8")
+			answer = raw_input("%s\nDo you know? (y)/n: " % a_word.encode("utf8"))
+			if answer:
+				self.db.updateCounter(q_word.encode("utf8"), "fail")
+				unknown_words.append(word)
+			self.db.updateCounter(eng, "count")
+		self.applyDBChanges()
+		self.saveStats()
+		if unknown_words:
+			exam.saveTestWords(unknown_words)
+
+	def saveTestWords(self, words):
+		prefix = "%s_%s_" % (testname, date.today().isoformat())
+		suffix = ".xls"
+		fname = self.s.mkfile(prifix = prefix, suffix = suffix, dir = "Translate")
+		self.xls.dumpData(fname, words)
+		print "Results have been saved into %s" % fname
+
+exam = Exam(debug = options.debug)
+exam.sync()
+if not exam.processDBErrors():
+	pass
+elif options.find:
+	h.printWords(exam.findDBWords(options.find))
+else:
+	exam.doExam(options.count)
