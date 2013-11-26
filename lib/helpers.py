@@ -35,7 +35,6 @@ def printChanges(changes):
 		for c in changes[ctype]:
 			print "==> %s" % c
 
-
 def smartSelection(l, c):
 	l = l[:c] + sample(l[c:], c)
 	i = c / 4
