@@ -87,18 +87,10 @@ class Exam:
 		fd.close()
 		print "Stats have been saved into %s" % fname
 
-	def getWords(self, count):
-		words = self.db.getAllWords()
-		words = words[:count] + sample(words[count:], count)
-		index = count / 4
-		words = words[:index] + sample(words[index:], count - index)
-		shuffle(words)
-		return words
-
 	def doExam(self, count, rus):
 		print "=== words count %s ===" % count
 		unknown_words = list()
-		words = self.getWords(count)
+		words = h.smartSelection(self.db.getAllWords(), count)
 		while words:
 			l = len(words)
 			index = randint(0, l - 1)

@@ -1,3 +1,5 @@
+from random import sample, shuffle
+
 def printWords(words):
 	if not words:
 		print "Could not find"
@@ -18,3 +20,10 @@ def printChanges(changes):
 		for c in changes[ctype]:
 			print "==> %s" % c
 
+
+def smartSelection(l, c):
+	l = l[:count] + sample(l[count:], c)
+	i = c / 4
+	l = l[:i] + sample(l[i:], c - i)
+	shuffle(l)
+	return l
