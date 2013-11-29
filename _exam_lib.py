@@ -79,7 +79,7 @@ class Exam:
 	def saveStats(self):
 		prefix = "stats_%s_" % date.today().isoformat()
 		suffix = ".csv"
-		fname = self.s.mkfile(prifix = prefix, suffix = suffix, dir = "Stats")
+		fname = self.s.mkFile(prifix = prefix, suffix = suffix, dir = "Stats")
 		fd = open(fname, "w+")
 		writer = csv.writer(fd)
 		writer.writerows(self.db.getStats())
@@ -111,6 +111,6 @@ class Exam:
 	def saveTestWords(self, words):
 		prefix = "%s_%s_" % (testname, date.today().isoformat())
 		suffix = ".xls"
-		fname = self.s.mkfile(prifix = prefix, suffix = suffix, dir = "Translate")
+		fname = self.s.mkFile(prifix = prefix, suffix = suffix, dir = "Translate")
 		self.xls.dumpData(fname, words)
 		print "Results have been saved into %s" % fname

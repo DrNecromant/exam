@@ -40,7 +40,7 @@ class Storage():
 		fd.close()
 		return hasher.hexdigest()
 
-	def mkfile(self, prifix = "", suffix = "", dir = ""):
+	def mkFile(self, prifix = "", suffix = "", dir = ""):
 		name = tempfile.mktemp(prefix = prifix, suffix = suffix, dir = self.getFullPath(dir))
 		return name
 
