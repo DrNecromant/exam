@@ -8,8 +8,8 @@ class Exam:
 	def __init__(self, debug = False):
 		self.s = Storage(getDropboxPath())
 		self.xls = XLS()
-		dbpath = self.s.getFullPath("DB/%s" % dbname)
-		self.db = DB(dbpath)
+		self.dbpath = self.s.getFullPath("DB/%s" % dbname)
+		self.db = DB(self.dbpath)
 		self.debug = debug
 
 	def sync(self):
@@ -66,6 +66,8 @@ class Exam:
 		else:
 			h.printChanges(changes)
 			self.db.commit(fake = self.debug)
+			if not self.debug:
+				self.s.mkClone(self.dbpath)
 
 	def processDBWord(self, word):
 		words = self.db.findWords(word)
