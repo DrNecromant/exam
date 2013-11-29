@@ -1,6 +1,7 @@
 from os import path, walk
 import hashlib
 import tempfile
+import shutil
 
 class Storage():
 	def __init__(self, storage_path):
@@ -42,3 +43,9 @@ class Storage():
 	def mkfile(self, prifix = "", suffix = "", dir = ""):
 		name = tempfile.mktemp(prefix = prifix, suffix = suffix, dir = self.getFullPath(dir))
 		return name
+
+	def mkClone(self, fpath, prefix = "", suffix = "_clone"):
+		dir, fullname = fpath.split()
+		name, ext = path.splitext(fullname)
+		new_fpath = path.join(dir, prefix + name + suffix + ext)
+		shutil.copy(self.getFullPath(fpath), self.getFullPath(new_fpath))
