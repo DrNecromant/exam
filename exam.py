@@ -14,5 +14,5 @@ parser.add_option("--count", "-c", dest="count",
 
 exam = Exam(debug = options.debug)
 exam.sync()
-if not exam.processDBErrors():
+if exam.processDBErrors():
 	exam.doExam(options.count, options.rus)

@@ -1,7 +1,9 @@
 from xlrd import open_workbook
 from xlwt import Workbook
+from style import *
 
 class XLS():
+	__metaclass__ = DecoMeta
 	def __init__(self):
 		pass
 

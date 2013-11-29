@@ -1,6 +1,8 @@
 import sqlite3
+from style import *
 
 class DB():
+	__metaclass__ = DecoMeta
 	def __init__(self, dbpath):
 		self.p = dbpath
 		self.con = sqlite3.connect(self.p)

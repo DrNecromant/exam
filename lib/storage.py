@@ -2,14 +2,17 @@ from os import path, walk, unlink
 from shutil import copy2
 import hashlib
 import tempfile
+from style import *
 
 class Storage():
+	__metaclass__ = DecoMeta
 	def __init__(self, storage_path):
 		self.path = storage_path
 
 	def getFullPath(self, shortpath = None):
 		if not shortpath:
 			return self.path
+		print path.join(self.path, shortpath)
 		return path.join(self.path, shortpath)
 
 	def getShortPath(self, fullpath = None):
