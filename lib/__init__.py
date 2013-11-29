@@ -3,6 +3,7 @@ from sys import platform
 from storage import Storage
 from xls import XLS
 from db import DB
+from style import *
 import helpers as h
 
 dbname = "translate.db"

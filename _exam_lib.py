@@ -4,7 +4,7 @@ from datetime import date
 from lib import *
 
 class Exam:
-	__metaclass__ = h.DecoMeta
+	__metaclass__ = DecoMeta
 	def __init__(self, debug = False):
 		self.s = Storage(getDropboxPath())
 		self.xls = XLS()
