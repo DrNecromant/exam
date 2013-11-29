@@ -12,7 +12,6 @@ class Storage():
 	def getFullPath(self, shortpath = None):
 		if not shortpath:
 			return self.path
-		print path.join(self.path, shortpath)
 		return path.join(self.path, shortpath)
 
 	def getShortPath(self, fullpath = None):
