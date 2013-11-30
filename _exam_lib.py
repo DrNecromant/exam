@@ -9,7 +9,7 @@ class Exam:
 	def __init__(self, debug = False):
 		self.s = Storage(getDropboxPath())
 		self.xls = XLS()
-		self.dbpath = self.s.getFile(DBNAME, SUBDIR = DBDIR)
+		self.dbpath = self.s.getFile(DBNAME, subdir = DBDIR)
 		self.db = DB(self.dbpath)
 		self.debug = debug
 

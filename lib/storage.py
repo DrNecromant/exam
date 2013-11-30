@@ -45,8 +45,8 @@ class Storage():
 		return fpath
 
 	def getFile(self, name, subdir = ""):
-		if dir:
-			name = path.join(dir, name)
+		if subdir:
+			name = path.join(subdir, name)
 		fpath = self.getFullPath(name)
 		return fpath
 
