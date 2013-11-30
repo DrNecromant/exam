@@ -13,7 +13,7 @@ class Exam:
 		self.debug = debug
 
 	def sync(self):
-		xls_file_paths = self.s.getFiles(subdir = "Translate", fext = ".xls", exceptions = [testname])
+		xls_file_paths = self.s.getFiles(subdir = "Translate", fext = ".xls")
 		xls_file_names = map(self.s.getShortPath, xls_file_paths)
 		xls_set = set(xls_file_names)
 		db_file_names = self.db.getAllFiles()
@@ -111,6 +111,6 @@ class Exam:
 	def saveTestWords(self, words):
 		prefix = "%s_%s_" % (testname, date.today().isoformat())
 		suffix = ".xls"
-		fname = self.s.mkFile(prifix = prefix, suffix = suffix, dir = "Translate")
+		fname = self.s.mkFile(prifix = prefix, suffix = suffix, dir = "Test")
 		self.xls.dumpData(fname, words)
 		print "Results have been saved into %s" % fname

@@ -19,14 +19,12 @@ class Storage():
 			return fullpath.replace(self.path, "")
 		return None
 
-	def getFiles(self, subdir = None, fext = None, exceptions = None):
+	def getFiles(self, subdir = None, fext = None):
 		result = list()
 		fullpath = self.getFullPath(subdir)
 		for p, dirs, files in walk(fullpath):
 			for f in files:
 				if fext and not f.endswith(fext):
-					continue
-				if [e for e in exceptions if f.startswith(e)]:
 					continue
 				result.append(path.join(p, f))
 		return result
