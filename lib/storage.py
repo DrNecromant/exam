@@ -40,9 +40,15 @@ class Storage():
 		fd.close()
 		return hasher.hexdigest()
 
-	def mkFile(self, prifix = "", suffix = "", dir = ""):
-		name = tempfile.mktemp(prefix = prifix, suffix = suffix, dir = self.getFullPath(dir))
-		return name
+	def mkFile(self, prifix = "", suffix = "", subdir = ""):
+		fpath = tempfile.mktemp(prefix = prifix, suffix = suffix, dir = self.getFullPath(subdir))
+		return fpath
+
+	def getFile(self, name, subdir = ""):
+		if dir:
+			name = path.join(dir, name)
+		fpath = self.getFullPath(name)
+		return fpath
 
 	def mkClone(self, fpath, prefix = "", suffix = "_clone"):
 		dir, fullname = path.split(fpath)
