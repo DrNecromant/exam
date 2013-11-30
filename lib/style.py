@@ -1,5 +1,14 @@
 import types
 
+DONOT_PRINT_FUNC_NAME = (
+	"__init__",
+	"getFullPath",
+	"getSha",
+	"getShortPath",
+	"getBlankChanges",
+	"updateCounter",
+)
+
 class DecoMeta(type):
 	def __new__(cls, name, bases, attrs):
 		cls.__name = name
@@ -13,6 +22,7 @@ class DecoMeta(type):
 		class_name = cls.__name
 		func_name = func.__name__
 		def wrapper(*args, **kwargs):
-			print "# %s:%s ..." % (class_name, func_name)
+			if not func_name in DONOT_PRINT_FUNC_NAME:
+				print "# %s:%s ..." % (class_name, func_name)
 			return func(*args, **kwargs)
 		return wrapper
