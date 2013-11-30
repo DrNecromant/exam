@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+
 import csv
 from datetime import date
 from lib import *
@@ -8,12 +9,12 @@ class Exam:
 	def __init__(self, debug = False):
 		self.s = Storage(getDropboxPath())
 		self.xls = XLS()
-		self.dbpath = self.s.getFullPath("DB/%s" % dbname)
+		self.dbpath = self.s.getFullPath("%s/%s" % (DBDIR, DBNAME))
 		self.db = DB(self.dbpath)
 		self.debug = debug
 
 	def sync(self):
-		xls_file_paths = self.s.getFiles(subdir = "Translate", fext = ".xls")
+		xls_file_paths = self.s.getFiles(subdir = TRANSLATEDIR, fext = ".xls")
 		xls_file_names = map(self.s.getShortPath, xls_file_paths)
 		xls_set = set(xls_file_names)
 		db_file_names = self.db.getAllFiles()
@@ -79,7 +80,7 @@ class Exam:
 	def saveStats(self):
 		prefix = "stats_%s_" % date.today().isoformat()
 		suffix = ".csv"
-		fname = self.s.mkFile(prifix = prefix, suffix = suffix, dir = "Stats")
+		fname = self.s.mkFile(prifix = prefix, suffix = suffix, dir = STATSDIR)
 		fd = open(fname, "w+")
 		writer = csv.writer(fd)
 		writer.writerows(self.db.getStats())
@@ -109,8 +110,8 @@ class Exam:
 			self.saveTestWords(unknown_words)
 
 	def saveTestWords(self, words):
-		prefix = "%s_%s_" % (testname, date.today().isoformat())
+		prefix = "%s_%s_" % (TESTNAME, date.today().isoformat())
 		suffix = ".xls"
-		fname = self.s.mkFile(prifix = prefix, suffix = suffix, dir = "Test")
+		fname = self.s.mkFile(prifix = prefix, suffix = suffix, dir = TESTDIR)
 		self.xls.dumpData(fname, words)
 		print "Results have been saved into %s" % fname

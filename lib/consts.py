@@ -1,0 +1,6 @@
+DBNAME = "translate.db"
+TESTNAME = "test"
+DBDIR = "DB"
+TRANSLATEDIR = "Translate"
+TESTDIR = "Test"
+STATSDIR = "Stats"

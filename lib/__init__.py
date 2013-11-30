@@ -4,10 +4,8 @@ from storage import Storage
 from xls import XLS
 from db import DB
 from style import *
+from consts import *
 import helpers as h
-
-dbname = "translate.db"
-testname = "test"
 
 def getDropboxPath():
 	if platform == "linux2":
