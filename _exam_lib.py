@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import csv
-from datetime import date
+from datetime import datetime
 from lib import *
 
 class Exam:
@@ -78,7 +78,7 @@ class Exam:
 			h.printWords(words)
 
 	def saveStats(self):
-		prefix = "stats_%s_" % date.today().isoformat()
+		prefix = "stats_%s_" % datetime.today().strftime(TIMEFORMAT)
 		suffix = ".csv"
 		fname = self.s.mkFile(prifix = prefix, suffix = suffix, subdir = STATSDIR)
 		fd = open(fname, "w+")
@@ -110,7 +110,7 @@ class Exam:
 			self.saveTestWords(unknown_words)
 
 	def saveTestWords(self, words):
-		prefix = "%s_%s_" % (TESTNAME, date.today().isoformat())
+		prefix = "%s_%s_" % (TESTNAME, datetime.today().strftime(TIMEFORMAT))
 		suffix = ".xls"
 		fname = self.s.mkFile(prifix = prefix, suffix = suffix, subdir = TESTDIR)
 		self.xls.dumpData(fname, words)
