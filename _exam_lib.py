@@ -123,8 +123,8 @@ class Exam:
 			words = self.xls.loadData(testfile)
 			for word in words:
 				engs.add(word[0])
-			self.s.unlink(testfile)
 		words = map(self.db.getWords, engs)
 		content = [word[0] for word in words if len(word) == 1]
 		content = h.shuffleList(content)
 		self.saveTestWords(content)
+		self.s.unlinkFiles(testfiles)
