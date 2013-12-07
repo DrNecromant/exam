@@ -115,3 +115,16 @@ class Exam:
 		fname = self.s.mkFile(prifix = prefix, suffix = suffix, subdir = TESTDIR)
 		self.xls.dumpData(fname, words)
 		print "Results have been saved into %s" % fname
+
+	def joinTestFiles(self):
+		engs = set()
+		testfiles = self.s.getFiles(subdir = TESTDIR, fext = ".xls")
+		for testfile in testfiles:
+			words = self.xls.loadData(testfile)
+			for word in words:
+				engs.add(word[0])
+			self.s.unlink(testfile)
+		words = map(self.db.getWords, engs)
+		content = [word[0] for word in words if len(word) == 1]
+		content = h.shuffleList(content)
+		self.saveTestWords(content)

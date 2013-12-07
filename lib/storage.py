@@ -44,6 +44,9 @@ class Storage():
 		fpath = tempfile.mktemp(prefix = prifix, suffix = suffix, dir = self.getFullPath(subdir))
 		return fpath
 
+	def unlink(self, filepath):
+		unlink(filepath)
+
 	def getFile(self, name, subdir = ""):
 		if subdir:
 			name = path.join(subdir, name)

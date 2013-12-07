@@ -26,3 +26,7 @@ def smartSelection(l, c):
 	l = l[:i] + sample(l[i:], c - i)
 	shuffle(l)
 	return l
+
+def shuffleList(l):
+	shuffle(l)
+	return l
