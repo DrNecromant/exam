@@ -81,9 +81,7 @@ class Exam:
 		if self.fake:
 			print "Cannot save stats - fake mode"
 			return
-		prefix = "stats_%s_" % datetime.today().strftime(TIMEFORMAT)
-		suffix = ".csv"
-		fname = self.s.mkFile(prifix = prefix, suffix = suffix, subdir = STATSDIR)
+		fname = self.s.getFile(name = "exam_stats.csv", subdir = STATSDIR)
 		fd = open(fname, "w+")
 		writer = csv.writer(fd)
 		writer.writerows(self.db.getStats())
@@ -109,7 +107,6 @@ class Exam:
 			else:
 				self.db.updateCounter(eng, "passed")
 		self.processDBChanges()
-		self.saveStats()
 		if unknown_words:
 			self.saveTestWords(unknown_words)
 
