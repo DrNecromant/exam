@@ -109,8 +109,11 @@ class DB():
 
 	def updateCounter(self, eng, counter):
 		word = self.session.query(Word).filter(Word.eng == eng).one()
+		history = History(date = self.getDateNow())
 		count = int(getattr(word, counter)) + 1
 		setattr(word, counter, count)
+		setattr(history, counter, count)
+		word.history.append(history)
 		self.changes["update"].append("%s %s %s" % (eng, counter, count))
 
 	def getSha(self, name):
@@ -124,15 +127,17 @@ class DB():
 		return self.session.query(Word.eng, Word.rus).join(File).filter(File.name == name).all()
 
 	def deleteFile(self, fname):
-		f = self.session.query(File).filter(File.name == fname)
-		for word in f.one().words:
+		file_query = self.session.query(File).filter(File.name == fname)
+		for word in file_query.one().words:
 			self.deleteWord(fname, word.eng)
-		f.delete(synchronize_session = False)
+		file_query.delete(synchronize_session = False)
 		self.changes["delete"].append("%s | all words" % fname)
 
 	def deleteWord(self, fname, eng):
 		file_id = self.session.query(File).filter(File.name == fname).one().id
-		self.session.query(Word).filter((Word.file == file_id) & (Word.eng == eng)).delete(synchronize_session = False)
+		word_query = self.session.query(Word).filter((Word.file == file_id) & (Word.eng == eng))
+		word_query.one().history.append(History(date = self.getDateNow(), passed = 11, failed = 11))
+		word_query.delete(synchronize_session = False)
 		self.changes["delete"].append("%s | %s" % (fname, eng))
 
 	def createFile(self, fname, sha, words):
