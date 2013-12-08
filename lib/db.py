@@ -30,7 +30,7 @@ class Word(Base):
 	passed = Column(Integer, default = 0)
 	failed = Column(Integer, default = 0)
 
-	word_history = relationship("History")
+	history = relationship("History")
 
 class History(Base):
 	__tablename__ = 'history'
@@ -50,7 +50,12 @@ class DB():
 		Session = sessionmaker(bind = engine)
 		self.session = Session()
 		self.changes = self.getBlankChanges()
-		self.now = datetime.now()
+		self.now = None
+
+	def getDateNow(self):
+		if not self.now:
+			self.now = datetime.now().replace(microsecond = 0)
+		return self.now
 
 	def getErrors(self):
 		errors = dict()
@@ -120,8 +125,8 @@ class DB():
 
 	def deleteFile(self, fname):
 		f = self.session.query(File).filter(File.name == fname)
-		file_id = f.one().id
-		self.session.query(Word).filter(Word.file == file_id).delete(synchronize_session = False)
+		for word in f.one().words:
+			self.deleteWord(fname, word.eng)
 		f.delete(synchronize_session = False)
 		self.changes["delete"].append("%s | all words" % fname)
 
@@ -134,12 +139,14 @@ class DB():
 
 	def deleteWord(self, fname, eng):
 		file_id = self.session.query(File).filter(File.name == fname).one().id
-		self.session.query(Word).filter((Word.id == file_id) & (Word.eng == eng)).delete(synchronize_session = False)
+		self.session.query(Word).filter((Word.file == file_id) & (Word.eng == eng)).delete(synchronize_session = False)
 		self.changes["delete"].append("%s | %s" % (fname, eng))
 
 	def createWord(self, fname, eng, rus):
 		f = self.session.query(File).filter(File.name == fname).one()
-		f.words.append(Word(eng = eng, rus = rus))
+		word = Word(eng = eng, rus = rus)
+		word.history.append(History(date = self.getDateNow()))
+		f.words.append(word)
 		self.changes["create"].append("%s | %s | %s" % (fname, eng, rus))
 
 	def updateWord(self, fname, eng, rus1, rus2):

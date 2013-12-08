@@ -9,7 +9,8 @@ DONOT_PRINT_FUNC_NAME = (
 	"updateCounter",
 	"createWord",
 	"updateWord",
-	"deleteWord"
+	"deleteWord",
+	"getDateNow"
 )
 
 class DecoMeta(type):
