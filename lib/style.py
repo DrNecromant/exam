@@ -7,6 +7,9 @@ DONOT_PRINT_FUNC_NAME = (
 	"getShortPath",
 	"getBlankChanges",
 	"updateCounter",
+	"createWord",
+	"updateWord",
+	"deleteWord"
 )
 
 class DecoMeta(type):
