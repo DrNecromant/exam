@@ -24,8 +24,8 @@ class Word(Base):
 	eng = Column(String)
 	rus = Column(String)
 	file = Column(Integer, ForeignKey('file.id'))
-	count = Column(String, default = 0)
-	fail = Column(Integer, default = 0, quote = False)
+	passed = Column(String, default = 0)
+	failed = Column(Integer, default = 0)
 
 	file_id = relationship("File", backref = 'words')
 
@@ -133,14 +133,14 @@ class DB():
 		self.changes["update"].append("%s | %s | %s -> %s" % (fname, eng, rus1, rus2))
 
 	def getStats(self):
-		all_entries = self.session.query(Word.id, Word.eng, Word.count, Word.fail, File.name).join(File).all()
-		result_table = [["word_id", "basedir", "filename", "single", "count", "fail"]]
-		for entry in all_entries:
+		entries = self.session.query(Word.id, Word.eng, Word.passed, Word.failed, File.name).join(File).all()
+		result_table = [["word_id", "basedir", "filename", "single", "passed", "failed"]]
+		for entry in entries:
 			basedir = entry.name.split("/")[1]
 			filename = "/".join(entry.name.split("/")[2:])
 			if " " in entry.eng:
 				single = 1
 			else:
 				single = 0
-			result_table.append([entry.id, basedir, filename, single, entry.count, entry.fail])
+			result_table.append([entry.id, basedir, filename, single, entry.passed, entry.failed])
 		return result_table

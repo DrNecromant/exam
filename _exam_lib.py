@@ -104,9 +104,10 @@ class Exam:
 			print "%s" % fname.encode("utf8")
 			answer = raw_input("%s\nDo you know? (y)/n: " % a_word.encode("utf8"))
 			if answer:
-				self.db.updateCounter(eng, "fail")
+				self.db.updateCounter(eng, "failed")
 				unknown_words.append(word)
-			self.db.updateCounter(eng, "count")
+			else:
+				self.db.updateCounter(eng, "passed")
 		self.processDBChanges()
 		self.saveStats()
 		if unknown_words:
