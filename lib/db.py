@@ -1,5 +1,5 @@
 from style import *
-from sqlalchemy import create_engine, ForeignKey, Column, Integer, String, func
+from sqlalchemy import create_engine, ForeignKey, Column, Integer, String, Date, func
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, sessionmaker, backref
 from sqlalchemy.schema import MetaData, ColumnDefault
@@ -16,6 +16,8 @@ class File(Base):
 	name = Column(String)
 	sha = Column(String, default = "NOSHA")
 
+	words = relationship("Word")
+
 class Word(Base):
 	__tablename__ = 'word'
 	__table_args__ = {'sqlite_autoincrement': True}
@@ -27,7 +29,17 @@ class Word(Base):
 	passed = Column(String, default = 0)
 	failed = Column(Integer, default = 0)
 
-	file_id = relationship("File", backref = 'words')
+	word_history = relationship("History")
+
+class History(Base):
+	__tablename__ = 'history'
+	__table_args__ = {'sqlite_autoincrement': True}
+
+	id = Column(Integer, primary_key = True)
+	date = Column(Date)
+	word = Column(Integer, ForeignKey('word.id'))
+	passed = Column(String, default = 0)
+	failed = Column(Integer, default = 0)
 
 class DB():
 	__metaclass__ = DecoMeta
