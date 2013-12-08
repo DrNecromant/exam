@@ -86,7 +86,7 @@ class DB():
 		return self.session.query(Word.eng, Word.rus, File.name).join(File).filter(Word.eng == word).all()
 
 	def getAllWords(self):
-		return self.session.query(Word.eng, Word.rus, File.name).join(File).all()
+		return self.session.query(Word.eng, Word.rus, File.name).join(File).order_by((1000 * Word.failed) / (Word.failed + Word.passed)).all()
 
 	def updateCounter(self, eng, counter):
 		word = self.session.query(Word).filter(Word.eng == eng).one()
