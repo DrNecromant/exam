@@ -1,5 +1,5 @@
 from style import *
-from sqlalchemy import create_engine, ForeignKey, Column, Integer, String, text, event, func, update
+from sqlalchemy import create_engine, ForeignKey, Column, Integer, String, func
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, sessionmaker, backref
 from sqlalchemy.schema import MetaData, ColumnDefault
@@ -24,8 +24,8 @@ class Word(Base):
 	eng = Column(String)
 	rus = Column(String)
 	file = Column(Integer, ForeignKey('file.id'))
-	count = Column(String, server_default = text("0"))
-	fail = Column(Integer, server_default = text("0"), quote = False)
+	count = Column(String, default = 0)
+	fail = Column(Integer, default = 0, quote = False)
 
 	file_id = relationship("File", backref = 'words')
 
