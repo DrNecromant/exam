@@ -1,32 +1,55 @@
-import sqlite3
 from style import *
+from sqlalchemy import create_engine, ForeignKey, Column, Integer, String, text, event, func, update
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import relationship, sessionmaker, backref
+from sqlalchemy.schema import MetaData, ColumnDefault
+from sqlalchemy.engine import Engine
+
+metadata = MetaData()
+Base = declarative_base(metadata = metadata)
+
+class File(Base):
+	__tablename__ = 'file'
+	__table_args__ = {'sqlite_autoincrement': True}
+
+	id = Column(Integer, primary_key = True)
+	name = Column(String)
+	sha = Column(String, server_default = "nosha")
+
+class Word(Base):
+	__tablename__ = 'word'
+	__table_args__ = {'sqlite_autoincrement': True}
+
+	id = Column(Integer, primary_key = True)
+	eng = Column(String)
+	rus = Column(String)
+	file = Column(Integer, ForeignKey('file.id'))
+	count = Column(String, server_default = text("0"))
+	fail = Column(Integer, server_default = text("0"), quote = False)
+
+	file_id = relationship("File", backref = 'words')
 
 class DB():
 	__metaclass__ = DecoMeta
 	def __init__(self, dbpath):
-		self.p = dbpath
-		self.con = sqlite3.connect(self.p)
-		self.cur = self.con.cursor()
+		engine = create_engine('sqlite:///%s' % dbpath, echo = False)
+		Base.metadata.create_all(engine) 
+		Session = sessionmaker(bind = engine)
+		self.session = Session()
 		self.changes = self.getBlankChanges()
-		self.cur.executescript("PRAGMA foreign_keys=ON;" + \
-			"CREATE TABLE IF NOT EXISTS file(id INTEGER PRIMARY KEY, name STRING, sha STRING DEFAULT 'nosha');" + \
-			"CREATE TABLE IF NOT EXISTS word(id INTEGER PRIMARY KEY, eng STRING, " + \
-				"rus STRING, file INTEGER, count INTEGER DEFAULT 0, " + \
-				"fail INTEGER DEFAULT 0, FOREIGN KEY(file) REFERENCES file(id));")
-		self.con.commit()
 
 	def getErrors(self):
 		errors = dict()
-		duplicates = self.cur.execute("SELECT eng from word group by eng having count(rus) > 1").fetchall()
+		duplicates = self.session.query(Word).group_by(Word.eng).having(func.count(Word.rus) > 1).all()
 		if duplicates:
-			errors["duplicates"] = map(lambda a: a[0], duplicates)
-		spaces = self.cur.execute("SELECT eng from word where eng like ' %' or eng like '% ' or eng like '%  %'").fetchall()
+			errors["duplicates"] = map(lambda a: a.eng, duplicates)
+		spaces = self.session.query(Word).filter(Word.eng.like(" %") | Word.eng.like("% ") | Word.eng.like("%  %")).all()
 		if spaces:
-			errors["spaces"] = map(lambda a: a[0], spaces)
-		articles = self.cur.execute("SELECT eng from word where eng like 'a %' or eng like 'the %'").fetchall()
+			errors["spaces"] = map(lambda a: a.eng, spaces)
+		articles = self.session.query(Word).filter(Word.eng.like("a %") | Word.eng.like("the %")).all()
 		if articles:
-			errors["articles"] = map(lambda a: a[0], articles)
-		engs = self.cur.execute("SELECT eng from word").fetchall()
+			errors["articles"] = map(lambda a: a.eng, articles)
+		engs = self.session.query(Word.eng).all()
 		rus_letters = [s[0] for s in engs if not all(ord(c) < 128 for c in s[0])]
 		if rus_letters:
 			errors["rus_letters"] = rus_letters
@@ -42,97 +65,82 @@ class DB():
 		return {"create": list(), "update": list(), "delete": list()}
 
 	def quit(self):
-		self.con.close()
+		self.session.close()
 
 	def commit(self, fake = False):
 		if fake:
 			print "Cannot apply database changes - fake mode"
-			self.con.rollback()
+			self.session.rollback()
 		else:
 			print "Apply database changes"
-			self.con.commit()
+			self.session.commit()
 		self.changes = self.getBlankChanges()
 
 	def getAllFiles(self):
-		files = self.cur.execute("SELECT name from file").fetchall()
-		if files:
-			files = map(lambda a: a[0], files)
-		return files
+		return map(lambda a: a.name, self.session.query(File).all())
 
 	def findWords(self, word):
-		return self.cur.execute("SELECT eng, rus, file.name from word " + \
-			"left join file on word.file = file.id " + \
-			"where eng like ?", ("%" + word + "%",)).fetchall()
+		return self.session.query(Word.eng, Word.rus, File.name).join(File).filter(Word.eng.like("%" + word + "%")).all()
 
 	def getWords(self, word):
-		return self.cur.execute("SELECT eng, rus, file.name from word " + \
-			"left join file on word.file = file.id " + \
-			"where eng=?", (word,)).fetchall()
+		return self.session.query(Word.eng, Word.rus, File.name).join(File).filter(Word.eng == word).all()
 
 	def getAllWords(self):
-		return self.cur.execute("SELECT eng, rus, file.name from word " + \
-			"left join file on word.file = file.id order by (count - fail) / cast(count as real)").fetchall()
+		return self.session.query(Word.eng, Word.rus, File.name).join(File).all()
 
 	def updateCounter(self, eng, counter):
-		count = self.cur.execute("SELECT %s FROM word WHERE eng=?" % counter, (eng,)).fetchone()[0]
-		count += 1
-		self.cur.execute("UPDATE word SET %s=? WHERE eng=?" % counter, (count, eng))
+		word = self.session.query(Word).filter(Word.eng == eng).one()
+		count = int(getattr(word, counter)) + 1
+		setattr(word, counter, count)
 		self.changes["update"].append("%s %s %s" % (eng, counter, count))
 
 	def getSha(self, name):
-		sha = self.cur.execute("SELECT sha FROM file WHERE name = ?", (name,)).fetchone()[0]
-		return sha
+		return self.session.query(File).filter(File.name == name).one().sha
 
 	def updateSha(self, fname, sha):
+		self.session.query(File).filter(File.name == fname).one().sha = sha
 		self.changes["update"].append("%s | %s" % (fname, sha))
-		self.cur.execute("UPDATE file SET sha=? WHERE name=?", (sha, fname))
 
 	def loadData(self, name):
-		data = self.cur.execute("SELECT eng, rus FROM word LEFT JOIN file ON file.id = word.file WHERE file.name = ?", (name,)).fetchall()
-		return data
+		return self.session.query(Word.eng, Word.rus).join(File).filter(File.name == name).all()
 
 	def deleteFile(self, fname):
-		self.changes["delete"].append(fname)
-		self.cur.execute("SELECT id FROM file WHERE name=?", (fname,))
-		file_id = self.cur.fetchone()[0]
-		self.cur.execute("DELETE FROM word WHERE file=?", (file_id,))
-		self.cur.execute("DELETE FROM file WHERE name=?", (fname,))
+		f = self.session.query(File).filter(File.name == fname)
+		file_id = f.one().id
+		self.session.query(Word).filter(Word.file == file_id).delete(synchronize_session = False)
+		f.delete(synchronize_session = False)
+		self.changes["delete"].append("%s | all words" % fname)
 
 	def createFile(self, fname, sha, words):
-		self.changes["create"].append("%s | %s" % (fname, sha))
-		self.cur.execute("INSERT INTO file(name, sha) VALUES(?, ?)", (fname, sha))
+		self.session.add(File(name = fname, sha = sha))
 		for word in words:
 			eng, rus = word
 			self.createWord(fname, eng, rus)
+		self.changes["create"].append("%s | %s" % (fname, sha))
 
 	def deleteWord(self, fname, eng):
+		file_id = self.session.query(File).filter(File.name == fname).one().id
+		self.session.query(Word).filter((Word.id == file_id) & (Word.eng == eng)).delete(synchronize_session = False)
 		self.changes["delete"].append("%s | %s" % (fname, eng))
-		self.cur.execute("SELECT id FROM file WHERE name=?", (fname,))
-		file_id = self.cur.fetchone()[0]
-		self.cur.execute("DELETE FROM word WHERE eng=? AND file=?", (eng, file_id))
 
 	def createWord(self, fname, eng, rus):
+		f = self.session.query(File).filter(File.name == fname).one()
+		f.words.append(Word(eng = eng, rus = rus))
 		self.changes["create"].append("%s | %s | %s" % (fname, eng, rus))
-		self.cur.execute("SELECT id FROM file WHERE name=?", (fname,))
-		file_id = self.cur.fetchone()[0]
-		self.cur.execute("INSERT INTO word(eng, rus, file) VALUES(?, ?, ?)", (eng, rus, file_id))
 
 	def updateWord(self, fname, eng, rus1, rus2):
+		self.session.query(Word).join(File).filter((Word.eng == eng) & (File.name == fname)).one().rus = rus2
 		self.changes["update"].append("%s | %s | %s -> %s" % (fname, eng, rus1, rus2))
-		self.cur.execute("SELECT id FROM file WHERE name=?", (fname,))
-		file_id = self.cur.fetchone()[0]
-		self.cur.execute("UPDATE word SET rus=? WHERE file=? AND eng=?", (rus2, file_id, eng))
 
 	def getStats(self):
-		table = self.cur.execute("SELECT eng, word.id, count, fail, file.id, file.name FROM word join file on word.file = file.id").fetchall()
-		result_table = [["word_id", "source", "file_id", "single", "count", "fail"]]
-		for row in table:
-			eng, word_id, count, fail, file_id, filename = row
-			source = filename.split("/")[1]
-			name = "/".join(filename.split("/")[2:])
-			if " " in eng:
+		all_entries = self.session.query(Word.id, Word.eng, Word.count, Word.fail, File.name).join(File).all()
+		result_table = [["word_id", "basedir", "filename", "single", "count", "fail"]]
+		for entry in all_entries:
+			basedir = entry.name.split("/")[1]
+			filename = "/".join(entry.name.split("/")[2:])
+			if " " in entry.eng:
 				single = 1
 			else:
 				single = 0
-			result_table.append([word_id, source, file_id, single, count, fail])
+			result_table.append([entry.id, basedir, filename, single, entry.count, entry.fail])
 		return result_table

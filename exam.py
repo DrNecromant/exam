@@ -12,7 +12,7 @@ parser.add_option("--count", "-c", dest="count",
 
 (options, args) = parser.parse_args()
 
-exam = Exam(debug = options.debug)
+exam = Exam(fake = options.fake)
 exam.sync()
 if exam.processDBErrors():
 	exam.doExam(options.count, options.rus)

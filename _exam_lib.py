@@ -6,12 +6,12 @@ from lib import *
 
 class Exam:
 	__metaclass__ = DecoMeta
-	def __init__(self, debug = False):
+	def __init__(self, fake = False):
 		self.s = Storage(getDropboxPath())
 		self.xls = XLS()
 		self.dbpath = self.s.getFile(DBNAME, subdir = DBDIR)
 		self.db = DB(self.dbpath)
-		self.debug = debug
+		self.fake = fake
 
 	def sync(self):
 		xls_file_paths = self.s.getFiles(subdir = TRANSLATEDIR, fext = ".xls")
@@ -66,8 +66,8 @@ class Exam:
 			print "There is nothing to commit"
 		else:
 			h.printChanges(changes)
-			self.db.commit(fake = self.debug)
-			if not self.debug:
+			self.db.commit(fake = self.fake)
+			if not self.fake:
 				self.s.mkClone(self.dbpath)
 
 	def processDBWord(self, word):
@@ -78,6 +78,9 @@ class Exam:
 			h.printWords(words)
 
 	def saveStats(self):
+		if self.fake:
+			print "Cannot save stats - fake mode"
+			return
 		prefix = "stats_%s_" % datetime.today().strftime(TIMEFORMAT)
 		suffix = ".csv"
 		fname = self.s.mkFile(prifix = prefix, suffix = suffix, subdir = STATSDIR)
@@ -110,6 +113,9 @@ class Exam:
 			self.saveTestWords(unknown_words)
 
 	def saveTestWords(self, words):
+		if self.fake:
+			print "Cannot save test words - fake mode"
+			return
 		prefix = "%s_%s_" % (TESTNAME, datetime.today().strftime(TIMEFORMAT))
 		suffix = ".xls"
 		fname = self.s.mkFile(prifix = prefix, suffix = suffix, subdir = TESTDIR)
