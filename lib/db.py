@@ -130,17 +130,17 @@ class DB():
 		f.delete(synchronize_session = False)
 		self.changes["delete"].append("%s | all words" % fname)
 
+	def deleteWord(self, fname, eng):
+		file_id = self.session.query(File).filter(File.name == fname).one().id
+		self.session.query(Word).filter((Word.file == file_id) & (Word.eng == eng)).delete(synchronize_session = False)
+		self.changes["delete"].append("%s | %s" % (fname, eng))
+
 	def createFile(self, fname, sha, words):
 		self.session.add(File(name = fname, sha = sha))
 		for word in words:
 			eng, rus = word
 			self.createWord(fname, eng, rus)
 		self.changes["create"].append("%s | %s" % (fname, sha))
-
-	def deleteWord(self, fname, eng):
-		file_id = self.session.query(File).filter(File.name == fname).one().id
-		self.session.query(Word).filter((Word.file == file_id) & (Word.eng == eng)).delete(synchronize_session = False)
-		self.changes["delete"].append("%s | %s" % (fname, eng))
 
 	def createWord(self, fname, eng, rus):
 		f = self.session.query(File).filter(File.name == fname).one()
