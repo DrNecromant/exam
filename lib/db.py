@@ -1,9 +1,10 @@
 from style import *
-from sqlalchemy import create_engine, ForeignKey, Column, Integer, String, Date, func
+from sqlalchemy import create_engine, ForeignKey, Column, Integer, String, DateTime, func
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, sessionmaker, backref
 from sqlalchemy.schema import MetaData, ColumnDefault
 from sqlalchemy.engine import Engine
+from datetime import datetime
 
 metadata = MetaData()
 Base = declarative_base(metadata = metadata)
@@ -26,7 +27,7 @@ class Word(Base):
 	eng = Column(String)
 	rus = Column(String)
 	file = Column(Integer, ForeignKey('file.id'))
-	passed = Column(String, default = 0)
+	passed = Column(Integer, default = 0)
 	failed = Column(Integer, default = 0)
 
 	word_history = relationship("History")
@@ -36,9 +37,9 @@ class History(Base):
 	__table_args__ = {'sqlite_autoincrement': True}
 
 	id = Column(Integer, primary_key = True)
-	date = Column(Date)
+	date = Column(DateTime)
 	word = Column(Integer, ForeignKey('word.id'))
-	passed = Column(String, default = 0)
+	passed = Column(Integer, default = 0)
 	failed = Column(Integer, default = 0)
 
 class DB():
@@ -49,6 +50,7 @@ class DB():
 		Session = sessionmaker(bind = engine)
 		self.session = Session()
 		self.changes = self.getBlankChanges()
+		self.now = datetime.now()
 
 	def getErrors(self):
 		errors = dict()
