@@ -14,7 +14,7 @@ class File(Base):
 
 	id = Column(Integer, primary_key = True)
 	name = Column(String)
-	sha = Column(String, server_default = "nosha")
+	sha = Column(String, default = "NOSHA")
 
 class Word(Base):
 	__tablename__ = 'word'
