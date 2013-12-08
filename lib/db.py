@@ -109,10 +109,9 @@ class DB():
 
 	def updateCounter(self, eng, counter):
 		word = self.session.query(Word).filter(Word.eng == eng).one()
-		history = History(date = self.getDateNow())
 		count = int(getattr(word, counter)) + 1
 		setattr(word, counter, count)
-		setattr(history, counter, count)
+		history = History(date = self.getDateNow(), passed = word.passed, failed = word.failed)
 		word.history.append(history)
 		self.changes["update"].append("%s %s %s" % (eng, counter, count))
 
