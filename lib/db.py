@@ -135,7 +135,8 @@ class DB():
 	def deleteWord(self, fname, eng):
 		file_id = self.session.query(File).filter(File.name == fname).one().id
 		word_query = self.session.query(Word).filter((Word.file == file_id) & (Word.eng == eng))
-		word_query.one().history.append(History(date = self.getDateNow(), passed = -1, failed = -1))
+		word = word_query.one()
+		word.history.append(History(date = self.getDateNow(), passed = -1, failed = -1))
 		word_query.delete(synchronize_session = False)
 		self.changes["delete"].append("%s | %s" % (fname, eng))
 
