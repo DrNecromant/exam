@@ -131,7 +131,7 @@ class Exam:
 					continue
 				engs.add(word[0])
 		words = map(self.db.getWords, engs)
-		if all(words):
+		if words and all(words):
 			content = [word[0] for word in words if len(word) == 1]
 			content = h.shuffleList(content)
 			self.saveTestWords(content)
