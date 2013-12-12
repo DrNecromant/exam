@@ -17,6 +17,6 @@ class XLS():
 			row += 1
 		wb.save(dst)
 
-	def loadData(self, filename):
+	def loadData(self, filename, column_num = 2):
 		sheet = open_workbook(filename).sheet_by_index(0)
-		return [tuple(sheet.row_values(rownum)[:2]) for rownum in range(sheet.nrows)]
+		return [tuple(sheet.row_values(rownum)[:column_num]) for rownum in range(sheet.nrows)]
