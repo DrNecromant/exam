@@ -124,8 +124,11 @@ class Exam:
 		engs = set()
 		testfiles = self.s.getFiles(subdir = TESTDIR, fext = ".xls")
 		for testfile in testfiles:
-			words = self.xls.loadData(testfile)
+			# get third columns values to remove marked words
+			words = self.xls.loadData(testfile, column_num = 3)
 			for word in words:
+				if len(word) > 2 and word[2]:
+					continue
 				engs.add(word[0])
 		words = map(self.db.getWords, engs)
 		content = [word[0] for word in words if len(word) == 1]
