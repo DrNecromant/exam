@@ -136,3 +136,26 @@ class Exam:
 			content = h.shuffleList(content)
 			self.saveTestWords(content)
 		self.s.unlinkFiles(testfiles)
+
+	def getStats(self):
+		dates = self.db.getDates()
+		for date in dates:
+			result = {
+				"p_sum": 0,
+				"f_sum": 0,
+				"idle": 0,
+				"bad": 0,
+				"good": 0
+			}
+			stats = self.db.getStatsByDate(date)
+			for passed, failed in stats:
+				result["p_sum"] += passed
+				result["f_sum"] += failed
+				if passed == 0 and failed == 0:
+					result["idle"] += 1
+				elif passed > failed:
+					result["good"] += 1
+				else:
+					result["bad"] += 1
+			print date
+			print result

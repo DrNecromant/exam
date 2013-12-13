@@ -4,7 +4,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, sessionmaker, backref
 from sqlalchemy.schema import MetaData, ColumnDefault
 from sqlalchemy.engine import Engine
-from datetime import datetime
+from datetime import datetime, timedelta
 
 metadata = MetaData()
 Base = declarative_base(metadata = metadata)
@@ -170,3 +170,17 @@ class DB():
 				single = 0
 			result_table.append([entry.id, basedir, filename, single, entry.passed, entry.failed])
 		return result_table
+
+	def getStatsByDate(self, date):
+		stats = self.session.query(func.max(History.date), History.passed, History.failed)
+		stats = stats.filter(History.date < date + timedelta(1))
+		stats = stats.group_by(History.word)
+		return [s[1:] for s in stats.all() if s[1] != -1 and s[2] != -1]
+
+	def getDates(self):
+		dates_query = self.session.query(func.date(func.min(History.date)), func.date(func.max(History.date)))
+		min_date, max_date = map(lambda t: datetime.strptime(t, "%Y-%m-%d"), dates_query.one())
+		dates = list()
+		for i in range((max_date - min_date).days + 1):
+			dates.append(min_date + timedelta(i))
+		return dates

@@ -11,6 +11,8 @@ parser.add_option("--stats", "-t", action = "store_true",
 	dest = "stats", help = "stats")
 parser.add_option("--join", "-j", action = "store_true",
 	dest = "join", help = "join")
+parser.add_option("--plot", "-p", action = "store_true",
+	dest = "plot", help = "plot")
 
 (options, args) = parser.parse_args()
 
@@ -24,3 +26,5 @@ if options.stats:
 	tool.saveCurrentStats()
 if options.join:
 	tool.joinTestFiles()
+if options.plot:
+	tool.getStats()
