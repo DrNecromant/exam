@@ -21,6 +21,6 @@ if options.sync:
 	tool.sync()
 	tool.processDBErrors()
 if options.stats:
-	tool.saveStats()
+	tool.saveCurrentStats()
 if options.join:
 	tool.joinTestFiles()

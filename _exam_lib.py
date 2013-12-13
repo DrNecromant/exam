@@ -77,7 +77,7 @@ class Exam:
 		else:
 			h.printWords(words)
 
-	def saveStats(self):
+	def saveCurrentStats(self):
 		if self.fake:
 			print "Cannot save stats - fake mode"
 			return
