@@ -28,6 +28,6 @@ class DecoMeta(type):
 		func_name = func.__name__
 		def wrapper(*args, **kwargs):
 			if not func_name in DONOT_PRINT_FUNC_NAME:
-				print "# %s:%s ..." % (class_name, func_name)
+				print "# %s::%s(%s, %s)" % (class_name, func_name, args[1:], kwargs)
 			return func(*args, **kwargs)
 		return wrapper
