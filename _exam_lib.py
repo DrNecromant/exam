@@ -77,17 +77,6 @@ class Exam:
 		else:
 			h.printWords(words)
 
-	def saveCurrentStats(self):
-		if self.fake:
-			print "Cannot save stats - fake mode"
-			return
-		fname = self.s.getFile(name = "exam_stats.csv", subdir = STATSDIR)
-		fd = open(fname, "w+")
-		writer = csv.writer(fd)
-		writer.writerows(self.db.getStats())
-		fd.close()
-		print "Stats have been saved into %s" % fname
-
 	def doExam(self, count, rus):
 		print "=== words count %s ===" % count
 		unknown_words = list()

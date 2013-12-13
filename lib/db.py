@@ -158,19 +158,6 @@ class DB():
 		self.session.query(Word).join(File).filter((Word.eng == eng) & (File.name == fname)).one().rus = rus2
 		self.changes["update"].append("%s | %s | %s -> %s" % (fname, eng, rus1, rus2))
 
-	def getStats(self):
-		entries = self.session.query(Word.id, Word.eng, Word.passed, Word.failed, File.name).join(File).all()
-		result_table = [["word_id", "basedir", "filename", "single", "passed", "failed"]]
-		for entry in entries:
-			basedir = entry.name.split("/")[1]
-			filename = "/".join(entry.name.split("/")[2:])
-			if " " in entry.eng:
-				single = 1
-			else:
-				single = 0
-			result_table.append([entry.id, basedir, filename, single, entry.passed, entry.failed])
-		return result_table
-
 	def getStatsByDate(self, date):
 		stats = self.session.query(func.max(History.date), History.passed, History.failed)
 		stats = stats.filter(History.date < date + timedelta(1))
