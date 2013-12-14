@@ -135,3 +135,9 @@ class Exam:
 			stats = h.getStatsFromRawData(raw_data)
 			all_stats.append(stats)
 		return dict(zip(keys, zip(*all_stats)))
+
+	def buildPlot(self, **stats):
+		f1 = self.s.getFile("quantity.png", subdir = STATSDIR)
+		f2 = self.s.getFile("quality.png", subdir = STATSDIR)
+		h.buildPlot((f1, f2), **stats)
+		print "plots has been saved into %s, %s" %(f1, f2)

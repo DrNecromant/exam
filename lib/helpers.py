@@ -1,5 +1,8 @@
 from random import sample, shuffle
 
+import numpy as np
+import matplotlib.pyplot as plt
+
 def printWords(words):
 	if not words:
 		print "Could not find"
@@ -32,6 +35,7 @@ def shuffleList(l):
 	return l
 
 def getStatsFromRawData(data):
+	part = 10000
 	p_sum = f_sum = idle = good = bad = 0
 	for passed, failed in data:
 		p_sum += passed
@@ -42,4 +46,20 @@ def getStatsFromRawData(data):
 			good += 1
 		else:
 			bad += 1
+	base = (good + bad + idle)
+	if good + bad != 0:
+		good = part * good / base
+		bad = part * bad / base
+	idle = part - good - bad
 	return [p_sum, f_sum, idle, good, bad]
+
+def buildPlot(files, **stats):
+	plt.figure("quantuty")
+	plt.plot(stats["p_sum"], color = "g", linewidth = 2)
+	plt.plot(stats["f_sum"], color = "r", linewidth = 2)
+	plt.savefig(files[0])
+	plt.figure("quality")
+	plt.plot(stats["idle"], color = "b", linewidth = 2)
+	plt.plot(stats["good"], color = "g", linewidth = 2)
+	plt.plot(stats["bad"], color = "r", linewidth = 2)
+	plt.savefig(files[1])
