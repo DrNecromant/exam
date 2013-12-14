@@ -12,7 +12,7 @@ DONOT_PRINT_FUNC_NAME = (
 	"deleteWord",
 	"getDateNow",
 	"getWords",
-	"getStatsByDate",
+	"getRawDataByDate",
 )
 
 class DecoMeta(type):

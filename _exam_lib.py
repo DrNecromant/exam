@@ -127,24 +127,11 @@ class Exam:
 		self.s.unlinkFiles(testfiles)
 
 	def getStats(self):
+		keys = ["p_sum", "f_sum", "idle", "good", "bad"]
+		all_stats = list()
 		dates = self.db.getDates()
 		for date in dates:
-			result = {
-				"p_sum": 0,
-				"f_sum": 0,
-				"idle": 0,
-				"bad": 0,
-				"good": 0
-			}
-			stats = self.db.getStatsByDate(date)
-			for passed, failed in stats:
-				result["p_sum"] += passed
-				result["f_sum"] += failed
-				if passed == 0 and failed == 0:
-					result["idle"] += 1
-				elif passed > failed:
-					result["good"] += 1
-				else:
-					result["bad"] += 1
-			print date
-			print result
+			raw_data = self.db.getRawDataByDate(date)
+			stats = h.getStatsFromRawData(raw_data)
+			all_stats.append(stats)
+		return dict(zip(keys, zip(*all_stats)))

@@ -158,7 +158,7 @@ class DB():
 		self.session.query(Word).join(File).filter((Word.eng == eng) & (File.name == fname)).one().rus = rus2
 		self.changes["update"].append("%s | %s | %s -> %s" % (fname, eng, rus1, rus2))
 
-	def getStatsByDate(self, date):
+	def getRawDataByDate(self, date):
 		stats = self.session.query(func.max(History.date), History.passed, History.failed)
 		stats = stats.filter(History.date < date + timedelta(1))
 		stats = stats.group_by(History.word)

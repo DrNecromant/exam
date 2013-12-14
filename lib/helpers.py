@@ -30,3 +30,16 @@ def smartSelection(l, c):
 def shuffleList(l):
 	shuffle(l)
 	return l
+
+def getStatsFromRawData(data):
+	p_sum = f_sum = idle = good = bad = 0
+	for passed, failed in data:
+		p_sum += passed
+		f_sum += failed
+		if passed == 0 and failed == 0:
+			idle += 1
+		elif passed > failed:
+			good += 1
+		else:
+			bad += 1
+	return [p_sum, f_sum, idle, good, bad]
