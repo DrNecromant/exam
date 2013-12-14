@@ -162,7 +162,8 @@ class DB():
 		stats = self.session.query(func.max(History.date), History.passed, History.failed)
 		stats = stats.filter(History.date < date + timedelta(1))
 		stats = stats.group_by(History.word)
-		return [s[1:] for s in stats.all() if s[1] != -1 and s[2] != -1]
+		stats = stats.having(History.passed > -1)
+		return map(lambda s: s[1:], stats.all())
 
 	def getDates(self):
 		dates_query = self.session.query(func.date(func.min(History.date)), func.date(func.max(History.date)))
