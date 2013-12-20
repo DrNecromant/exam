@@ -30,6 +30,10 @@ class DecoMeta(type):
 		def wrapper(*args, **kwargs):
 			if not func_name in DONOT_PRINT_FUNC_NAME:
 				args_to_print = map(lambda arg: "<list:%s>" %len(arg) if type(arg) == list and len(arg) > 3 else arg, args[1:])
-				print "# %s::%s(%s, %s)" % (class_name, func_name, args_to_print, kwargs)
+				#print "# %s::%s(%s, %s)" % (class_name, func_name, args_to_print, kwargs)
+				print "# %s::%s" % (class_name, func_name)
+				for args_type in (args_to_print, kwargs):
+					if args_type:
+						print "#\t%s" % args_type
 			return func(*args, **kwargs)
 		return wrapper
