@@ -88,10 +88,8 @@ class DB():
 
 	def commit(self, fake = False):
 		if fake:
-			print "Cannot apply database changes - fake mode"
 			self.session.rollback()
 		else:
-			print "Apply database changes"
 			self.session.commit()
 		self.changes = self.getBlankChanges()
 

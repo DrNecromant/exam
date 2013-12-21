@@ -62,9 +62,7 @@ class Exam:
 
 	def processDBChanges(self):
 		changes = self.db.getChanges()
-		if changes == self.db.getBlankChanges():
-			print "There is nothing to commit"
-		else:
+		if changes != self.db.getBlankChanges():
 			h.printChanges(changes)
 			self.db.commit(fake = self.fake)
 			if not self.fake:
@@ -72,9 +70,7 @@ class Exam:
 
 	def processDBWord(self, word):
 		words = self.db.findWords(word)
-		if not words:
-			print "No word found"
-		else:
+		if words:
 			h.printWords(words)
 
 	def doExam(self, count, rus):
@@ -101,13 +97,11 @@ class Exam:
 
 	def saveTestWords(self, words):
 		if self.fake:
-			print "Cannot save test words - fake mode"
 			return
 		prefix = "%s_%s_" % (TESTNAME, datetime.today().strftime(TIMEFORMAT))
 		suffix = ".xls"
 		fname = self.s.mkFile(prifix = prefix, suffix = suffix, subdir = TESTDIR)
 		self.xls.dumpData(fname, words)
-		print "Results have been saved into %s" % fname
 
 	def joinTestFiles(self):
 		engs = set()
@@ -140,4 +134,3 @@ class Exam:
 		f1 = self.s.getFile("quantity.png", subdir = STATSDIR)
 		f2 = self.s.getFile("quality.png", subdir = STATSDIR)
 		h.buildPlot((f1, f2), **stats)
-		print "plots has been saved into %s, %s" %(f1, f2)

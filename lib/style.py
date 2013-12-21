@@ -25,15 +25,19 @@ class DecoMeta(type):
 
 	@classmethod
 	def deco(cls, func):
+		convert_list = lambda p: "%s: %s" %(type(p), len(p)) if type(p) in (list, tuple) and len(p) > 3 else p
 		class_name = cls.__name
 		func_name = func.__name__
 		def wrapper(*args, **kwargs):
 			if not func_name in DONOT_PRINT_FUNC_NAME:
-				args_to_print = map(lambda arg: "<list:%s>" %len(arg) if type(arg) == list and len(arg) > 3 else arg, args[1:])
-				#print "# %s::%s(%s, %s)" % (class_name, func_name, args_to_print, kwargs)
+				args_to_print = args[1:]
+				kwargs_to_print = kwargs.items()
 				print "# %s::%s" % (class_name, func_name)
-				for args_type in (args_to_print, kwargs):
-					if args_type:
-						print "#\t%s" % args_type
+				if args_to_print:
+					for item in args_to_print:
+						print "\t*  %s" % convert_list(item)
+				if kwargs_to_print:
+					for items in kwargs_to_print:
+						print "\t** %s: %s" % (items[0], convert_list(items[1]))
 			return func(*args, **kwargs)
 		return wrapper
