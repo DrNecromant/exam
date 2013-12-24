@@ -74,7 +74,6 @@ class Exam:
 			h.printWords(words)
 
 	def doExam(self, count, rus):
-		print "=== words count %s ===" % count
 		unknown_words = list()
 		words = h.smartSelection(self.db.getAllWords(), count)
 		for word in words:
