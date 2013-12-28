@@ -26,7 +26,7 @@ def printChanges(changes):
 def smartSelection(l, c):
 	x = c / 3
 	y = c * 3
-	z = c - i1 * 2
+	z = c - x * 2
 	res = l[:x] + sample(l[x:y], x) + sample(l[y:], z)
 	shuffle(res)
 	return res
