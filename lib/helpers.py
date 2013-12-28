@@ -24,8 +24,10 @@ def printChanges(changes):
 			print "==> %s" % c
 
 def smartSelection(l, c):
-	q = c / 4
-	res = l[:q] + sample(l[q:c*4], q) + sample(l[c*4:], c-2*q)
+	x = c / 3
+	y = c * 3
+	z = c - i1 * 2
+	res = l[:x] + sample(l[x:y], x) + sample(l[y:], z)
 	shuffle(res)
 	return res
 
