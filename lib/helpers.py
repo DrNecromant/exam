@@ -36,23 +36,18 @@ def shuffleList(l):
 	return l
 
 def getStatsFromRawData(data):
-	part = 10000
-	p_sum = f_sum = idle = good = bad = 0
+	p_sum = f_sum = total = good = bad = 0
 	for passed, failed in data:
 		p_sum += passed
 		f_sum += failed
+		total += 1
 		if passed == 0 and failed == 0:
-			idle += 1
+			continue
 		elif passed > failed:
 			good += 1
 		else:
 			bad += 1
-	base = (good + bad + idle)
-	if good + bad != 0:
-		good = part * good / base
-		bad = part * bad / base
-	idle = part - good - bad
-	return [p_sum, f_sum, idle, good, bad]
+	return [p_sum, f_sum, total, good, bad]
 
 def buildPlot(files, **stats):
 	plt.figure("quantuty")
@@ -60,7 +55,7 @@ def buildPlot(files, **stats):
 	plt.plot(stats["f_sum"], color = "r", linewidth = 2)
 	plt.savefig(files[0])
 	plt.figure("quality")
-	plt.plot(stats["idle"], color = "b", linewidth = 2)
+	plt.plot(stats["total"], color = "b", linewidth = 2)
 	plt.plot(stats["good"], color = "g", linewidth = 2)
 	plt.plot(stats["bad"], color = "r", linewidth = 2)
 	plt.savefig(files[1])
