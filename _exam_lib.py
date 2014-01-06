@@ -120,7 +120,7 @@ class Exam:
 		self.s.unlinkFiles(testfiles)
 
 	def getStats(self):
-		keys = ["p_sum", "f_sum", "total", "good", "bad"]
+		keys = ["p_sum", "f_sum", "total", "good", "bad", "idle"]
 		all_stats = list()
 		dates = self.db.getDates()
 		for date in dates:
