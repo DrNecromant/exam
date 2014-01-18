@@ -74,8 +74,13 @@ class Exam:
 			h.printWords(words)
 
 	def doExam(self, count, rus):
+		words_to_exam = self.db.getAllWords()
+		if not words_to_exam:
+			print "# No words to exam"
+			return
+		print "# Check %s from %s words" %(count, len(words_to_exam))
 		unknown_words = list()
-		words = h.smartSelection(self.db.getAllWords(), count)
+		words = h.smartSelection(words_to_exam, count)
 		for word in words:
 			q_word, a_word, fname = word
 			eng = q_word
