@@ -49,17 +49,21 @@ def getStatsFromRawData(data, max_passed):
 			stat_dict[passed] += 1
 		else:
 			stat_dict[passed] = 1
-	res = [p_sum, f_sum, total]
+	res = [p_sum, f_sum]
 	for key in range(max_passed + 1):
 		if key in stat_dict:
 			res.append(stat_dict[key])
 		else:
 			res.append(0)
-	print res
+	res.append(total)
 	return res
 
 def buildPlot(file_to_save, stats):
 	plt.figure(file_to_save)
+	plt.grid()
+	i = 0
 	for stat in stats:
-		plt.plot(stat)
+		plt.plot(stat, label = "line %s" % i)
+		i += 1
+	plt.legend(loc='upper left')
 	plt.savefig(file_to_save)
