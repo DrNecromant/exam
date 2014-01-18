@@ -24,4 +24,4 @@ if options.join:
 	tool.joinTestFiles()
 if options.plot:
 	stats = tool.getStats()
-	tool.buildPlot(**stats)
+	tool.buildPlot(stats)

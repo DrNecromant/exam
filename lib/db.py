@@ -114,6 +114,9 @@ class DB():
 		word.history.append(history)
 		self.changes["update"].append("%s %s %s" % (eng, counter, count))
 
+	def getMaxCounter(self, counter):
+		return self.session.query(func.max(getattr(Word, counter))).scalar()
+
 	def getSha(self, name):
 		return self.session.query(File).filter(File.name == name).one().sha
 

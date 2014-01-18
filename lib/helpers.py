@@ -38,28 +38,28 @@ def shuffleList(l):
 	shuffle(l)
 	return l
 
-def getStatsFromRawData(data):
-	p_sum = f_sum = total = init = good = bad = 0
+def getStatsFromRawData(data, max_passed):
+	stat_dict = dict()
+	p_sum = f_sum = total = 0
 	for passed, failed in data:
 		p_sum += passed
 		f_sum += failed
 		total += 1
-		if passed == 0 and failed == 0:
-			init += 1
-		elif passed > failed:
-			good += 1
+		if stat_dict.has_key(passed):
+			stat_dict[passed] += 1
 		else:
-			bad += 1
-	return [p_sum, f_sum, total, good, bad, init]
+			stat_dict[passed] = 1
+	res = [p_sum, f_sum, total]
+	for key in range(max_passed + 1):
+		if key in stat_dict:
+			res.append(stat_dict[key])
+		else:
+			res.append(0)
+	print res
+	return res
 
-def buildPlot(files, **stats):
-	plt.figure("quantuty")
-	plt.plot(stats["p_sum"], color = "g", linewidth = 2)
-	plt.plot(stats["f_sum"], color = "r", linewidth = 2)
-	plt.savefig(files[0])
-	plt.figure("quality")
-	plt.plot(stats["total"], color = "b", linewidth = 2)
-	plt.plot(stats["good"], color = "g", linewidth = 2)
-	plt.plot(stats["bad"], color = "r", linewidth = 2)
-	plt.plot(stats["idle"], color = "y", linewidth = 2)
-	plt.savefig(files[1])
+def buildPlot(file_to_save, stats):
+	plt.figure(file_to_save)
+	for stat in stats:
+		plt.plot(stat)
+	plt.savefig(file_to_save)

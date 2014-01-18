@@ -125,16 +125,17 @@ class Exam:
 		self.s.unlinkFiles(testfiles)
 
 	def getStats(self):
-		keys = ["p_sum", "f_sum", "total", "good", "bad", "idle"]
+		max_passed = self.db.getMaxCounter("passed")
 		all_stats = list()
 		dates = self.db.getDates()
 		for date in dates:
 			raw_data = self.db.getRawDataByDate(date)
-			stats = h.getStatsFromRawData(raw_data)
+			stats = h.getStatsFromRawData(raw_data, max_passed)
 			all_stats.append(stats)
-		return dict(zip(keys, zip(*all_stats)))
+		return zip(*all_stats)
 
-	def buildPlot(self, **stats):
+	def buildPlot(self, stats):
 		f1 = self.s.getFile("quantity.png", subdir = STATSDIR)
+		h.buildPlot(f1, stats[:2])
 		f2 = self.s.getFile("quality.png", subdir = STATSDIR)
-		h.buildPlot((f1, f2), **stats)
+		h.buildPlot(f2, stats[2:])
