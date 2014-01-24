@@ -1,0 +1,140 @@
+from style import *
+from sqlalchemy import create_engine, ForeignKey, Column, Integer, String, DateTime, func
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import relationship, sessionmaker, backref
+from sqlalchemy.schema import MetaData, ColumnDefault
+from sqlalchemy.engine import Engine
+
+metadata = MetaData()
+Base = declarative_base(metadata = metadata)
+
+class File(Base):
+	__tablename__ = 'file'
+	__table_args__ = {'sqlite_autoincrement': True}
+
+	id = Column(Integer, primary_key = True)
+	name = Column(String)
+	sha = Column(String, default = "NOSHA")
+
+	words = relationship("Word")
+
+class Word(Base):
+	__tablename__ = 'word'
+	__table_args__ = {'sqlite_autoincrement': True}
+
+	id = Column(Integer, primary_key = True)
+	eng = Column(String)
+	rus = Column(String)
+	file = Column(Integer, ForeignKey('file.id'))
+	passed = Column(Integer, default = 0)
+	failed = Column(Integer, default = 0)
+
+	history = relationship("History")
+
+class History(Base):
+	__tablename__ = 'history'
+	__table_args__ = {'sqlite_autoincrement': True}
+
+	id = Column(Integer, primary_key = True)
+	date = Column(DateTime)
+	word = Column(Integer, ForeignKey('word.id'))
+	passed = Column(Integer, default = 0)
+	failed = Column(Integer, default = 0)
+
+class _base_DB():
+	__metaclass__ = DecoMeta
+
+	def __init__(self, dbpath):
+		engine = create_engine('sqlite:///%s' % dbpath, echo = False)
+		Base.metadata.create_all(engine) 
+		Session = sessionmaker(bind = engine)
+		self.session = Session()
+
+	def getAllFiles(self):
+		return map(lambda a: a.name, self.session.query(File).all())
+
+	def findWords(self, word):
+		return self.session.query(Word.eng, Word.rus, File.name).join(File).filter(Word.eng.like("%" + word + "%")).all()
+
+	def getWords(self, word):
+		return self.session.query(Word.eng, Word.rus, File.name).join(File).filter(Word.eng == word).all()
+
+	def getAllWords(self):
+		return self.session.query(Word.eng, Word.rus, File.name).join(File).\
+		filter(Word.passed <= 5).order_by(Word.passed + Word.failed, Word.passed).all()
+
+	def getMaxCounter(self, counter):
+		return self.session.query(func.max(getattr(Word, counter))).scalar()
+
+	def getSha(self, name):
+		return self.session.query(File).filter(File.name == name).one().sha
+
+	def loadData(self, name):
+		return self.session.query(Word.eng, Word.rus).join(File).filter(File.name == name).all()
+
+	def _getRawDataByDate(self, date):
+		stats = self.session.query(func.max(History.date), History.passed, History.failed)
+		stats = stats.filter(History.date < date)
+		stats = stats.group_by(History.word)
+		stats = stats.having(History.passed > -1)
+		return map(lambda s: s[1:], stats.all())
+
+	def _getDuplicates(self):
+		return self.session.query(Word).group_by(Word.eng).having(func.count(Word.rus) > 1).all()
+
+	def _getSpaces(self):
+		return self.session.query(Word).filter(Word.eng.like(" %") | Word.eng.like("% ") | Word.eng.like("%  %")).all()
+
+	def _getArticles(self):
+		return self.session.query(Word).filter(Word.eng.like("a %") | Word.eng.like("the %")).all()
+
+	def _getEngs(self):
+		return self.session.query(Word.eng).all()
+
+	def _getDates(self):
+		return self.session.query(func.date(func.min(History.date)), func.date(func.max(History.date))).one()
+
+	def _updateWord(self, fname, eng, rus):
+		self.session.query(Word).join(File).filter((Word.eng == eng) & (File.name == fname)).one().rus = rus
+
+	def _createWord(self, fname, eng, rus, d):
+		f = self.session.query(File).filter(File.name == fname).one()
+		word = Word(eng = eng, rus = rus)
+		f.words.append(word)
+		word.history.append(History(date = d))
+
+	def _createFile(self, fname, sha):
+		self.session.add(File(name = fname, sha = sha))
+
+	def _deleteWord(self, fname, eng, d):
+		file_id = self.session.query(File).filter(File.name == fname).one().id
+		word_query = self.session.query(Word).filter((Word.file == file_id) & (Word.eng == eng))
+		word = word_query.one()
+		word.history.append(History(date = d, passed = -1, failed = -1))
+		word_query.delete(synchronize_session = False)
+
+	def _deleteFile(self, fname):
+		self.session.query(File).filter(File.name == fname).delete(synchronize_session = False)
+
+	def _getWordsFromFile(self, fname):
+		objs = self.session.query(File).filter(File.name == fname).one().words
+		return map(lambda a: a.eng, objs)
+
+	def _updateSha(self, fname, sha):
+		self.session.query(File).filter(File.name == fname).one().sha = sha
+
+	def _updateCounter(self, eng, counter, d):
+		word = self.session.query(Word).filter(Word.eng == eng).one()
+		count = int(getattr(word, counter)) + 1
+		setattr(word, counter, count)
+		history = History(date = d, passed = word.passed, failed = word.failed)
+		word.history.append(history)
+
+	def _commit(self):
+		self.session.commit()
+
+	def _rollback(self):
+		self.session.rollback()
+
+	def quit(self):
+		self.session.close()

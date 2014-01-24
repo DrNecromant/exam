@@ -1,54 +1,9 @@
-from style import *
-from sqlalchemy import create_engine, ForeignKey, Column, Integer, String, DateTime, func
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import relationship, sessionmaker, backref
-from sqlalchemy.schema import MetaData, ColumnDefault
-from sqlalchemy.engine import Engine
+from _base_db import _base_DB
 from datetime import datetime, timedelta
 
-metadata = MetaData()
-Base = declarative_base(metadata = metadata)
-
-class File(Base):
-	__tablename__ = 'file'
-	__table_args__ = {'sqlite_autoincrement': True}
-
-	id = Column(Integer, primary_key = True)
-	name = Column(String)
-	sha = Column(String, default = "NOSHA")
-
-	words = relationship("Word")
-
-class Word(Base):
-	__tablename__ = 'word'
-	__table_args__ = {'sqlite_autoincrement': True}
-
-	id = Column(Integer, primary_key = True)
-	eng = Column(String)
-	rus = Column(String)
-	file = Column(Integer, ForeignKey('file.id'))
-	passed = Column(Integer, default = 0)
-	failed = Column(Integer, default = 0)
-
-	history = relationship("History")
-
-class History(Base):
-	__tablename__ = 'history'
-	__table_args__ = {'sqlite_autoincrement': True}
-
-	id = Column(Integer, primary_key = True)
-	date = Column(DateTime)
-	word = Column(Integer, ForeignKey('word.id'))
-	passed = Column(Integer, default = 0)
-	failed = Column(Integer, default = 0)
-
-class DB():
-	__metaclass__ = DecoMeta
+class DB(_base_DB):
 	def __init__(self, dbpath):
-		engine = create_engine('sqlite:///%s' % dbpath, echo = False)
-		Base.metadata.create_all(engine) 
-		Session = sessionmaker(bind = engine)
-		self.session = Session()
+		_base_DB.__init__(self, dbpath)
 		self.changes = self.getBlankChanges()
 		self.now = None
 
@@ -59,16 +14,16 @@ class DB():
 
 	def getErrors(self):
 		errors = dict()
-		duplicates = self.session.query(Word).group_by(Word.eng).having(func.count(Word.rus) > 1).all()
+		duplicates = self._getDuplicates()
 		if duplicates:
 			errors["duplicates"] = map(lambda a: a.eng, duplicates)
-		spaces = self.session.query(Word).filter(Word.eng.like(" %") | Word.eng.like("% ") | Word.eng.like("%  %")).all()
+		spaces = self._getSpaces()
 		if spaces:
 			errors["spaces"] = map(lambda a: a.eng, spaces)
-		articles = self.session.query(Word).filter(Word.eng.like("a %") | Word.eng.like("the %")).all()
+		articles = self._getArticles()
 		if articles:
 			errors["articles"] = map(lambda a: a.eng, articles)
-		engs = self.session.query(Word.eng).all()
+		engs = self._getEngs()
 		rus_letters = [s[0] for s in engs if not all(ord(c) < 128 for c in s[0])]
 		if rus_letters:
 			errors["rus_letters"] = rus_letters
@@ -83,93 +38,53 @@ class DB():
 	def getBlankChanges(self):
 		return {"create": list(), "update": list(), "delete": list()}
 
-	def quit(self):
-		self.session.close()
-
 	def commit(self, fake = False):
 		if fake:
-			self.session.rollback()
+			self_rollback()
 		else:
-			self.session.commit()
+			self._commit()
 		self.changes = self.getBlankChanges()
 
-	def getAllFiles(self):
-		return map(lambda a: a.name, self.session.query(File).all())
-
-	def findWords(self, word):
-		return self.session.query(Word.eng, Word.rus, File.name).join(File).filter(Word.eng.like("%" + word + "%")).all()
-
-	def getWords(self, word):
-		return self.session.query(Word.eng, Word.rus, File.name).join(File).filter(Word.eng == word).all()
-
-	def getAllWords(self):
-		return self.session.query(Word.eng, Word.rus, File.name).join(File).\
-		filter(Word.passed <= 5).order_by(Word.passed + Word.failed, Word.passed).all()
-
 	def updateCounter(self, eng, counter):
-		word = self.session.query(Word).filter(Word.eng == eng).one()
-		count = int(getattr(word, counter)) + 1
-		setattr(word, counter, count)
-		history = History(date = self.getDateNow(), passed = word.passed, failed = word.failed)
-		word.history.append(history)
+		self._updateCounter(eng, counter, self.getDateNow())
 		self.changes["update"].append("%s %s %s" % (eng, counter, count))
 
-	def getMaxCounter(self, counter):
-		return self.session.query(func.max(getattr(Word, counter))).scalar()
-
-	def getSha(self, name):
-		return self.session.query(File).filter(File.name == name).one().sha
-
 	def updateSha(self, fname, sha):
-		self.session.query(File).filter(File.name == fname).one().sha = sha
+		self._updateSha(fname, sha)
 		self.changes["update"].append("%s | %s" % (fname, sha))
 
-	def loadData(self, name):
-		return self.session.query(Word.eng, Word.rus).join(File).filter(File.name == name).all()
-
 	def deleteFile(self, fname):
-		file_query = self.session.query(File).filter(File.name == fname)
-		for word in file_query.one().words:
-			self.deleteWord(fname, word.eng)
-		file_query.delete(synchronize_session = False)
+		words = self._getWordsFromFile(fname)
+		for word in words:
+			self.deleteWord(fname, word)
+		self._deleteFile(fname)
 		self.changes["delete"].append("%s | all words" % fname)
 
 	def deleteWord(self, fname, eng):
-		file_id = self.session.query(File).filter(File.name == fname).one().id
-		word_query = self.session.query(Word).filter((Word.file == file_id) & (Word.eng == eng))
-		word = word_query.one()
-		word.history.append(History(date = self.getDateNow(), passed = -1, failed = -1))
-		word_query.delete(synchronize_session = False)
+		self._deleteWord(fname, eng, self.getDateNow())
 		self.changes["delete"].append("%s | %s" % (fname, eng))
 
 	def createFile(self, fname, sha, words):
-		self.session.add(File(name = fname, sha = sha))
+		self._createFile(fname, sha)
 		for word in words:
 			eng, rus = word
 			self.createWord(fname, eng, rus)
 		self.changes["create"].append("%s | %s" % (fname, sha))
 
 	def createWord(self, fname, eng, rus):
-		f = self.session.query(File).filter(File.name == fname).one()
-		word = Word(eng = eng, rus = rus)
-		word.history.append(History(date = self.getDateNow()))
-		f.words.append(word)
+		self._createWord(fname, eng, rus, self.getDateNow())
 		self.changes["create"].append("%s | %s | %s" % (fname, eng, rus))
 
 	def updateWord(self, fname, eng, rus1, rus2):
-		self.session.query(Word).join(File).filter((Word.eng == eng) & (File.name == fname)).one().rus = rus2
+		self._updateWord(fname, eng, rus2)
 		self.changes["update"].append("%s | %s | %s -> %s" % (fname, eng, rus1, rus2))
 
 	def getRawDataByDate(self, date):
-		stats = self.session.query(func.max(History.date), History.passed, History.failed)
-		stats = stats.filter(History.date < date + timedelta(1))
-		stats = stats.group_by(History.word)
-		stats = stats.having(History.passed > -1)
-		return map(lambda s: s[1:], stats.all())
+		return self._getRawDataByDate(date + timedelta(1))
 
 	def getDates(self):
-		dates_query = self.session.query(func.date(func.min(History.date)), func.date(func.max(History.date)))
-		min_date, max_date = map(lambda t: datetime.strptime(t, "%Y-%m-%d"), dates_query.one())
+		dates = self._getDates()
+		min_date, max_date = map(lambda t: datetime.strptime(t, "%Y-%m-%d"), dates)
 		dates = list()
 		for i in range((max_date - min_date).days + 1):
 			dates.append(min_date + timedelta(i))
