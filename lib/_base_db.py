@@ -1,45 +1,7 @@
 from style import *
-from sqlalchemy import create_engine, ForeignKey, Column, Integer, String, DateTime, func
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import relationship, sessionmaker, backref
-from sqlalchemy.schema import MetaData, ColumnDefault
-from sqlalchemy.engine import Engine
-
-metadata = MetaData()
-Base = declarative_base(metadata = metadata)
-
-class File(Base):
-	__tablename__ = 'file'
-	__table_args__ = {'sqlite_autoincrement': True}
-
-	id = Column(Integer, primary_key = True)
-	name = Column(String)
-	sha = Column(String, default = "NOSHA")
-
-	words = relationship("Word")
-
-class Word(Base):
-	__tablename__ = 'word'
-	__table_args__ = {'sqlite_autoincrement': True}
-
-	id = Column(Integer, primary_key = True)
-	eng = Column(String)
-	rus = Column(String)
-	file = Column(Integer, ForeignKey('file.id'))
-	passed = Column(Integer, default = 0)
-	failed = Column(Integer, default = 0)
-
-	history = relationship("History")
-
-class History(Base):
-	__tablename__ = 'history'
-	__table_args__ = {'sqlite_autoincrement': True}
-
-	id = Column(Integer, primary_key = True)
-	date = Column(DateTime)
-	word = Column(Integer, ForeignKey('word.id'))
-	passed = Column(Integer, default = 0)
-	failed = Column(Integer, default = 0)
+from model import *
+from sqlalchemy import create_engine, func
+from sqlalchemy.orm import sessionmaker
 
 class _base_DB():
 	__metaclass__ = DecoMeta
