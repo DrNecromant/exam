@@ -38,8 +38,8 @@ class Exam:
 			self.db.updateSha(upd_file_name, xls_sha)
 			xls_words = self.xls.loadData(self.s.getFullPath(upd_file_name))
 			xls_dict = dict(xls_words)
-			db_words = self.db.loadData(upd_file_name)
-			db_dict = dict(db_words)
+			db_words = self.db.getWordsByFile(upd_file_name)
+			db_dict = dict([(w.eng, w.rus) for w in db_words])
 			engs = set(xls_dict.keys()) | set(db_dict.keys())
 			for eng in engs:
 				xls_rus = xls_dict.get(eng)

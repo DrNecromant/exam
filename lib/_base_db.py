@@ -67,14 +67,14 @@ class _base_DB():
 		word.history.append(History(date = d, passed = -1, failed = -1))
 		word_query.delete(synchronize_session = False)
 
-	def _deleteFile(self, fname):
+	def deleteFileByName(self, fname):
 		self.session.query(File).filter(File.name == fname).delete(synchronize_session = False)
 
-	def _getWordsFromFile(self, fname):
-		objs = self.session.query(File).filter(File.name == fname).one().words
-		return map(lambda a: a.eng, objs)
+	def getWordsByFile(self, fname):
+		query = self.session.query(Word).join(File).filter(File.name == fname)
+		return query.all()
 
-	def _updateSha(self, fname, sha):
+	def updateShaByFile(self, fname, sha):
 		self.session.query(File).filter(File.name == fname).one().sha = sha
 
 	def _updateCounter(self, eng, counter, d):

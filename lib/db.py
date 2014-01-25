@@ -30,14 +30,14 @@ class DB(_base_DB):
 		self.changes["update"].append("%s %s %s" % (eng, counter, count))
 
 	def updateSha(self, fname, sha):
-		self._updateSha(fname, sha)
+		self.updateShaByFile(fname, sha)
 		self.changes["update"].append("%s | %s" % (fname, sha))
 
 	def deleteFile(self, fname):
-		words = self._getWordsFromFile(fname)
+		words = self.getWordsByFile(fname)
 		for word in words:
-			self.deleteWord(fname, word)
-		self._deleteFile(fname)
+			self.deleteWord(fname, word.eng)
+		self.deleteFileByName(fname)
 		self.changes["delete"].append("%s | all words" % fname)
 
 	def deleteWord(self, fname, eng):
