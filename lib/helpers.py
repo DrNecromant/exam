@@ -1,4 +1,5 @@
 from random import sample, shuffle
+from collections import Counter, defaultdict
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -37,6 +38,26 @@ def smartSelection(l, c):
 def shuffleList(l):
 	shuffle(l)
 	return l
+
+def getErrors(l):
+	errors = defaultdict(list)
+	cnt = Counter(l)
+	for el, c in cnt.items():
+		if c > 1:
+			errors["duplicates"].append(el)
+		if el.startswith(" ") or el.endswith(" ") or "  " in el:
+			errors["spaces"].append(el)
+		if el.startswith("the ") or el.startswith("a "):
+			errors["articles"].append(el)
+		for ch in el:
+			if ord(ch) >= 128:
+				errors["rus_letters"].append(el)
+				break
+		for ch in "?!,.()":
+			if ch in el:
+				errors["unused_signs"].append(el)
+				break
+	return errors
 
 def getStatsFromRawData(data, max_passed):
 	stat_dict = dict()

@@ -79,17 +79,9 @@ class _base_DB():
 		stats = stats.having(History.passed > -1)
 		return map(lambda s: s[1:], stats.all())
 
-	def _getDuplicates(self):
-		return self.session.query(Word).group_by(Word.eng).having(func.count(Word.rus) > 1).all()
-
-	def _getSpaces(self):
-		return self.session.query(Word).filter(Word.eng.like(" %") | Word.eng.like("% ") | Word.eng.like("%  %")).all()
-
-	def _getArticles(self):
-		return self.session.query(Word).filter(Word.eng.like("a %") | Word.eng.like("the %")).all()
-
-	def _getEngs(self):
-		return self.session.query(Word.eng).all()
+	def getEngWords(self):
+		query = self.session.query(Word)
+		return map(lambda w: w.eng, query.all())
 
 	def _getDates(self):
 		return self.session.query(func.date(func.min(History.date)), func.date(func.max(History.date))).one()

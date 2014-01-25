@@ -52,7 +52,8 @@ class Exam:
 					self.db.updateWord(upd_file_name, eng, db_rus, xls_rus)
 
 	def processDBErrors(self):
-		errors = self.db.getErrors()
+		engs = self.db.getEngWords()
+		errors = h.getErrors(engs)
 		if errors:
 			h.printErrors(errors, self.db.getWords)
 			return False

@@ -12,26 +12,6 @@ class DB(_base_DB):
 			self.now = datetime.now().replace(microsecond = 0)
 		return self.now
 
-	def getErrors(self):
-		errors = dict()
-		duplicates = self._getDuplicates()
-		if duplicates:
-			errors["duplicates"] = map(lambda a: a.eng, duplicates)
-		spaces = self._getSpaces()
-		if spaces:
-			errors["spaces"] = map(lambda a: a.eng, spaces)
-		articles = self._getArticles()
-		if articles:
-			errors["articles"] = map(lambda a: a.eng, articles)
-		engs = self._getEngs()
-		rus_letters = [s[0] for s in engs if not all(ord(c) < 128 for c in s[0])]
-		if rus_letters:
-			errors["rus_letters"] = rus_letters
-		signs = [s[0] for s in engs if "?" in s[0] or "!" in s[0] or "." in s[0] or "," in s[0] or "(" in s[0] or ")" in s[0]]
-		if signs:
-			errors["unused_signs"] = signs
-		return errors
-
 	def getChanges(self):
 		return dict(self.changes)
 
