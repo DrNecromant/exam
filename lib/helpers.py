@@ -1,5 +1,6 @@
 from random import sample, shuffle
 from collections import Counter, defaultdict
+from enchant import Dict
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -42,6 +43,7 @@ def shuffleList(l):
 def getErrors(l):
 	errors = defaultdict(list)
 	cnt = Counter(l)
+	dict_en = Dict("en_US")
 	for el, c in cnt.items():
 		if c > 1:
 			errors["duplicates"].append(el)
@@ -57,6 +59,9 @@ def getErrors(l):
 			if ch in el:
 				errors["unused_signs"].append(el)
 				break
+		for w in el.split():
+			if not dict_en.check(w):
+				errors["invalid"].append(el)
 	return errors
 
 def getStatsFromRawData(data, max_passed):
