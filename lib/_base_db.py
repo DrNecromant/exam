@@ -51,16 +51,16 @@ class _base_DB():
 	def _updateWord(self, fname, eng, rus):
 		self.session.query(Word).join(File).filter((Word.eng == eng) & (File.name == fname)).one().rus = rus
 
-	def _createWord(self, fname, eng, rus, d):
+	def createWordWithDate(self, fname, eng, rus, date):
 		f = self.session.query(File).filter(File.name == fname).one()
 		word = Word(eng = eng, rus = rus)
 		f.words.append(word)
-		word.history.append(History(date = d))
+		word.history.append(History(date = date))
 
-	def _createFile(self, fname, sha):
+	def createFileWithSha(self, fname, sha):
 		self.session.add(File(name = fname, sha = sha))
 
-	def _deleteWord(self, fname, eng, d):
+	def deleteWordFromFile(self, fname, eng, d):
 		file_id = self.session.query(File).filter(File.name == fname).one().id
 		word_query = self.session.query(Word).filter((Word.file == file_id) & (Word.eng == eng))
 		word = word_query.one()

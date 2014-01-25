@@ -41,18 +41,18 @@ class DB(_base_DB):
 		self.changes["delete"].append("%s | all words" % fname)
 
 	def deleteWord(self, fname, eng):
-		self._deleteWord(fname, eng, self.getDateNow())
+		self.deleteWordFromFile(fname, eng, self.getDateNow())
 		self.changes["delete"].append("%s | %s" % (fname, eng))
 
 	def createFile(self, fname, sha, words):
-		self._createFile(fname, sha)
+		self.createFileWithSha(fname, sha)
 		for word in words:
 			eng, rus = word
 			self.createWord(fname, eng, rus)
 		self.changes["create"].append("%s | %s" % (fname, sha))
 
 	def createWord(self, fname, eng, rus):
-		self._createWord(fname, eng, rus, self.getDateNow())
+		self.createWordWithDate(fname, eng, rus, self.getDateNow())
 		self.changes["create"].append("%s | %s | %s" % (fname, eng, rus))
 
 	def updateWord(self, fname, eng, rus1, rus2):
