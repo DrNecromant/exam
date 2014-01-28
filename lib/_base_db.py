@@ -18,8 +18,8 @@ class _base_DB():
 	def findWords(self, word):
 		return self.session.query(Word.eng, Word.rus, File.name).join(File).filter(Word.eng.like("%" + word + "%")).all()
 
-	def getWords(self, word):
-		return self.session.query(Word.eng, Word.rus, File.name).join(File).filter(Word.eng == word).all()
+	def getWordsByName(self, name):
+		return self.session.query(Word.eng, Word.rus, File.name).join(File).filter(Word.eng == name).all()
 
 	def getAllWords(self):
 		return self.session.query(Word.eng, Word.rus, File.name).join(File).\
@@ -38,14 +38,14 @@ class _base_DB():
 		stats = stats.having(History.passed > -1)
 		return map(lambda s: s[1:], stats.all())
 
-	def getEngWords(self):
+	def getWordsEng(self):
 		query = self.session.query(Word)
 		return map(lambda w: w.eng, query.all())
 
-	def _getDates(self):
+	def getDatesMinMax(self):
 		return self.session.query(func.date(func.min(History.date)), func.date(func.max(History.date))).one()
 
-	def _updateWord(self, fname, eng, rus):
+	def updateWordRus(self, fname, eng, rus):
 		self.session.query(Word).join(File).filter((Word.eng == eng) & (File.name == fname)).one().rus = rus
 
 	def createWordWithDate(self, fname, eng, rus, date):
@@ -57,11 +57,11 @@ class _base_DB():
 	def createFileWithSha(self, fname, sha):
 		self.session.add(File(name = fname, sha = sha))
 
-	def deleteWordFromFile(self, fname, eng, d):
+	def deleteWordWithDate(self, fname, eng, date):
 		file_id = self.session.query(File).filter(File.name == fname).one().id
 		word_query = self.session.query(Word).filter((Word.file == file_id) & (Word.eng == eng))
 		word = word_query.one()
-		word.history.append(History(date = d, passed = -1, failed = -1))
+		word.history.append(History(date = date, passed = -1, failed = -1))
 		word_query.delete(synchronize_session = False)
 
 	def deleteFileByName(self, fname):
@@ -74,7 +74,7 @@ class _base_DB():
 	def updateShaByFile(self, fname, sha):
 		self.session.query(File).filter(File.name == fname).one().sha = sha
 
-	def _updateCounter(self, eng, counter, d):
+	def updateCounterWithDate(self, eng, counter, d):
 		word = self.session.query(Word).filter(Word.eng == eng).one()
 		count = int(getattr(word, counter)) + 1
 		setattr(word, counter, count)

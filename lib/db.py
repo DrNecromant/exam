@@ -26,7 +26,7 @@ class DB(_base_DB):
 		self.changes = self.getBlankChanges()
 
 	def updateCounter(self, eng, counter):
-		self._updateCounter(eng, counter, self.getDateNow())
+		self.updateCounterWithDate(eng, counter, self.getDateNow())
 		self.changes["update"].append("%s %s %s" % (eng, counter, count))
 
 	def updateSha(self, fname, sha):
@@ -41,7 +41,7 @@ class DB(_base_DB):
 		self.changes["delete"].append("%s | all words" % fname)
 
 	def deleteWord(self, fname, eng):
-		self.deleteWordFromFile(fname, eng, self.getDateNow())
+		self.deleteWordWithDate(fname, eng, self.getDateNow())
 		self.changes["delete"].append("%s | %s" % (fname, eng))
 
 	def createFile(self, fname, sha, words):
@@ -56,16 +56,22 @@ class DB(_base_DB):
 		self.changes["create"].append("%s | %s | %s" % (fname, eng, rus))
 
 	def updateWord(self, fname, eng, rus1, rus2):
-		self._updateWord(fname, eng, rus2)
+		self.updateWordRus(fname, eng, rus2)
 		self.changes["update"].append("%s | %s | %s -> %s" % (fname, eng, rus1, rus2))
 
 	def getRawDataByDate(self, date):
 		return self.getHistoryByDate(date + timedelta(1))
 
 	def getDates(self):
-		dates = self._getDates()
+		dates = self.getDatesMinMax()
 		min_date, max_date = map(lambda t: datetime.strptime(t, "%Y-%m-%d"), dates)
 		dates = list()
 		for i in range((max_date - min_date).days + 1):
 			dates.append(min_date + timedelta(i))
 		return dates
+
+	def getWords(self, name = None):
+		if name:
+			return self.getWordsByName(name)
+		else:
+			return self.getWordsEng()
