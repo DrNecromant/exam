@@ -31,10 +31,7 @@ class _base_DB():
 	def getSha(self, name):
 		return self.session.query(File).filter(File.name == name).one().sha
 
-	def loadData(self, name):
-		return self.session.query(Word.eng, Word.rus).join(File).filter(File.name == name).all()
-
-	def _getRawDataByDate(self, date):
+	def getHistoryByDate(self, date):
 		stats = self.session.query(func.max(History.date), History.passed, History.failed)
 		stats = stats.filter(History.date < date)
 		stats = stats.group_by(History.word)

@@ -60,7 +60,7 @@ class DB(_base_DB):
 		self.changes["update"].append("%s | %s | %s -> %s" % (fname, eng, rus1, rus2))
 
 	def getRawDataByDate(self, date):
-		return self._getRawDataByDate(date + timedelta(1))
+		return self.getHistoryByDate(date + timedelta(1))
 
 	def getDates(self):
 		dates = self._getDates()
