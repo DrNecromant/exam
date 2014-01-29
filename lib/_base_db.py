@@ -74,11 +74,11 @@ class _base_DB():
 	def updateShaByFile(self, fname, sha):
 		self.session.query(File).filter(File.name == fname).one().sha = sha
 
-	def updateCounterWithDate(self, eng, counter, d):
+	def updateCounterWithDate(self, eng, counter, date):
 		word = self.session.query(Word).filter(Word.eng == eng).one()
 		count = int(getattr(word, counter)) + 1
 		setattr(word, counter, count)
-		history = History(date = d, passed = word.passed, failed = word.failed)
+		history = History(date = date, passed = word.passed, failed = word.failed)
 		word.history.append(history)
 
 	def _commit(self):
