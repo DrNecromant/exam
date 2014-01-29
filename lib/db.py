@@ -7,6 +7,57 @@ class DB(_base_DB):
 		self.changes = self.getBlankChanges()
 		self.now = None
 
+	# === # File operations # === #
+
+	def addFile(self, name, sha, words):
+		self.createFile(name, sha)
+		for word in words:
+			eng, rus = word
+			self.createWord(name, eng, rus)
+		self.changes["create"].append("%s" % name)
+
+	def removeFile(self, name):
+		engs = self.getWords(fname = name, output = 1)
+		for eng in engs:
+			self.removeWord(name, eng)
+		self.deleteFile(name)
+		self.changes["delete"].append("%s" % name)
+
+	def getFiles(self):
+		return self.getFileNames()
+
+	def updateSha(self, fname, sha):
+		self.updateFileSha(fname, sha)
+		self.changes["update"].append("%s | %s" % (fname, sha))
+
+	def getSha(self, fname):
+		return self.getFileSha(fname)
+
+	# === # Word operations # === #
+
+	def addWord(self, fname, eng, rus):
+		self.createWord(fname, eng, rus, self.getDateNow())
+		self.changes["create"].append("%s | %s | %s" % (fname, eng, rus))
+
+	def removeWord(self, fname, eng):
+		self.deleteWord(fname, eng, self.getDateNow())
+		self.changes["delete"].append("%s | %s" % (fname, eng))
+
+	def changeWord(self, fname, eng, rus1, rus2):
+		self.updateWord(fname, eng, rus2)
+		self.changes["update"].append("%s | %s | %s -> %s" % (fname, eng, rus1, rus2))
+
+	def getWords(self, eng = None, rus = None, fname = None, output = 7):
+		return self.getWordEntries(eng, rus, fname, output)
+
+	def findWords(self, eng):
+		return self.getWordsLike(self, eng)
+
+	def getSortedWords(self, max_passed = 5):
+		return self.getWordsByStats(max_passed)
+
+	# === # === # === #
+
 	def getDateNow(self):
 		if not self.now:
 			self.now = datetime.now().replace(microsecond = 0)
@@ -29,36 +80,6 @@ class DB(_base_DB):
 		self.updateCounterWithDate(eng, counter, self.getDateNow())
 		self.changes["update"].append("%s %s %s" % (eng, counter, count))
 
-	def updateSha(self, fname, sha):
-		self.updateShaByFile(fname, sha)
-		self.changes["update"].append("%s | %s" % (fname, sha))
-
-	def deleteFile(self, fname):
-		words = self.getWordsByFile(fname)
-		for word in words:
-			self.deleteWord(fname, word.eng)
-		self.deleteFileByName(fname)
-		self.changes["delete"].append("%s | all words" % fname)
-
-	def deleteWord(self, fname, eng):
-		self.deleteWordWithDate(fname, eng, self.getDateNow())
-		self.changes["delete"].append("%s | %s" % (fname, eng))
-
-	def createFile(self, fname, sha, words):
-		self.createFileWithSha(fname, sha)
-		for word in words:
-			eng, rus = word
-			self.createWord(fname, eng, rus)
-		self.changes["create"].append("%s | %s" % (fname, sha))
-
-	def createWord(self, fname, eng, rus):
-		self.createWordWithDate(fname, eng, rus, self.getDateNow())
-		self.changes["create"].append("%s | %s | %s" % (fname, eng, rus))
-
-	def updateWord(self, fname, eng, rus1, rus2):
-		self.updateWordRus(fname, eng, rus2)
-		self.changes["update"].append("%s | %s | %s -> %s" % (fname, eng, rus1, rus2))
-
 	def getRawDataByDate(self, date):
 		return self.getHistoryByDate(date + timedelta(1))
 
@@ -69,9 +90,3 @@ class DB(_base_DB):
 		for i in range((max_date - min_date).days + 1):
 			dates.append(min_date + timedelta(i))
 		return dates
-
-	def getWords(self, name = None):
-		if name:
-			return self.getWordsByName(name)
-		else:
-			return self.getWordsEng()

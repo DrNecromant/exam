@@ -12,24 +12,80 @@ class _base_DB():
 		Session = sessionmaker(bind = engine)
 		self.session = Session()
 
-	def getAllFiles(self):
+	# === # File operations # === #
+
+	def createFile(self, name, sha):
+		self.session.add(File(name = name, sha = sha))
+
+	def deleteFile(self, name):
+		query = self.session.query(File).filter(File.name == name)
+		query.delete(synchronize_session = False)
+
+	def getFileNames(self):
 		return map(lambda a: a.name, self.session.query(File).all())
 
-	def findWords(self, word):
-		return self.session.query(Word.eng, Word.rus, File.name).join(File).filter(Word.eng.like("%" + word + "%")).all()
+	def updateFileSha(self, fname, sha):
+		self.session.query(File).filter(File.name == fname).one().sha = sha
 
-	def getWordsByName(self, name):
-		return self.session.query(Word.eng, Word.rus, File.name).join(File).filter(Word.eng == name).all()
+	def getFileSha(self, name):
+		return self.session.query(File).filter(File.name == name).one().sha
 
-	def getAllWords(self):
-		return self.session.query(Word.eng, Word.rus, File.name).join(File).\
-		filter(Word.passed <= 5).order_by(Word.passed + Word.failed, Word.passed).all()
+	# === # Word operations # === #
+
+	def createWord(self, fname, eng, rus, date):
+		f = self.session.query(File).filter(File.name == fname).one()
+		word = Word(eng = eng, rus = rus)
+		f.words.append(word)
+		word.history.append(History(date = date))
+
+	def deleteWord(self, fname, eng, date):
+		file_id = self.session.query(File).filter(File.name == fname).one().id
+		query = self.session.query(Word).filter((Word.file == file_id) & (Word.eng == eng))
+		word = query.one()
+		word.history.append(History(date = date, passed = -1, failed = -1))
+		query.delete(synchronize_session = False)
+
+	def updateWord(self, fname, eng, rus):
+		query = self.session.query(Word).join(File)
+		query.filter((Word.eng == eng) & (File.name == fname)).one().rus = rus
+
+	def getWordEntries(self, eng, rus, fname, output):
+		query = self.session.query(Word.eng, Word.rus, File.name).join(File)
+		if fname:
+			query = query.filter(File.name == fname)
+		if eng and eng != True:
+			query = query.filter(Word.eng == eng)
+		if rus and rus != True:
+			query = query.filter(Word.rus == rus)
+		entries = query.all()
+		entries_zip = zip(*entries)
+		result_zip = list()
+		if output & 1:
+			result_zip.append(entries_zip[0])
+		if output & 2:
+			result_zip.append(entries_zip[1])
+		if output & 4:
+			result_zip.append(entries_zip[2])
+		if len(result_zip) == 1:
+			result = result_zip[0]
+		else:
+			result = zip(*result_zip)
+		return result
+
+	def getWordsLike(self, word):
+		query = self.session.query(Word.eng, Word.rus, File.name).join(File)
+		return query.filter(Word.eng.like("%" + word + "%")).all()
+
+	def getWordsByStats(self, max_passed):
+		query = self.session.query(Word.eng, Word.rus, File.name).join(File)
+		if max_passed:
+			query = query.filter(Word.passed <= max_passed)
+		return query.order_by(Word.passed + Word.failed, Word.passed).all()
+
+	# === # === # === #
 
 	def getMaxCounter(self, counter):
 		return self.session.query(func.max(getattr(Word, counter))).scalar()
-
-	def getSha(self, name):
-		return self.session.query(File).filter(File.name == name).one().sha
 
 	def getHistoryByDate(self, date):
 		stats = self.session.query(func.max(History.date), History.passed, History.failed)
@@ -38,41 +94,8 @@ class _base_DB():
 		stats = stats.having(History.passed > -1)
 		return map(lambda s: s[1:], stats.all())
 
-	def getWordsEng(self):
-		query = self.session.query(Word)
-		return map(lambda w: w.eng, query.all())
-
 	def getDatesMinMax(self):
 		return self.session.query(func.date(func.min(History.date)), func.date(func.max(History.date))).one()
-
-	def updateWordRus(self, fname, eng, rus):
-		self.session.query(Word).join(File).filter((Word.eng == eng) & (File.name == fname)).one().rus = rus
-
-	def createWordWithDate(self, fname, eng, rus, date):
-		f = self.session.query(File).filter(File.name == fname).one()
-		word = Word(eng = eng, rus = rus)
-		f.words.append(word)
-		word.history.append(History(date = date))
-
-	def createFileWithSha(self, fname, sha):
-		self.session.add(File(name = fname, sha = sha))
-
-	def deleteWordWithDate(self, fname, eng, date):
-		file_id = self.session.query(File).filter(File.name == fname).one().id
-		word_query = self.session.query(Word).filter((Word.file == file_id) & (Word.eng == eng))
-		word = word_query.one()
-		word.history.append(History(date = date, passed = -1, failed = -1))
-		word_query.delete(synchronize_session = False)
-
-	def deleteFileByName(self, fname):
-		self.session.query(File).filter(File.name == fname).delete(synchronize_session = False)
-
-	def getWordsByFile(self, fname):
-		query = self.session.query(Word).join(File).filter(File.name == fname)
-		return query.all()
-
-	def updateShaByFile(self, fname, sha):
-		self.session.query(File).filter(File.name == fname).one().sha = sha
 
 	def updateCounterWithDate(self, eng, counter, date):
 		word = self.session.query(Word).filter(Word.eng == eng).one()

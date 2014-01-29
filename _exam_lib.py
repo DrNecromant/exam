@@ -17,19 +17,19 @@ class Exam:
 		xls_file_paths = self.s.getFiles(subdir = TRANSLATEDIR, fext = ".xls")
 		xls_file_names = map(self.s.getShortPath, xls_file_paths)
 		xls_set = set(xls_file_names)
-		db_file_names = self.db.getAllFiles()
+		db_file_names = self.db.getFiles()
 		db_set = set(db_file_names)
 		old_file_names = db_set - xls_set
 		new_file_names = xls_set - db_set
 		upd_file_names = xls_set & db_set
 
 		for old_file_name in old_file_names:
-			self.db.deleteFile(old_file_name)
+			self.db.removeFile(old_file_name)
 		for new_file_name in new_file_names:
 			new_file_path = self.s.getFullPath(new_file_name)
 			xls_words = self.xls.loadData(new_file_path)
 			sha = self.s.getSha(new_file_name)
-			self.db.createFile(new_file_name, sha, xls_words)
+			self.db.addFile(new_file_name, sha, xls_words)
 		for upd_file_name in upd_file_names:
 			db_sha = self.db.getSha(upd_file_name)
 			xls_sha = self.s.getSha(upd_file_name)
@@ -38,21 +38,21 @@ class Exam:
 			self.db.updateSha(upd_file_name, xls_sha)
 			xls_words = self.xls.loadData(self.s.getFullPath(upd_file_name))
 			xls_dict = dict(xls_words)
-			db_words = self.db.getWordsByFile(upd_file_name)
-			db_dict = dict([(w.eng, w.rus) for w in db_words])
+			db_words = self.db.getWords(fname = upd_file_name, output = 3)
+			db_dict = dict(db_words)
 			engs = set(xls_dict.keys()) | set(db_dict.keys())
 			for eng in engs:
 				xls_rus = xls_dict.get(eng)
 				db_rus = db_dict.get(eng)
 				if not xls_rus:
-					self.db.deleteWord(upd_file_name, eng)
+					self.db.removeWord(upd_file_name, eng)
 				elif not db_rus:
-					self.db.createWord(upd_file_name, eng, xls_rus)
+					self.db.addWord(upd_file_name, eng, xls_rus)
 				elif xls_rus != db_rus:
 					self.db.updateWord(upd_file_name, eng, db_rus, xls_rus)
 
 	def processDBErrors(self):
-		engs = self.db.getWords()
+		engs = self.db.getWords(output = 1)
 		errors = h.getErrors(engs)
 		if errors:
 			h.printErrors(errors, self.db.getWords)
@@ -75,7 +75,7 @@ class Exam:
 			h.printWords(words)
 
 	def doExam(self, count, rus):
-		words_to_exam = self.db.getAllWords()
+		words_to_exam = self.db.getSortedWords()
 		if not words_to_exam:
 			print "# No words to exam"
 			return

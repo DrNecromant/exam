@@ -12,6 +12,7 @@ DONOT_PRINT_FUNC_NAME = (
 	"deleteWord",
 	"getDateNow",
 	"getWords",
+	"getWordEntries",
 	"getRawDataByDate",
 	"findWords",
 )
