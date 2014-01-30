@@ -92,7 +92,7 @@ class Exam:
 			print "%s" % fname.encode("utf8")
 			answer = raw_input("%s\nDo you know? (y)/n: " % a_word.encode("utf8"))
 			if answer:
-				self.db.updateCounter(eng, "failed")
+				self.db.changeCounter(eng, "failed")
 				unknown_words.append(word)
 			else:
 				self.db.updateCounter(eng, "passed")
@@ -126,7 +126,7 @@ class Exam:
 		self.s.unlinkFiles(testfiles)
 
 	def getStats(self):
-		max_passed = self.db.getMaxCounter("passed")
+		max_passed = self.db.getMaxPassed()
 		all_stats = list()
 		dates = self.db.getDates()
 		for date in dates:

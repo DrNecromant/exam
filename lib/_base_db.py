@@ -93,7 +93,7 @@ class _base_DB():
 			query = query.filter(Word.passed <= max_passed)
 		return query.order_by(Word.passed + Word.failed, Word.passed).all()
 
-	# === # === # === #
+	# === # Stats operations  # === #
 
 	def getMaxCounter(self, counter):
 		return self.session.query(func.max(getattr(Word, counter))).scalar()
@@ -105,10 +105,13 @@ class _base_DB():
 		stats = stats.having(History.passed > -1)
 		return map(lambda s: s[1:], stats.all())
 
-	def getDatesMinMax(self):
-		return self.session.query(func.date(func.min(History.date)), func.date(func.max(History.date))).one()
+	def getMinDate(self):
+		return self.session.query(func.date(func.min(History.date))).scalar()
 
-	def updateCounterWithDate(self, eng, counter, date):
+	def getMaxDate(self):
+		return self.session.query(func.date(func.max(History.date))).scalar()
+
+	def updateCounter(self, eng, counter, date):
 		word = self.session.query(Word).filter(Word.eng == eng).one()
 		count = int(getattr(word, counter)) + 1
 		setattr(word, counter, count)

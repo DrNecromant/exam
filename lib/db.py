@@ -7,6 +7,12 @@ class DB(_base_DB):
 		self.changes = self.getBlankChanges()
 		self.now = None
 
+	def getBlankChanges(self):
+		return {"create": list(), "update": list(), "delete": list()}
+
+	def getChanges(self):
+		return dict(self.changes)
+
 	# === # Main operations # === #
 
 	def applyChanges(self, fake = False):
@@ -68,6 +74,21 @@ class DB(_base_DB):
 	def getSortedWords(self, max_passed = 5):
 		return self.getWordsByStats(max_passed)
 
+	# === # Stats operations # === #
+
+	def getMaxPassed(self):
+		return self.getMaxCounter("passed")
+
+	def getRawDataByDate(self, date):
+		return self.getHistoryByDate(date + timedelta(1))
+
+	def getDatesMinMax(self):
+		return self.getMinDate(), self.getMaxDate()
+
+	def changeCounter(self, eng, counter):
+		self.updateCounter(eng, counter, self.getDateNow())
+		self.changes["update"].append("%s %s %s" % (eng, counter, count))
+
 	# === # === # === #
 
 	def getDateNow(self):
@@ -75,22 +96,10 @@ class DB(_base_DB):
 			self.now = datetime.now().replace(microsecond = 0)
 		return self.now
 
-	def getChanges(self):
-		return dict(self.changes)
-
-	def getBlankChanges(self):
-		return {"create": list(), "update": list(), "delete": list()}
-
-	def updateCounter(self, eng, counter):
-		self.updateCounterWithDate(eng, counter, self.getDateNow())
-		self.changes["update"].append("%s %s %s" % (eng, counter, count))
-
-	def getRawDataByDate(self, date):
-		return self.getHistoryByDate(date + timedelta(1))
-
 	def getDates(self):
-		dates = self.getDatesMinMax()
-		min_date, max_date = map(lambda t: datetime.strptime(t, "%Y-%m-%d"), dates)
+		convert_date = lambda t: datetime.strptime(t, "%Y-%m-%d")
+		min_date = convert_date(self.getMinDate())
+		max_date = convert_date(self.getMaxDate())
 		dates = list()
 		for i in range((max_date - min_date).days + 1):
 			dates.append(min_date + timedelta(i))
