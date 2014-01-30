@@ -35,7 +35,7 @@ class Exam:
 			xls_sha = self.s.getSha(upd_file_name)
 			if db_sha == xls_sha:
 				continue
-			self.db.updateSha(upd_file_name, xls_sha)
+			self.db.changeSha(upd_file_name, xls_sha)
 			xls_words = self.xls.loadData(self.s.getFullPath(upd_file_name))
 			xls_dict = dict(xls_words)
 			db_words = self.db.getWords(fname = upd_file_name, output = 3)
@@ -65,7 +65,7 @@ class Exam:
 		changes = self.db.getChanges()
 		if changes != self.db.getBlankChanges():
 			h.printChanges(changes)
-			self.db.commit(fake = self.fake)
+			self.db.applyChanges(fake = self.fake)
 			if not self.fake:
 				self.s.mkClone(self.dbpath)
 

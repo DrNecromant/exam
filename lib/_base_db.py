@@ -12,6 +12,17 @@ class _base_DB():
 		Session = sessionmaker(bind = engine)
 		self.session = Session()
 
+	# === # Main operations # === #
+
+	def commit(self):
+		self.session.commit()
+
+	def rollback(self):
+		self.session.rollback()
+
+	def close(self):
+		self.session.close()
+
 	# === # File operations # === #
 
 	def createFile(self, name, sha):
@@ -103,12 +114,3 @@ class _base_DB():
 		setattr(word, counter, count)
 		history = History(date = date, passed = word.passed, failed = word.failed)
 		word.history.append(history)
-
-	def _commit(self):
-		self.session.commit()
-
-	def _rollback(self):
-		self.session.rollback()
-
-	def quit(self):
-		self.session.close()

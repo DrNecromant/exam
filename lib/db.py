@@ -7,6 +7,18 @@ class DB(_base_DB):
 		self.changes = self.getBlankChanges()
 		self.now = None
 
+	# === # Main operations # === #
+
+	def applyChanges(self, fake = False):
+		if fake:
+			self.rollback()
+		else:
+			self.commit()
+		self.changes = self.getBlankChanges()
+
+	def quit(self):
+		self.close()
+
 	# === # File operations # === #
 
 	def addFile(self, name, sha, words):
@@ -26,7 +38,7 @@ class DB(_base_DB):
 	def getFiles(self):
 		return self.getFileNames()
 
-	def updateSha(self, fname, sha):
+	def changeSha(self, fname, sha):
 		self.updateFileSha(fname, sha)
 		self.changes["update"].append("%s | %s" % (fname, sha))
 
@@ -68,13 +80,6 @@ class DB(_base_DB):
 
 	def getBlankChanges(self):
 		return {"create": list(), "update": list(), "delete": list()}
-
-	def commit(self, fake = False):
-		if fake:
-			self_rollback()
-		else:
-			self._commit()
-		self.changes = self.getBlankChanges()
 
 	def updateCounter(self, eng, counter):
 		self.updateCounterWithDate(eng, counter, self.getDateNow())
