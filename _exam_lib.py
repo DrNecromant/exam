@@ -10,7 +10,7 @@ class Exam:
 		self.s = Storage(getDropboxPath())
 		self.xls = XLS()
 		self.dbpath = self.s.getFile(DBNAME, subdir = DBDIR)
-		self.db = DB(self.dbpath)
+		self.db = DB(self.dbpath, h.getDateNow())
 		self.fake = fake
 
 	def sync(self):
@@ -128,9 +128,10 @@ class Exam:
 	def getStats(self):
 		max_passed = self.db.getMaxPassed()
 		all_stats = list()
-		dates = self.db.getDates()
+		mindate, maxdate = self.db.getMinMaxDates()
+		dates = h.getDatesFromRange(mindate, maxdate)
 		for date in dates:
-			raw_data = self.db.getRawDataByDate(date)
+			raw_data = self.db.getRawDataByDate(h.incDate(date))
 			stats = h.getStatsFromRawData(raw_data, max_passed)
 			all_stats.append(stats)
 		return zip(*all_stats)

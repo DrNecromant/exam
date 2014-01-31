@@ -1,11 +1,10 @@
 from _base_db import _base_DB
-from datetime import datetime, timedelta
 
 class DB(_base_DB):
-	def __init__(self, dbpath):
+	def __init__(self, dbpath, timestamp):
 		_base_DB.__init__(self, dbpath)
 		self.changes = self.getBlankChanges()
-		self.now = None
+		self.now = timestamp
 
 	def getBlankChanges(self):
 		return {"create": list(), "update": list(), "delete": list()}
@@ -54,11 +53,11 @@ class DB(_base_DB):
 	# === # Word operations # === #
 
 	def addWord(self, fname, eng, rus):
-		self.createWord(fname, eng, rus, self.getDateNow())
+		self.createWord(fname, eng, rus, self.now)
 		self.changes["create"].append("%s | %s | %s" % (fname, eng, rus))
 
 	def removeWord(self, fname, eng):
-		self.deleteWord(fname, eng, self.getDateNow())
+		self.deleteWord(fname, eng, self.now)
 		self.changes["delete"].append("%s | %s" % (fname, eng))
 
 	def changeWord(self, fname, eng, rus1, rus2):
@@ -80,27 +79,14 @@ class DB(_base_DB):
 		return self.getMaxCounter("passed")
 
 	def getRawDataByDate(self, date):
-		return self.getHistoryByDate(date + timedelta(1))
+		return self.getHistoryByDate(date)
 
 	def getDatesMinMax(self):
 		return self.getMinDate(), self.getMaxDate()
 
 	def changeCounter(self, eng, counter):
-		self.updateCounter(eng, counter, self.getDateNow())
+		self.updateCounter(eng, counter, self.now)
 		self.changes["update"].append("%s %s %s" % (eng, counter, count))
 
-	# === # === # === #
-
-	def getDateNow(self):
-		if not self.now:
-			self.now = datetime.now().replace(microsecond = 0)
-		return self.now
-
-	def getDates(self):
-		convert_date = lambda t: datetime.strptime(t, "%Y-%m-%d")
-		min_date = convert_date(self.getMinDate())
-		max_date = convert_date(self.getMaxDate())
-		dates = list()
-		for i in range((max_date - min_date).days + 1):
-			dates.append(min_date + timedelta(i))
-		return dates
+	def getMinMaxDates(self):
+		return self.getMinDate(), self.getMaxDate()

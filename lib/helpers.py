@@ -1,6 +1,7 @@
 from random import sample, shuffle
 from collections import Counter, defaultdict
 from enchant import Dict
+from datetime import datetime, timedelta
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -93,3 +94,18 @@ def buildPlot(file_to_save, stats):
 		i += 1
 	plt.legend(loc='upper left')
 	plt.savefig(file_to_save)
+
+def getDateNow():
+	return datetime.now().replace(microsecond = 0)
+
+def getDatesFromRange(mindate, maxdate):
+	convert_date = lambda t: datetime.strptime(t, "%Y-%m-%d")
+	mindate = convert_date(mindate)
+	maxdate = convert_date(maxdate)
+	dates = list()
+	for i in range((maxdate - mindate).days + 1):
+		dates.append(mindate + timedelta(i))
+	return dates
+
+def incDate(date):
+	return date + timedelta(1)
