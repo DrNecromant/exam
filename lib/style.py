@@ -8,6 +8,7 @@ DONOT_PRINT_FUNC_NAME = (
 	"getShortPath",
 	"getFullPath",
 	"getSha",
+	"loadData",
 )
 
 class DecoMeta(type):
