@@ -2,19 +2,12 @@ import types
 
 DONOT_PRINT_FUNC_NAME = (
 	"__init__",
+	"getFileSha",
+	"getWordEntries",
+	"getWords",
+	"getShortPath",
 	"getFullPath",
 	"getSha",
-	"getShortPath",
-	"getBlankChanges",
-	"updateCounter",
-	"createWord",
-	"updateWord",
-	"deleteWord",
-	"getDateNow",
-	"getWords",
-	"getWordEntries",
-	"getRawDataByDate",
-	"findWords",
 )
 
 class DecoMeta(type):
