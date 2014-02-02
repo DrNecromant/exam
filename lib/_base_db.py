@@ -117,3 +117,11 @@ class _base_DB():
 		setattr(word, counter, count)
 		history = History(date = date, passed = word.passed, failed = word.failed)
 		word.history.append(history)
+
+	# === # Dict operations  # === #
+
+	def createDictEngWord(eng):
+		self.session.add(DictEng(eng = eng))
+
+	def getDictEngWord(self, eng):
+		return self.session.query(DictEng.eng).filter(DictEng.eng == eng).scalar()

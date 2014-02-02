@@ -49,11 +49,11 @@ class Exam:
 				elif not db_rus:
 					self.db.addWord(upd_file_name, eng, xls_rus)
 				elif xls_rus != db_rus:
-					self.db.updateWord(upd_file_name, eng, db_rus, xls_rus)
+					self.db.changeWord(upd_file_name, eng, db_rus, xls_rus)
 
 	def processDBErrors(self):
 		engs = self.db.getWords(output = 1)
-		errors = h.getErrors(engs)
+		errors = h.getErrors(engs, checker = self.db.checkEngWord)
 		if errors:
 			h.printErrors(errors, self.db.getWords)
 			return False

@@ -16,7 +16,7 @@ def printWords(words):
 
 def printErrors(errors, mapper):
 	for error_type in errors:
-		print "========== ERROR %s ==========" % error_type
+		print "========== ERROR %s (%s) ==========" % (error_type, len(errors[error_type]))
 		for eng in errors[error_type]:
 			printWords(mapper(eng))
 
@@ -41,7 +41,7 @@ def shuffleList(l):
 	shuffle(l)
 	return l
 
-def getErrors(l):
+def getErrors(l, checker):
 	errors = defaultdict(list)
 	cnt = Counter(l)
 	dict_en = Dict("en_US")
@@ -61,7 +61,7 @@ def getErrors(l):
 				errors["unused_signs"].append(el)
 				break
 		for w in el.split():
-			if not dict_en.check(w):
+			if not dict_en.check(w) and not checker(w):
 				errors["invalid"].append(el)
 	return errors
 

@@ -68,7 +68,7 @@ class DB(_base_DB):
 		return self.getWordEntries(eng, rus, fname, output)
 
 	def findWords(self, eng):
-		return self.getWordsLike(self, eng)
+		return self.getWordsLike(eng)
 
 	def getSortedWords(self, max_passed = 5):
 		return self.getWordsByStats(max_passed)
@@ -90,3 +90,13 @@ class DB(_base_DB):
 
 	def getMinMaxDates(self):
 		return self.getMinDate(), self.getMaxDate()
+
+	# === # Dict operations  # === #
+
+	def addEngWord(self, eng):
+		self.createDictEngWord(eng)
+
+	def checkEngWord(self, eng):
+		if self.getDictEngWord(eng):
+			return True
+		return False

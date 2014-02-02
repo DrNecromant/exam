@@ -3,7 +3,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from sqlalchemy.schema import MetaData
 
-__all__ = ['File', 'Word', 'History', 'Base']
+__all__ = ['File', 'Word', 'History', 'DictEng', 'Base']
 
 metadata = MetaData()
 Base = declarative_base(metadata = metadata)
@@ -41,3 +41,9 @@ class History(Base):
 	passed = Column(Integer, default = 0)
 	failed = Column(Integer, default = 0)
 
+class DictEng(Base):
+	__tablename__ = 'dicteng'
+	__table_args__ = {'sqlite_autoincrement': True}
+
+	id = Column(Integer, primary_key = True)
+	eng = Column(String)

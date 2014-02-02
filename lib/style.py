@@ -9,6 +9,10 @@ DONOT_PRINT_FUNC_NAME = (
 	"getFullPath",
 	"getSha",
 	"loadData",
+	"addWord",
+	"createWord",
+	"changeWord",
+	"updateWord",
 )
 
 class DecoMeta(type):
