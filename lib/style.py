@@ -13,6 +13,20 @@ DONOT_PRINT_FUNC_NAME = (
 	"createWord",
 	"changeWord",
 	"updateWord",
+	"updateFileSha",
+	"removeWord",
+	"deleteWord",
+	"changeSha",
+	"getDictEngWord",
+	"checkEngWord",
+	"getBlankChanges",
+	"mkClone",
+	"commit",
+	"applyChanges",
+	"addEngWord",
+	"createDictEngWord",
+	"getChanges",
+	"getFile",
 )
 
 class DecoMeta(type):

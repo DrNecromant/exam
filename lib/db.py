@@ -95,6 +95,7 @@ class DB(_base_DB):
 
 	def addEngWord(self, eng):
 		self.createDictEngWord(eng)
+		self.changes["create"].append(eng)
 
 	def checkEngWord(self, eng):
 		if self.getDictEngWord(eng):

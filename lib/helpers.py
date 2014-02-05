@@ -56,12 +56,12 @@ def getErrors(l, checker):
 			if ord(ch) >= 128:
 				errors["rus_letters"].append(el)
 				break
-		for ch in "?!,.()":
+		for ch in "?!,.():;":
 			if ch in el:
 				errors["unused_signs"].append(el)
 				break
 		for w in el.split():
-			if not dict_en.check(w) and not checker(w):
+			if not dict_en.check(w) and not checker(w) and not w.isdigit():
 				errors["invalid"].append(el)
 	return errors
 

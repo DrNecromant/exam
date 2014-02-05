@@ -141,3 +141,10 @@ class Exam:
 		h.buildPlot(f1, stats[:2])
 		f2 = self.s.getFile("quality.png", subdir = STATSDIR)
 		h.buildPlot(f2, stats[2:])
+
+	def addEngWord(self, eng):
+		if self.db.checkEngWord(eng):
+			print "%s word already exists" % eng
+		else:
+			self.db.addEngWord(eng)
+			self.processDBChanges()

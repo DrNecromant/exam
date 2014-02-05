@@ -120,7 +120,7 @@ class _base_DB():
 
 	# === # Dict operations  # === #
 
-	def createDictEngWord(eng):
+	def createDictEngWord(self, eng):
 		self.session.add(DictEng(eng = eng))
 
 	def getDictEngWord(self, eng):
