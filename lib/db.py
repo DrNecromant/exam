@@ -30,7 +30,7 @@ class DB(_base_DB):
 		self.createFile(name, sha)
 		for word in words:
 			eng, rus = word
-			self.createWord(name, eng, rus)
+			self.addWord(name, eng, rus)
 		self.changes["create"].append("%s" % name)
 
 	def removeFile(self, name):
@@ -86,7 +86,7 @@ class DB(_base_DB):
 
 	def changeCounter(self, eng, counter):
 		self.updateCounter(eng, counter, self.now)
-		self.changes["update"].append("%s %s %s" % (eng, counter, count))
+		self.changes["update"].append("%s %s" % (eng, counter))
 
 	def getMinMaxDates(self):
 		return self.getMinDate(), self.getMaxDate()

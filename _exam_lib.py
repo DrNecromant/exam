@@ -95,7 +95,7 @@ class Exam:
 				self.db.changeCounter(eng, "failed")
 				unknown_words.append(word)
 			else:
-				self.db.updateCounter(eng, "passed")
+				self.db.changeCounter(eng, "passed")
 		self.processDBChanges()
 		if unknown_words:
 			self.saveTestWords(unknown_words)

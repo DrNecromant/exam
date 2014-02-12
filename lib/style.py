@@ -27,6 +27,18 @@ DONOT_PRINT_FUNC_NAME = (
 	"createDictEngWord",
 	"getChanges",
 	"getFile",
+	"updateCounter",
+	"changeCounter",
+	"dumpData",
+	"mkFile",
+	"saveTestWords",
+	"getHistoryByDate",
+	"getRawDataByDate",
+	"getMinDate",
+	"getMaxDate",
+	"getMinMaxDates",
+	"getFiles",
+	"unlinkFiles",
 )
 
 class DecoMeta(type):
