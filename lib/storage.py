@@ -23,6 +23,9 @@ class Storage():
 		result = list()
 		fullpath = self.getFullPath(subdir)
 		for p, dirs, files in walk(fullpath):
+			# workaround for Alenka
+			if "Translate/Books/Game of Thrones" in p:
+				continue
 			for f in files:
 				if fext and not f.endswith(fext):
 					continue
