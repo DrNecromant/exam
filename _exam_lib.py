@@ -120,7 +120,7 @@ class Exam:
 				engs.add(word[0])
 		words = map(self.db.getWords, engs)
 		if words:
-			content = [word[0] for word in words if len(word) == 1]
+			content = [word[0] for word in words if word and len(word) == 1]
 			content = h.shuffleList(content)
 			self.saveTestWords(content)
 		self.s.unlinkFiles(testfiles)

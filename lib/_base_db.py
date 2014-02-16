@@ -69,6 +69,8 @@ class _base_DB():
 		if rus and rus != True:
 			query = query.filter(Word.rus == rus)
 		entries = query.all()
+		if not entries:
+			return None
 		entries_zip = zip(*entries)
 		result_zip = list()
 		if output & 1:
