@@ -46,6 +46,8 @@ def getErrors(l, checker):
 	cnt = Counter(l)
 	dict_en = Dict("en_US")
 	for el, c in cnt.items():
+		if len(el) < 3:
+			errors["small_word"].append(el)
 		if c > 1:
 			errors["duplicates"].append(el)
 		if el.startswith(" ") or el.endswith(" ") or "  " in el:
