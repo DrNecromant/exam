@@ -3,15 +3,25 @@
 import csv
 from datetime import datetime
 from lib import *
+from optparse import OptionParser
+
+parser = OptionParser()
+parser.add_option("--debug", "-d", action = "store_true",
+	dest = "debug", help = "debug logs")
+parser.add_option("--fake", "-k", action="store_true",
+	dest="fake", help="dry run")
 
 class Exam:
 	__metaclass__ = DecoMeta
-	def __init__(self, fake = False):
+	def __init__(self):
+		(self.options, self.args) = parser.parse_args()
+		if self.options.debug:
+			config.debug = True
 		self.s = Storage(getDropboxPath())
 		self.xls = XLS()
 		self.dbpath = self.s.getFile(DBNAME, subdir = DBDIR)
 		self.db = DB(self.dbpath, h.getDateNow())
-		self.fake = fake
+		self.fake = self.options.fake
 
 	def sync(self):
 		xls_file_paths = self.s.getFiles(subdir = TRANSLATEDIR, fext = ".xls")

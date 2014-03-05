@@ -6,6 +6,7 @@ from db import DB
 from style import *
 from consts import *
 import helpers as h
+import config
 
 def getDropboxPath():
 	if platform == "linux2":

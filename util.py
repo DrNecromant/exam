@@ -1,8 +1,5 @@
-from optparse import OptionParser
+from _exam_lib import Exam, parser
 
-from _exam_lib import Exam
-
-parser = OptionParser()
 parser.add_option("--find", "-f", dest = "find",
 	help = "find word or part of word")
 parser.add_option("--add", "-a", dest = "add",
@@ -14,9 +11,8 @@ parser.add_option("--join", "-j", action = "store_true",
 parser.add_option("--plot", "-p", action = "store_true",
 	dest = "plot", help = "plot")
 
-(options, args) = parser.parse_args()
-
 tool = Exam()
+options = tool.options
 if options.find:
 	tool.processDBWord(options.find)
 if options.add:

@@ -1,45 +1,5 @@
+import config
 import types
-
-DONOT_PRINT_FUNC_NAME = (
-	"__init__",
-	"getFileSha",
-	"getWordEntries",
-	"getWords",
-	"getShortPath",
-	"getFullPath",
-	"getSha",
-	"loadData",
-	"addWord",
-	"createWord",
-	"changeWord",
-	"updateWord",
-	"updateFileSha",
-	"removeWord",
-	"deleteWord",
-	"changeSha",
-	"getDictEngWord",
-	"checkEngWord",
-	"getBlankChanges",
-	"mkClone",
-	"commit",
-	"applyChanges",
-	"addEngWord",
-	"createDictEngWord",
-	"getChanges",
-	"getFile",
-	"updateCounter",
-	"changeCounter",
-	"dumpData",
-	"mkFile",
-	"saveTestWords",
-	"getHistoryByDate",
-	"getRawDataByDate",
-	"getMinDate",
-	"getMaxDate",
-	"getMinMaxDates",
-	"getFiles",
-	"unlinkFiles",
-)
 
 class DecoMeta(type):
 	def __new__(cls, name, bases, attrs):
@@ -55,7 +15,7 @@ class DecoMeta(type):
 		class_name = cls.__name
 		func_name = func.__name__
 		def wrapper(*args, **kwargs):
-			if not func_name in DONOT_PRINT_FUNC_NAME:
+			if config.debug:
 				args_to_print = args[1:]
 				kwargs_to_print = kwargs.items()
 				print "# %s::%s" % (class_name, func_name)
