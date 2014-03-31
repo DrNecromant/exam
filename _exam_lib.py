@@ -101,6 +101,9 @@ class Exam:
 			raw_input(q_word.encode("utf8"))
 			print "%s" % fname.encode("utf8")
 			answer = raw_input("%s\nDo you know? (y)/n: " % a_word.encode("utf8"))
+			if answer == "finish":
+				print "Exit from exam with saving changes"
+				break
 			if answer:
 				self.db.changeCounter(eng, "failed")
 				unknown_words.append(word)
