@@ -107,6 +107,13 @@ class Exam:
 			if answer:
 				self.db.changeCounter(eng, "failed")
 				unknown_words.append(word)
+				hints = set()
+				for w in eng.split():
+					other_words = self.db.findWords(w)
+					if len(other_words) < 10:
+						hints.update(other_words)
+				if hints:
+					h.printWords(hints)
 			else:
 				self.db.changeCounter(eng, "passed")
 		self.processDBChanges()
