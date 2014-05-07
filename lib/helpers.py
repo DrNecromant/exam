@@ -2,9 +2,12 @@ from random import sample, shuffle
 from collections import Counter, defaultdict
 from enchant import Dict
 from datetime import datetime, timedelta
+import re
 
 import numpy as np
 import matplotlib.pyplot as plt
+
+import htmlentitydefs
 
 def printWords(words):
 	if not words:
@@ -111,3 +114,32 @@ def getDatesFromRange(mindate, maxdate):
 
 def incDate(date):
 	return date + timedelta(1)
+
+def unescape(text):
+   def fixup(m):
+      text = m.group(0)
+      if text[:2] == "&#":
+         # character reference
+         try:
+            if text[:3] == "&#x":
+               return unichr(int(text[3:-1], 16))
+            else:
+               return unichr(int(text[2:-1]))
+         except ValueError:
+            pass
+      else:
+         # named entity
+         try:
+            if text[1:-1] == "amp":
+               text = "&amp;amp;"
+            elif text[1:-1] == "gt":
+               text = "&amp;gt;"
+            elif text[1:-1] == "lt":
+               text = "&amp;lt;"
+            else:
+               key = text[1:-1]
+               text = unichr(htmlentitydefs.name2codepoint[key])
+         except KeyError:
+            pass
+      return text
+   return re.sub("&#?\w+;", fixup, text)
