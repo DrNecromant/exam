@@ -28,8 +28,22 @@ class Word(Base):
 	file = Column(Integer, ForeignKey('file.id'))
 	passed = Column(Integer, default = 0)
 	failed = Column(Integer, default = 0)
+	translations = Column(Integer)
+	examples = Column(Integer)
+	phrases = Column(Integer)
+	date = Column(DateTime)
 
+	lingvo = relationship("Lingvo")
 	history = relationship("History")
+
+class Lingvo(Base):
+	__tablename__ = 'Lingvo'
+	__table_args__ = {'sqlite_autoincrement': True}
+
+	id = Column(Integer, primary_key = True)
+	word = Column(Integer, ForeignKey('word.id'))
+	eng = Column(String)
+	rus = Column(String)
 
 class History(Base):
 	__tablename__ = 'history'
