@@ -41,7 +41,7 @@ class Lingvo():
 		examples = list()
 		if not self.examples:
 			return examples
-		
+
 		try:
 			response = urllib2.urlopen(EX_URL_TEMP % self.entry)
 			ex_html = response.read()
