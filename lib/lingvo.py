@@ -22,13 +22,14 @@ class Lingvo():
 
 	def __calc__(self):
 		try:
-			response = urllib2.urlopen(IN_URL_TEMP % self.entry)
+			url = IN_URL_TEMP % urllib2.quote(self.entry.decode("utf8"))
+			response = urllib2.urlopen(url)
 			in_html = response.read()
-			self.translation = self.__getCount__(in_html, "Translations")
+			self.translations = self.__getCount__(in_html, "Translations")
 			self.examples = self.__getCount__(in_html, "Examples")
 			self.phrases = self.__getCount__(in_html, "Phrases")
 		except urllib2.URLError, e:
-			self.translation = None
+			self.translations = None
 			self.examples = None
 			self.phrases = None
 
@@ -43,7 +44,8 @@ class Lingvo():
 			return examples
 
 		try:
-			response = urllib2.urlopen(EX_URL_TEMP % self.entry)
+			url = EX_URL_TEMP % urllib2.quote(self.entry.decode("utf8"))
+			response = urllib2.urlopen(url)
 			ex_html = response.read()
 		except urllib2.URLError, e:
 			return examples
@@ -59,8 +61,8 @@ class Lingvo():
 		return examples
 
 if __name__ == "__main__":
-	l = Lingvo("entry")
-	print l.translation, l.examples, l.phrases
+	l = Lingvo("my world")
+	print l.translations, l.examples, l.phrases
 	examples = l.getExamples()
 	if not examples:
 		print "no examples"
