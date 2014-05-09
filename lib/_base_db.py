@@ -140,3 +140,14 @@ class _base_DB():
 		word.examples = examples
 		word.phrases = phrases
 		word.date = date
+
+	def createExamples(self, eng, examples):
+		word = self.session.query(Word).filter(Word.eng == eng).one()
+		for eng_phrase, rus_phrase in examples:
+			lingvo = Lingvo(eng = eng_phrase, rus = rus_phrase)
+			word.lingvo.append(lingvo)
+
+	def deleteExamples(self, eng):
+		word_id = self.session.query(Word).filter(Word.eng == eng).one().id
+		query = self.session.query(Lingvo).filter(word = word_id)
+		query.delete(synchronize_session = False)

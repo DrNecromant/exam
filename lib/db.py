@@ -110,3 +110,11 @@ class DB(_base_DB):
 	def setLingvoCounters(self, eng, translation, examples, phrases):
 		self.setWordStats(eng, translation, examples, phrases, self.now)
 		self.changes["update"].append("%s | %s | %s | %s" % (eng, translation, examples, phrases))
+
+	def addExamples(self, eng, examples):
+		self.createExamples(eng, examples)
+		self.changes["update"].append("%s | examples | %s" % (eng, len(examples)))
+
+	def removeExamples(self, eng):
+		self.deleteExamples(eng)
+		self.changes["delete"].append("%s | examples" % eng)
