@@ -3,8 +3,6 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from sqlalchemy.schema import MetaData
 
-__all__ = ['File', 'Word', 'History', 'DictEng', 'Base']
-
 metadata = MetaData()
 Base = declarative_base(metadata = metadata)
 
