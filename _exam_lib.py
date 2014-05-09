@@ -95,10 +95,37 @@ class Exam:
 		for word in words:
 			q_word, a_word, fname = word
 			eng = q_word
+
+			print "### Lingvo Degub Start ###"
+			tr, ex, ph, date = self.db.getLingvoCounters(eng)
+			rank = None
+			if date is None or h.getDaysFrom(date) < 7:
+				print "Update lingvo info for word", eng
+				l = Lingvo(eng)
+				if l.examples is not None:
+					print "Update counters"
+					self.db.setLingvoCounters(eng, l.translations, l.examples, l.phrases)
+					print "Get rank from lingvo"
+					rank = l.getRank()
+				if l.examples:
+					examples = l.getExamples()
+					if examples:
+						if date:
+							print "Remove examples"
+							self.db.removeExamples(eng)
+						print "Add examples"
+						self.db.addExamples(eng, examples)
+					else:
+						print "Could not get examples"
+			else:
+				print "Get rank from base"
+				rank = tr + ex + ph
+			print "### Lingvo Debug End ###"
+
 			if rus:
 				q_word, a_word = a_word, q_word
 			print "\n= #%s = " % (words.index(word) + 1)
-			raw_input(q_word.encode("utf8"))
+			raw_input(q_word.encode("utf8") + " (%s)" % rank)
 			print "%s" % fname.encode("utf8")
 			answer = raw_input("%s\nDo you know? (y)/n: " % a_word.encode("utf8"))
 			if answer == "finish":
