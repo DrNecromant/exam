@@ -112,6 +112,13 @@ def getDatesFromRange(mindate, maxdate):
 		dates.append(mindate + timedelta(i))
 	return dates
 
+def getDaysFrom(date):
+	convert_date = lambda t: datetime.strptime(t, "%Y-%m-%d")
+	date = convert_date(date)
+	print date
+	days = getDateNow() - date
+	return days.days
+
 def incDate(date):
 	return date + timedelta(1)
 
