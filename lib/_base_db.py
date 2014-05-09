@@ -127,3 +127,16 @@ class _base_DB():
 
 	def getDictEngWord(self, eng):
 		return self.session.query(DictEng.eng).filter(DictEng.eng == eng).scalar()
+
+	# === # Lingvo operations # === #
+
+	def getWordStats(self, eng):
+		word = self.session.query(Word).filter(Word.eng == eng).one()
+		return word.translations, word.examples, word.phrases, word.date
+
+	def setWordStats(self, eng, translations, examples, phrases, date):
+		word = self.session.query(Word).filter(Word.eng == eng).one()
+		word.translations = translations
+		word.examples = examples
+		word.phrases = phrases
+		word.date = date

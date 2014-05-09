@@ -101,3 +101,12 @@ class DB(_base_DB):
 		if self.getDictEngWord(eng):
 			return True
 		return False
+
+	# === # Lingvo operations # === #
+
+	def getLingvoCounters(self, eng):
+		return self.getWordStats(eng)
+
+	def setLingvoCounters(self, eng, translation, examples, phrases):
+		self.setWordStats(eng, translation, examples, phrases, self.now)
+		self.changes["update"].append("%s | %s | %s | %s" % (eng, translation, examples, phrases))
