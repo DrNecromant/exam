@@ -14,10 +14,6 @@ class Lingvo():
 
 	def __getCount__(self, html, param):
 		m = re.search(".*%s\s*\((\d+)\).*" % param, html)
-		f = open("l.txt", "w")
-		print >>f, param
-		print >>f, html
-		f.close()
 		return int(m.group(1))
 
 	def __calc__(self):
