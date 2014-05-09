@@ -113,7 +113,7 @@ class DB(_base_DB):
 
 	def addExamples(self, eng, examples):
 		self.createExamples(eng, examples)
-		self.changes["update"].append("%s | examples | %s" % (eng, len(examples)))
+		self.changes["create"].append("%s | examples | %s" % (eng, len(examples)))
 
 	def removeExamples(self, eng):
 		self.deleteExamples(eng)
