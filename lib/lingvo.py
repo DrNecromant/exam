@@ -35,7 +35,7 @@ class Lingvo():
 
 	def _tunePhrase(self, phrase):
 		new_phrase = unescape(phrase.decode("utf-8"))
-		new_phrase = re.sub("<.*?em.*?>", "", phrase)
+		new_phrase = re.sub("<.*?em.*?>", "", new_phrase)
 		return new_phrase
 
 	def getExamples(self):
