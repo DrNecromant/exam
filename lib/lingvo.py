@@ -60,6 +60,11 @@ class Lingvo():
 
 		return examples
 
+	def getRank(self):
+		if self.examples is None:
+			return None
+		return self.translations + self.examples + self.phrases
+
 if __name__ == "__main__":
 	l = Lingvo("my world")
 	print l.translations, l.examples, l.phrases
