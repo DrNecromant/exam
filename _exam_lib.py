@@ -85,26 +85,35 @@ class Exam:
 			h.printWords(words)
 
 	def processLingvoWords(self):
+		i = 0
 		engs = self.db.getWords(output = 1)
 		for eng in engs:
 			rank, date = self.db.getWordRank(eng)
 			print eng, rank, date
 			if rank is None or h.getDaysFrom(date) >= 7:
-				print "\tUpdate"
-				self.setWordStats(eng)
+				i += 1
+				print "\tUpdate", i
+				result = self.setWordStats(eng)
+				if not result:
+					break
+				self.processDBChanges()
+				h.randomSleep(30, 60)
+			else:
+				print "Already synced"
 
 	def setWordStats(self, eng):
 		l = Lingvo(eng)
 		if l.examples is None:
 			print "\tError in getting counters"
-			return
+			return False
 		if l.examples and not l.ex_list:
 			print "\tError in getting examples"
-			return
-		self.db.setLingvoCounters(eng, l.translation, l.examples, l.phrases)
+			return False
+		self.db.setLingvoCounters(eng, l.translations, l.examples, l.phrases)
 		if l.examples:
 			self.db.updateExamples(eng, l.ex_list)
 		print "\tSuccess"
+		return True
 
 	def doExam(self, count, rus):
 		words_to_exam = self.db.getSortedWords()
