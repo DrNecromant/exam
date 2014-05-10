@@ -26,7 +26,10 @@ class Lingvo():
 
 	def __calc__(self):
 		self.translations = self.__getCount__("Translations")
-		self.examples = self.__getCount__("Examples from texts")
+		if "No examples found." in self.html:
+			self.examples = 0
+		else:
+			self.examples = self.__getCount__("Examples from texts")
 		self.phrases = self.__getCount__("Phrases")
 		self.ex_list = self.getExamples()
 
