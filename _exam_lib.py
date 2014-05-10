@@ -84,7 +84,7 @@ class Exam:
 		if words:
 			h.printWords(words)
 
-	def processLingvoWords(self):
+	def processLingvoWords(self, delay):
 		i = 0
 		engs = self.db.getWords(output = 1)
 		for eng in engs:
@@ -97,7 +97,7 @@ class Exam:
 				if not result:
 					break
 				self.processDBChanges()
-				h.randomSleep(30, 60)
+				h.randomSleep(delay/2, delay + delay/2)
 			else:
 				print "Already synced"
 
