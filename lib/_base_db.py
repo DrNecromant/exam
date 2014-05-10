@@ -149,5 +149,5 @@ class _base_DB():
 
 	def deleteExamples(self, eng):
 		word_id = self.session.query(Word).filter(Word.eng == eng).one().id
-		query = self.session.query(Lingvo).filter(word = word_id)
+		query = self.session.query(Lingvo).filter(Lingvo.word == word_id)
 		query.delete(synchronize_session = False)
