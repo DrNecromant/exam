@@ -11,9 +11,12 @@ class Lingvo():
 		self.examples = None
 		self.phrases = None
 		self.__calc__()
+		self.ex_list = self.getExamples()
 
 	def __getCount__(self, html, param):
 		m = re.search(".*%s\s*\((\d+)\).*" % param, html)
+		if not m:
+			return None
 		return int(m.group(1))
 
 	def __calc__(self):
@@ -55,11 +58,6 @@ class Lingvo():
 			examples.append(map(self._tunePhrase, phrase_pair))
 
 		return examples
-
-	def getRank(self):
-		if self.examples is None:
-			return None
-		return self.translations + self.examples + self.phrases
 
 if __name__ == "__main__":
 	l = Lingvo("my world")

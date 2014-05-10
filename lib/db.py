@@ -111,10 +111,13 @@ class DB(_base_DB):
 		self.setWordStats(eng, translation, examples, phrases, self.now)
 		self.changes["update"].append("%s | %s | %s | %s" % (eng, translation, examples, phrases))
 
-	def addExamples(self, eng, examples):
-		self.createExamples(eng, examples)
-		self.changes["create"].append("%s | examples | %s" % (eng, len(examples)))
-
-	def removeExamples(self, eng):
+	def updateExamples(self, eng, examples):
 		self.deleteExamples(eng)
-		self.changes["delete"].append("%s | examples" % eng)
+		self.createExamples(eng, examples)
+		self.changes["update"].append("%s | examples | %s" % (eng, len(examples)))
+
+	def getWordRank(self, eng):
+		tr, ex, ph, date = self.getLingvoCounters(eng)
+		if date is None:
+			return (None, None)
+		return (tr + ex + ph, date)

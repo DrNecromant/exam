@@ -84,33 +84,27 @@ class Exam:
 		if words:
 			h.printWords(words)
 
-	def getLingvoRank(self, eng):
-		print "### Lingvo Degub Start ###"
-		tr, ex, ph, date = self.db.getLingvoCounters(eng)
-		rank = None
-		if date is None or h.getDaysFrom(date) < 7:
-			print "Update lingvo info for word", eng
-			l = Lingvo(eng)
-			if l.examples is not None:
-				print "Get rank from lingvo"
-				self.db.setLingvoCounters(eng, l.translations, l.examples, l.phrases)
-				rank = l.getRank()
-			if l.examples:
-				examples = l.getExamples()
-				if examples:
-					if date:
-						print "Remove examples"
-						self.db.removeExamples(eng)
-					print "Add examples"
-					self.db.addExamples(eng, examples)
-				else:
-					print "Could not get examples"
-		else:
-			print "Get rank from base"
-			rank = tr + ex + ph
-		print "### Lingvo Debug End ###"
-		return rank
+	def processLingvoWords(self):
+		engs = self.db.getWords(output = 1)
+		for eng in engs:
+			rank, date = self.db.getWordRank(eng)
+			print eng, rank, date
+			if rank is None or h.getDaysFrom(date) >= 7:
+				print "\tUpdate"
+				self.setWordStats(eng)
 
+	def setWordStats(self, eng):
+		l = Lingvo(eng)
+		if l.examples is None:
+			print "\tError in getting counters"
+			return
+		if l.examples and not l.ex_list:
+			print "\tError in getting examples"
+			return
+		self.db.setLingvoCounters(eng, l.translation, l.examples, l.phrases)
+		if l.examples:
+			self.db.updateExamples(eng, l.ex_list)
+		print "\tSuccess"
 
 	def doExam(self, count, rus):
 		words_to_exam = self.db.getSortedWords()
@@ -123,7 +117,7 @@ class Exam:
 		for word in words:
 			q_word, a_word, fname = word
 			eng = q_word
-			rank = self.getLingvoRank(eng)
+			rank = self.db.getWordRank(eng)[0]
 
 			if rus:
 				q_word, a_word = a_word, q_word
