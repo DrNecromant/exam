@@ -1,8 +1,9 @@
-from random import sample, shuffle
+from random import sample, shuffle, randint
 from collections import Counter, defaultdict
 from enchant import Dict
 from datetime import datetime, timedelta
 import re
+from time import sleep
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -113,9 +114,6 @@ def getDatesFromRange(mindate, maxdate):
 	return dates
 
 def getDaysFrom(date):
-	convert_date = lambda t: datetime.strptime(t, "%Y-%m-%d")
-	date = convert_date(date)
-	print date
 	days = getDateNow() - date
 	return days.days
 
@@ -150,3 +148,6 @@ def unescape(text):
             pass
       return text
    return re.sub("&#?\w+;", fixup, text)
+
+def randomSleep(begin, end):
+	sleep(randint(begin, end))
