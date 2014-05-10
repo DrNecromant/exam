@@ -1,55 +1,55 @@
 import urllib2
 import sys
 import re
-from consts import IN_URL_TEMP, EX_URL_TEMP
+from consts import LINGVO_URL
 from helpers import unescape
+
+class LingvoError(Exception):
+	pass
 
 class Lingvo():
 	def __init__(self, entry):
 		self.entry = entry
+		self.html = self.getContent()
 		self.translations = None
 		self.examples = None
 		self.phrases = None
-		self.__calc__()
-		self.ex_list = self.getExamples()
+		self.ex_list = None
+		if self.html:
+			self.__calc__()
 
-	def __getCount__(self, html, param):
-		m = re.search(".*%s\s*\((\d+)\).*" % param, html)
+	def __getCount__(self, param):
+		m = re.search(".*%s\s*\((\d+)\).*" % param, self.html)
 		if not m:
 			return None
 		return int(m.group(1))
 
 	def __calc__(self):
-		try:
-			url = IN_URL_TEMP % urllib2.quote(self.entry.decode("utf8"))
-			response = urllib2.urlopen(url)
-			in_html = response.read()
-			self.translations = self.__getCount__(in_html, "Translations")
-			self.examples = self.__getCount__(in_html, "Examples")
-			self.phrases = self.__getCount__(in_html, "Phrases")
-		except urllib2.URLError, e:
-			self.translations = None
-			self.examples = None
-			self.phrases = None
+		self.translations = self.__getCount__("Translations")
+		self.examples = self.__getCount__("Examples from texts")
+		self.phrases = self.__getCount__("Phrases")
+		self.ex_list = self.getExamples()
 
 	def _tunePhrase(self, phrase):
 		new_phrase = unescape(phrase.decode("utf-8"))
 		new_phrase = re.sub("<.*?em.*?>", "", new_phrase)
 		return new_phrase
 
+	def getContent(self):
+		try:
+			url = LINGVO_URL % urllib2.quote(self.entry.decode("utf8"))
+			response = urllib2.urlopen(url)
+			html = response.read()
+		except urllib2.URLError, e:
+			html = None
+		return html
+
 	def getExamples(self):
 		examples = list()
-		if not self.examples:
+		if not self.html or not self.examples:
 			return examples
 
-		try:
-			url = EX_URL_TEMP % urllib2.quote(self.entry.decode("utf8"))
-			response = urllib2.urlopen(url)
-			ex_html = response.read()
-		except urllib2.URLError, e:
-			return examples
-
-		ex_html_modified = ex_html.replace("\n", "").replace("\r", "").replace("\t", "")
+		ex_html_modified = self.html.replace("\n", "").replace("\r", "").replace("\t", "")
 		div = "<div.+?>(.+?)</div>"
 		td_class = "l-examples__tdExamp"
 
@@ -60,7 +60,7 @@ class Lingvo():
 		return examples
 
 if __name__ == "__main__":
-	l = Lingvo("my world")
+	l = Lingvo("world")
 	print l.translations, l.examples, l.phrases
 	examples = l.getExamples()
 	if not examples:
