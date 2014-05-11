@@ -63,7 +63,7 @@ class Exam:
 
 	def processDBErrors(self):
 		engs = self.db.getWords(output = 1)
-		errors = h.getErrors(engs, checker = self.db.checkEngWord)
+		errors = h.getErrors(engs, checker = self.checkEngWord)
 		if errors:
 			h.printErrors(errors, self.db.getWords)
 			return False
@@ -195,9 +195,13 @@ class Exam:
 		f2 = self.s.getFile("quality.png", subdir = STATSDIR)
 		h.buildPlot(f2, stats[2:])
 
-	def addEngWord(self, eng):
-		if self.db.checkEngWord(eng):
-			print "%s word already exists" % eng
-		else:
-			self.db.addEngWord(eng)
-			self.processDBChanges()
+	def checkEngWord(self, eng):
+		dict_words = list()
+		files = self.s.getFiles(subdir = DICTDIR, fext = ".xls")
+		for f in files:
+			data = self.xls.loadData(f, column_num = 1)
+			for entry in data:
+				dict_words.append(entry[0])
+		if eng not in dict_words:
+			return False
+		return True

@@ -120,14 +120,6 @@ class _base_DB():
 		history = History(date = date, passed = word.passed, failed = word.failed)
 		word.history.append(history)
 
-	# === # Dict operations  # === #
-
-	def createDictEngWord(self, eng):
-		self.session.add(DictEng(eng = eng))
-
-	def getDictEngWord(self, eng):
-		return self.session.query(DictEng.eng).filter(DictEng.eng == eng).scalar()
-
 	# === # Lingvo operations # === #
 
 	def getWordStats(self, eng):

@@ -91,17 +91,6 @@ class DB(_base_DB):
 	def getMinMaxDates(self):
 		return self.getMinDate(), self.getMaxDate()
 
-	# === # Dict operations  # === #
-
-	def addEngWord(self, eng):
-		self.createDictEngWord(eng)
-		self.changes["create"].append(eng)
-
-	def checkEngWord(self, eng):
-		if self.getDictEngWord(eng):
-			return True
-		return False
-
 	# === # Lingvo operations # === #
 
 	def getLingvoCounters(self, eng):
