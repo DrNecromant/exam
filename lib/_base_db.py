@@ -143,3 +143,12 @@ class _base_DB():
 		word_id = self.session.query(Word).filter(Word.eng == eng).one().id
 		query = self.session.query(Lingvo).filter(Lingvo.word == word_id)
 		query.delete(synchronize_session = False)
+
+	# === # Dict operations  # === #
+
+	def createDictEngWord(self, eng):
+		self.session.add(DictEng(eng = eng))
+
+	def getDictEngWords(self, eng):
+		words = self.session.query(DictEng.eng).all()
+		return map(lambda x: x[0], words)
