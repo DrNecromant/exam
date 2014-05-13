@@ -120,6 +120,10 @@ class _base_DB():
 		history = History(date = date, passed = word.passed, failed = word.failed)
 		word.history.append(history)
 
+	def getHistoryCountByDate(self, date_str):
+		query = self.session.query(func.count(History.id)).filter(History.date.like(date_str + "%"))
+		return query.filter((History.passed > 0) | (History.failed > 0)).scalar()
+
 	# === # Lingvo operations # === #
 
 	def getWordStats(self, eng):

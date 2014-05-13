@@ -205,3 +205,8 @@ class Exam:
 		if eng not in dict_words:
 			return False
 		return True
+
+	def printProcessedWordCount(self, date = h.getDateNow()):
+		date_str = date.strftime("%Y-%m-%d")
+		count = self.db.getCountByDate(date_str)
+		print count

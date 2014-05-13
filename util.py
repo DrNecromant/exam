@@ -8,6 +8,8 @@ parser.add_option("--join", "-j", action = "store_true",
 	dest = "join", help = "join")
 parser.add_option("--plot", "-p", action = "store_true",
 	dest = "plot", help = "plot")
+parser.add_option("--today", "-t", action = "store_true",
+	dest = "today", help = "today")
 
 tool = Exam()
 options = tool.options
@@ -21,3 +23,5 @@ if options.join:
 if options.plot:
 	stats = tool.getStats()
 	tool.buildPlot(stats)
+if options.today:
+	count = tool.printProcessedWordCount()

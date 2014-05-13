@@ -91,6 +91,9 @@ class DB(_base_DB):
 	def getMinMaxDates(self):
 		return self.getMinDate(), self.getMaxDate()
 
+	def getCountByDate(self, date_str):
+		return self.getHistoryCountByDate(date_str)
+
 	# === # Lingvo operations # === #
 
 	def getLingvoCounters(self, eng):
