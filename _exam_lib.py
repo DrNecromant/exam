@@ -116,7 +116,7 @@ class Exam:
 		return True
 
 	def doExam(self, count, rus):
-		words_to_exam = self.db.getSortedWords()
+		words_to_exam = self.db.getSortedWords(max_passed = PASSED_LIMIT)
 		if not words_to_exam:
 			print "# No words to exam"
 			return

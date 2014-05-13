@@ -70,7 +70,7 @@ class DB(_base_DB):
 	def findWords(self, eng):
 		return self.getWordsLike(eng)
 
-	def getSortedWords(self, max_passed = 5):
+	def getSortedWords(self, max_passed):
 		return self.getWordsByStats(max_passed)
 
 	# === # Stats operations # === #
