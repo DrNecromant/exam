@@ -20,7 +20,7 @@ class Exam:
 		self.s = Storage(getDropboxPath())
 		self.xls = XLS()
 		self.dbpath = self.s.getFile(DBNAME, subdir = DBDIR)
-		self.db = DB(self.dbpath, h.getDateNow())
+		self.db = DB(self.dbpath, h.getDateNow)
 		self.fake = self.options.fake
 
 	def sync(self):

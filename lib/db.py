@@ -1,10 +1,10 @@
 from _base_db import _base_DB
 
 class DB(_base_DB):
-	def __init__(self, dbpath, timestamp):
+	def __init__(self, dbpath, getDateTime):
 		_base_DB.__init__(self, dbpath)
 		self.changes = self.getBlankChanges()
-		self.now = timestamp
+		self.getDateTime = getDateTime
 
 	def getBlankChanges(self):
 		return {"create": list(), "update": list(), "delete": list()}
@@ -53,11 +53,11 @@ class DB(_base_DB):
 	# === # Word operations # === #
 
 	def addWord(self, fname, eng, rus):
-		self.createWord(fname, eng, rus, self.now)
+		self.createWord(fname, eng, rus, self.getDateTime())
 		self.changes["create"].append("%s | %s | %s" % (fname, eng, rus))
 
 	def removeWord(self, fname, eng):
-		self.deleteWord(fname, eng, self.now)
+		self.deleteWord(fname, eng, self.getDateTime())
 		self.changes["delete"].append("%s | %s" % (fname, eng))
 
 	def changeWord(self, fname, eng, rus1, rus2):
@@ -85,7 +85,7 @@ class DB(_base_DB):
 		return self.getMinDate(), self.getMaxDate()
 
 	def changeCounter(self, eng, counter):
-		self.updateCounter(eng, counter, self.now)
+		self.updateCounter(eng, counter, self.getDateTime())
 		self.changes["update"].append("%s %s" % (eng, counter))
 
 	def getMinMaxDates(self):
@@ -100,7 +100,7 @@ class DB(_base_DB):
 		return self.getWordStats(eng)
 
 	def setLingvoCounters(self, eng, translation, examples, phrases):
-		self.setWordStats(eng, translation, examples, phrases, self.now)
+		self.setWordStats(eng, translation, examples, phrases, self.getDateTime())
 		self.changes["update"].append("%s | %s | %s | %s" % (eng, translation, examples, phrases))
 
 	def updateExamples(self, eng, examples):
