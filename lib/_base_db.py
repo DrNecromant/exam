@@ -124,25 +124,28 @@ class _base_DB():
 
 	def getWordStats(self, eng):
 		word = self.session.query(Word).filter(Word.eng == eng).one()
-		return word.translations, word.examples, word.phrases, word.date
+		return word.tr_num, word.ex_num, word.ph_num, word.updated
 
-	def setWordStats(self, eng, translations, examples, phrases, date):
+	def setWordStats(self, eng, tr_num, ex_num, ph_num, updated):
 		word = self.session.query(Word).filter(Word.eng == eng).one()
-		word.translations = translations
-		word.examples = examples
-		word.phrases = phrases
-		word.date = date
+		word.tr_num = tr_num
+		word.ex_num = ex_num
+		word.ph_num = ph_num
+		word.updated = updated
 
 	def createExamples(self, eng, examples):
 		word = self.session.query(Word).filter(Word.eng == eng).one()
-		for eng_phrase, rus_phrase in examples:
-			lingvo = Lingvo(eng = eng_phrase, rus = rus_phrase)
-			word.lingvo.append(lingvo)
+		for eng, rus in examples:
+			example = self.session.query(Example).filter(Example.eng == eng & Example.rus == rus).first()
+			if not example:
+				example = Example(eng = eng, rus = rus)
+				self.session.add(example)
+			word.examples.append(WordExample(example_id = example.id, word_id = word.id))
 
-	def deleteExamples(self, eng):
-		word_id = self.session.query(Word).filter(Word.eng == eng).one().id
-		query = self.session.query(Lingvo).filter(Lingvo.word == word_id)
-		query.delete(synchronize_session = False)
+	def getExamples(self, eng):
+		word = self.session.query(Word).filter(Word.eng == eng).one()
+		example_ids = map(lambda x: x.example_id, word.examples)
+		return self.session.query(Example.eng, Example.rus).filter(Example.id.in_(example_ids)).all()
 
 	# === # Dict operations  # === #
 
