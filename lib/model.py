@@ -32,6 +32,7 @@ class Word(Base):
 	updated = Column(DateTime)
 
 	history = relationship("History")
+	examples = relationship("WordExample")
 
 class Example(Base):
 	__tablename__ = 'example'
@@ -41,15 +42,15 @@ class Example(Base):
 	eng = Column(String)
 	rus = Column(String)
 
-class WordsExample(Base):
+	words = relationship("WordExample")
+
+class WordExample(Base):
 	__tablename__ = 'wordexample'
 	__table_args__ = {'sqlite_autoincrement': True}
 
 	id = Column(Integer, primary_key = True)
 	word_id = Column(Integer, ForeignKey('word.id'))
 	example_id = Column(Integer, ForeignKey('example.id'))
-	example = relationship("Example", backref = "words")
-	word = relationship("Example", backref = "examples")
 
 class History(Base):
 	__tablename__ = 'history'
