@@ -26,7 +26,8 @@ def printErrors(errors, mapper):
 
 def printChanges(changes):
 	for ctype in changes:
-		print "========== %s ===========" % ctype
+		if changes[ctype]:
+			print "========== %s ===========" % ctype
 		for c in changes[ctype]:
 			print "==> %s" % c
 
@@ -150,4 +151,6 @@ def unescape(text):
    return re.sub("&#?\w+;", fixup, text)
 
 def randomSleep(begin, end):
-	sleep(randint(begin, end))
+	t = randint(begin, end)
+	print "Sleep", t
+	sleep(t)
