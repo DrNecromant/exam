@@ -89,11 +89,10 @@ class Exam:
 		i = 0
 		engs = self.db.getWords(output = 1)
 		for eng in engs:
+			i += 1
+			print "[ Update %s ]" % i
 			rank, date = self.db.getWordRank(eng)
-			print eng, rank, date
-			if rank is None or h.getDaysFrom(date) >= 7:
-				i += 1
-				print "\tUpdate", i
+			if rank is None or h.getDaysFrom(date) >= 30:
 				result = self.setWordStats(eng)
 				if not result:
 					break
@@ -101,19 +100,20 @@ class Exam:
 				h.randomSleep(delay/2, delay + delay/2)
 			else:
 				print "Already synced"
+				print eng, rank, date
 
 	def setWordStats(self, eng):
 		l = Lingvo(eng)
-		if l.examples is None:
-			print "\tError in getting counters"
+		if l.ex_num is None:
+			print "Error in getting counters"
 			return False
-		if l.examples and not l.ex_list:
-			print "\tError in getting examples"
+		if l.ex_num and not l.examples:
+			print "Error in getting examples"
 			return False
-		self.db.setLingvoCounters(eng, l.translations, l.examples, l.phrases)
-		if l.examples:
-			self.db.updateExamples(eng, l.ex_list)
-		print "\tSuccess"
+		self.db.setLingvoCounters(eng, l.tr_num, l.ex_num, l.ph_num)
+		if l.ex_num:
+			self.db.updateExamples(eng, l.examples)
+		print "Success"
 		return True
 
 	def doExam(self, count, rus):
@@ -203,7 +203,7 @@ class Exam:
 		for f in files:
 			data = self.xls.loadData(f, column_num = 1)
 			for entry in data:
-				dict_words.append(entry[0])
+				self.dict_words.append(entry[0])
 		return self.dict_words
 
 	def checkEngWord(self, eng):

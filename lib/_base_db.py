@@ -139,12 +139,13 @@ class _base_DB():
 
 	def createExamples(self, eng, examples):
 		word = self.session.query(Word).filter(Word.eng == eng).one()
-		for eng, rus in examples:
-			example = self.session.query(Example).filter(Example.eng == eng & Example.rus == rus).first()
+		for ex_eng, ex_rus in examples:
+			example = self.session.query(Example).filter(Example.eng == ex_eng).first()
 			if not example:
-				example = Example(eng = eng, rus = rus)
+				example = Example(eng = ex_eng, rus = ex_rus)
 				self.session.add(example)
-			word.examples.append(WordExample(example_id = example.id, word_id = word.id))
+				self.session.flush()
+			word.examples.append(WordExample(word_id = word.id, example_id = example.id))
 
 	def getExamples(self, eng):
 		word = self.session.query(Word).filter(Word.eng == eng).one()

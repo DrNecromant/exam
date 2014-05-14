@@ -11,10 +11,10 @@ class Lingvo():
 	def __init__(self, entry):
 		self.entry = entry
 		self.html = self.getContent()
-		self.translations = None
+		self.tr_num = None
+		self.ex_num = None
+		self.ph_num = None
 		self.examples = None
-		self.phrases = None
-		self.ex_list = None
 		if self.html:
 			self.__calc__()
 
@@ -25,13 +25,13 @@ class Lingvo():
 		return int(m.group(1))
 
 	def __calc__(self):
-		self.translations = self.__getCount__("Translations")
+		self.tr_num = self.__getCount__("Translations")
 		if "No examples found." in self.html:
-			self.examples = 0
+			self.ex_num = 0
 		else:
-			self.examples = self.__getCount__("Examples from texts")
-		self.phrases = self.__getCount__("Phrases")
-		self.ex_list = self.getExamples()
+			self.ex_num = self.__getCount__("Examples from texts")
+		self.ph_num = self.__getCount__("Phrases")
+		self.examples = self.getExamples()
 
 	def _tunePhrase(self, phrase):
 		new_phrase = unescape(phrase.decode("utf-8"))
@@ -49,7 +49,7 @@ class Lingvo():
 
 	def getExamples(self):
 		examples = list()
-		if not self.html or not self.examples:
+		if not self.html or not self.ex_num:
 			return examples
 
 		ex_html_modified = self.html.replace("\n", "").replace("\r", "").replace("\t", "")
@@ -64,7 +64,7 @@ class Lingvo():
 
 if __name__ == "__main__":
 	l = Lingvo("world")
-	print l.translations, l.examples, l.phrases
+	print l.tr_num, l.ex_num, l.ph_num
 	examples = l.getExamples()
 	if not examples:
 		print "no examples"

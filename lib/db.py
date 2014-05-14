@@ -99,14 +99,28 @@ class DB(_base_DB):
 	def getLingvoCounters(self, eng):
 		return self.getWordStats(eng)
 
-	def setLingvoCounters(self, eng, translation, examples, phrases):
-		self.setWordStats(eng, translation, examples, phrases, self.getDateTime())
-		self.changes["update"].append("%s | %s | %s | %s" % (eng, translation, examples, phrases))
+	def setLingvoCounters(self, eng, tr_num, ex_num, ph_num):
+		self.setWordStats(eng, tr_num, ex_num, ph_num, self.getDateTime())
+		self.changes["update"].append("%s | %s | %s | %s" % (eng, tr_num, ex_num, ph_num))
 
-	def updateExamples(self, eng, examples):
-		self.deleteExamples(eng)
+	def addExamples(self, eng, examples):
 		self.createExamples(eng, examples)
 		self.changes["update"].append("%s | examples | %s" % (eng, len(examples)))
+
+	def updateExamples(self, eng, examples):
+		db_examples = self.getExamples(eng)
+		if db_examples:
+			examples_to_create = list()
+			db_eng_examples = zip(*db_examples)[0]
+			print db_eng_examples
+			for ex_eng, ex_rus in examples:
+				if ex_eng in db_eng_examples:
+					continue
+				examples_to_create.append((ex_eng, ex_rus))
+			if examples_to_create:
+				self.addExamples(eng, examples_to_create)
+		else:
+			self.addExamples(eng, examples)
 
 	def getWordRank(self, eng):
 		tr, ex, ph, date = self.getLingvoCounters(eng)
