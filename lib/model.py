@@ -61,10 +61,3 @@ class History(Base):
 	word = Column(Integer, ForeignKey('word.id'))
 	passed = Column(Integer, default = 0)
 	failed = Column(Integer, default = 0)
-
-class DictEng(Base):
-	__tablename__ = 'dicteng'
-	__table_args__ = {'sqlite_autoincrement': True}
-
-	id = Column(Integer, primary_key = True)
-	eng = Column(String)
