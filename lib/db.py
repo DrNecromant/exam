@@ -113,12 +113,3 @@ class DB(_base_DB):
 		if date is None:
 			return (None, None)
 		return (tr + ex + ph, date)
-
-	# === # Dict operations  # === #
-
-	def addDictWord(self, eng):
-		self.createDictEngWord(eng)
-		self.changes["create"].append(eng)
-
-	def getDictWords(self, eng):
-		return self.getDictEngWords(eng)

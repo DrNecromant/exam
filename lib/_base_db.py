@@ -150,12 +150,3 @@ class _base_DB():
 		word = self.session.query(Word).filter(Word.eng == eng).one()
 		example_ids = map(lambda x: x.example_id, word.examples)
 		return self.session.query(Example.eng, Example.rus).filter(Example.id.in_(example_ids)).all()
-
-	# === # Dict operations  # === #
-
-	def createDictEngWord(self, eng):
-		self.session.add(DictEng(eng = eng))
-
-	def getDictEngWords(self, eng):
-		words = self.session.query(DictEng.eng).all()
-		return map(lambda x: x[0], words)

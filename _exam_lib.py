@@ -22,6 +22,7 @@ class Exam:
 		self.dbpath = self.s.getFile(DBNAME, subdir = DBDIR)
 		self.db = DB(self.dbpath, h.getDateNow)
 		self.fake = self.options.fake
+		self.dict_words = list()
 
 	def sync(self):
 		xls_file_paths = self.s.getFiles(subdir = TRANSLATEDIR, fext = ".xls")
@@ -195,14 +196,18 @@ class Exam:
 		f2 = self.s.getFile("quality.png", subdir = STATSDIR)
 		h.buildPlot(f2, stats[2:])
 
-	def checkEngWord(self, eng):
-		dict_words = list()
+	def getDictEngWords(self):
+		if self.dict_words:
+			return self.dict_words
 		files = self.s.getFiles(subdir = DICTDIR, fext = ".xls")
 		for f in files:
 			data = self.xls.loadData(f, column_num = 1)
 			for entry in data:
 				dict_words.append(entry[0])
-		if eng not in dict_words:
+		return self.dict_words
+
+	def checkEngWord(self, eng):
+		if eng not in self.getDictEngWords():
 			return False
 		return True
 
