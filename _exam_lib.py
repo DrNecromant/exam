@@ -90,31 +90,23 @@ class Exam:
 		engs = self.db.getWords(output = 1)
 		for eng in engs:
 			i += 1
+			rank, updated = self.db.getWordRank(eng)
+			if rank is not None and h.getDaysFrom(updated) < 30:
+				continue
 			print "[ Update %s ]" % i
-			rank, date = self.db.getWordRank(eng)
-			if rank is None or h.getDaysFrom(date) >= 30:
-				result = self.setWordStats(eng)
-				if not result:
-					break
-				self.processDBChanges()
-				h.randomSleep(delay/2, delay + delay/2)
-			else:
-				print "Already synced"
-				print eng, rank, date
+			self.setWordStats(eng)
+			self.processDBChanges()
+			h.randomSleep(delay/2, delay + delay/2)
 
 	def setWordStats(self, eng):
 		l = Lingvo(eng)
 		if l.ex_num is None:
-			print "Error in getting counters"
-			return False
+			raise Exception("Error in getting counters")
 		if l.ex_num and not l.examples:
-			print "Error in getting examples"
-			return False
+			raise Exception("Error in getting examples")
 		self.db.setLingvoCounters(eng, l.tr_num, l.ex_num, l.ph_num)
 		if l.ex_num:
 			self.db.updateExamples(eng, l.examples)
-		print "Success"
-		return True
 
 	def doExam(self, count, rus):
 		words_to_exam = self.db.getSortedWords(max_passed = PASSED_LIMIT)

@@ -105,7 +105,7 @@ class DB(_base_DB):
 
 	def addExamples(self, eng, examples):
 		self.createExamples(eng, examples)
-		self.changes["update"].append("%s | examples | %s" % (eng, len(examples)))
+		self.changes["create"].append("%s | examples | %s" % (eng, len(examples)))
 
 	def updateExamples(self, eng, examples):
 		db_examples = self.getExamples(eng)

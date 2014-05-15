@@ -152,5 +152,4 @@ def unescape(text):
 
 def randomSleep(begin, end):
 	t = randint(begin, end)
-	print "Sleep", t
 	sleep(t)
