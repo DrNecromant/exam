@@ -150,4 +150,6 @@ class _base_DB():
 	def getExamples(self, eng):
 		word = self.session.query(Word).filter(Word.eng == eng).one()
 		example_ids = map(lambda x: x.example_id, word.examples)
+		if not example_ids:
+			return None
 		return self.session.query(Example.eng, Example.rus).filter(Example.id.in_(example_ids)).all()
