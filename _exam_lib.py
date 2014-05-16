@@ -86,14 +86,15 @@ class Exam:
 			h.printWords(words)
 
 	def processLingvoWords(self, delay):
-		i = 0
-		engs = self.db.getWords(output = 1)
+		engs = list(self.db.getWords(output = 1))
+		engs.reverse()
+		count = len(engs) + 1
 		for eng in engs:
-			i += 1
+			count -= 1
 			rank, updated = self.db.getWordRank(eng)
 			if rank is not None and h.getDaysFrom(updated) < 30:
 				continue
-			print "[ Update %s ]" % i
+			print "[ Update %s ]" % count
 			self.setWordStats(eng)
 			self.processDBChanges()
 			h.randomSleep(delay/2, delay + delay/2)
