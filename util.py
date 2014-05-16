@@ -24,4 +24,4 @@ if options.plot:
 	stats = tool.getStats()
 	tool.buildPlot(stats)
 if options.today:
-	count = tool.printProcessedWordCount()
+	count = tool.processWordCount()

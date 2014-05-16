@@ -203,7 +203,12 @@ class Exam:
 			return False
 		return True
 
-	def printProcessedWordCount(self, date = h.getDateNow()):
-		date_str = date.strftime("%Y-%m-%d")
-		count = self.db.getCountByDate(date_str)
-		print count
+	def processWordCount(self, date = h.getDateNow()):
+		mindate, maxdate = self.db.getMinMaxDates()
+		dates = h.getDatesFromRange(mindate, maxdate)
+		stats = dict()
+		for date in dates[1:]:
+			date_str = date.strftime("%Y-%m-%d")
+			count = self.db.getCountByDate(date_str)
+			stats[date_str] = count
+		h.printWordCount(stats)

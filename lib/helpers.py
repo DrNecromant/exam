@@ -153,3 +153,10 @@ def unescape(text):
 def randomSleep(begin, end):
 	t = randint(begin, end)
 	sleep(t)
+
+def printWordCount(stats):
+	for date in sorted(stats)[:5]:
+		print date, ":", stats[date]
+	values = stats.values()
+	average = sum(values) / len(values) 
+	print "average :", average
