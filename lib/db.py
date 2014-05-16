@@ -57,6 +57,7 @@ class DB(_base_DB):
 		self.changes["create"].append("%s | %s | %s" % (fname, eng, rus))
 
 	def removeWord(self, fname, eng):
+		self.removeWordExamples(eng)
 		self.deleteWord(fname, eng, self.getDateTime())
 		self.changes["delete"].append("%s | %s" % (fname, eng))
 
@@ -127,3 +128,7 @@ class DB(_base_DB):
 		if date is None:
 			return (None, None)
 		return (tr + ex + ph, date)
+
+	def removeWordExamples(self, eng):
+		self.deleteWordExamples(eng)
+		self.changes["delete"].append("%s | examples" % eng)
