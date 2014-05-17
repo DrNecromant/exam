@@ -16,9 +16,11 @@ def printWords(words):
 	if not words:
 		print "Could not find"
 		return
+	i = 0
 	for eng, rus, fname in words:
+		i += 1
 		sfname = fname.replace(TRANSLATEDIR, "")[1:]
-		print "%s | %s | %s" % (eng.encode("utf8"), rus.encode("utf8"), sfname.encode("utf8"))
+		print "%s) %s | %s | %s" % (i, eng.encode("utf8"), rus.encode("utf8"), sfname.encode("utf8"))
 
 def printErrors(errors, mapper):
 	for error_type in errors:

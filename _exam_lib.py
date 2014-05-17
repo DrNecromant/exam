@@ -139,7 +139,7 @@ class Exam:
 				hints = set()
 				for w in eng.split():
 					other_words = self.db.findWords(w)
-					if len(other_words) < 5:
+					if len(other_words) < 10:
 						hints.update(other_words)
 				if hints:
 					h.printWords(hints)
