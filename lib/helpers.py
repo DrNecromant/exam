@@ -4,6 +4,7 @@ from enchant import Dict
 from datetime import datetime, timedelta
 import re
 from time import sleep
+from consts import *
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -11,12 +12,13 @@ import matplotlib.pyplot as plt
 import htmlentitydefs
 
 def printWords(words):
+	print "*** Words ***"
 	if not words:
 		print "Could not find"
 		return
 	for eng, rus, fname in words:
-		print "%s | %s" % (eng.encode("utf8"), rus.encode("utf8"))
-		print "\t%s" % fname
+		sfname = fname.replace(TRANSLATEDIR, "")[1:]
+		print "%s | %s | %s" % (eng.encode("utf8"), rus.encode("utf8"), sfname.encode("utf8"))
 
 def printErrors(errors, mapper):
 	for error_type in errors:
@@ -171,4 +173,3 @@ def printExamples(examples):
 		eng, rus = example
 		print "%s) %s" % (i, eng)
 		print "\t%s" % rus
-	print "****************"
