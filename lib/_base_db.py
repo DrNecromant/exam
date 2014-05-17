@@ -60,7 +60,7 @@ class _base_DB():
 		query = self.session.query(Word).join(File)
 		query.filter((Word.eng == eng) & (File.name == fname)).one().rus = rus
 
-	def getWordEntries(self, eng, rus, fname, output):
+	def getWordEntries(self, eng, rus, fname, output, updated_before):
 		query = self.session.query(Word.eng, Word.rus, File.name).join(File)
 		if fname:
 			query = query.filter(File.name == fname)
@@ -68,6 +68,8 @@ class _base_DB():
 			query = query.filter(Word.eng == eng)
 		if rus and rus != True:
 			query = query.filter(Word.rus == rus)
+		if updated_before:
+			query = query.filter((Word.updated == None) | (Word.updated < updated_before))
 		entries = query.all()
 		if not entries:
 			return None

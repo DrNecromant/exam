@@ -86,14 +86,17 @@ class Exam:
 			h.printWords(words)
 
 	def processLingvoWords(self, delay):
-		engs = list(self.db.getWords(output = 1))
+		outdated = h.getDateBefore(100)
+		engs = self.db.getWords(output = 1, updated_before = outdated)
+		if not engs:
+			print "No word to sync"
+			return
+		engs = list(engs)
 		engs.reverse()
 		count = len(engs) + 1
 		for eng in engs:
 			count -= 1
-			rank, updated = self.db.getWordRank(eng)
-			if rank is not None and h.getDaysFrom(updated) < 30:
-				continue
+			rank = self.db.getWordRank(eng)
 			print "[ Update %s ]" % count
 			self.setWordStats(eng)
 			self.processDBChanges()
@@ -120,7 +123,7 @@ class Exam:
 		for word in words:
 			q_word, a_word, fname = word
 			eng = q_word
-			rank = self.db.getWordRank(eng)[0]
+			rank = self.db.getWordRank(eng)
 
 			if rus:
 				q_word, a_word = a_word, q_word
@@ -208,7 +211,7 @@ class Exam:
 		mindate, maxdate = self.db.getMinMaxDates()
 		dates = h.getDatesFromRange(mindate, maxdate)
 		stats = dict()
-		for date in dates[1:]:
+		for date in dates:
 			date_str = date.strftime("%Y-%m-%d")
 			count = self.db.getCountByDate(date_str)
 			stats[date_str] = count

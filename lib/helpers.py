@@ -114,9 +114,8 @@ def getDatesFromRange(mindate, maxdate):
 		dates.append(mindate + timedelta(i))
 	return dates
 
-def getDaysFrom(date):
-	days = getDateNow() - date
-	return days.days
+def getDateBefore(days):
+	return getDateNow() - timedelta(days)
 
 def incDate(date):
 	return date + timedelta(1)

@@ -65,8 +65,8 @@ class DB(_base_DB):
 		self.updateWord(fname, eng, rus2)
 		self.changes["update"].append("%s | %s | %s -> %s" % (fname, eng, rus1, rus2))
 
-	def getWords(self, eng = None, rus = None, fname = None, output = 7):
-		return self.getWordEntries(eng, rus, fname, output)
+	def getWords(self, eng = None, rus = None, fname = None, output = 7, updated_before = None):
+		return self.getWordEntries(eng, rus, fname, output, updated_before)
 
 	def findWords(self, eng):
 		return self.getWordsLike(eng)
@@ -113,7 +113,6 @@ class DB(_base_DB):
 		if db_examples:
 			examples_to_create = list()
 			db_eng_examples = zip(*db_examples)[0]
-			print db_eng_examples
 			for ex_eng, ex_rus in examples:
 				if ex_eng in db_eng_examples:
 					continue
