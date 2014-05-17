@@ -96,7 +96,6 @@ class Exam:
 		count = len(engs) + 1
 		for eng in engs:
 			count -= 1
-			rank = self.db.getWordRank(eng)
 			print "[ Update %s ]" % count
 			self.setWordStats(eng)
 			self.processDBChanges()

@@ -125,8 +125,8 @@ class DB(_base_DB):
 	def getWordRank(self, eng):
 		tr, ex, ph, date = self.getLingvoCounters(eng)
 		if date is None:
-			return (None, None)
-		return (tr + ex + ph, date)
+			return None
+		return tr + ex + ph
 
 	def removeWordExamples(self, eng):
 		self.deleteWordExamples(eng)
