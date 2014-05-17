@@ -108,8 +108,11 @@ class DB(_base_DB):
 		self.createExamples(eng, examples)
 		self.changes["create"].append("%s | examples | %s" % (eng, len(examples)))
 
+	def getExamples(self, eng):
+		return self.getExamplePairs(eng)
+
 	def updateExamples(self, eng, examples):
-		db_examples = self.getExamples(eng)
+		db_examples = self.getExamplePairs(eng)
 		if db_examples:
 			examples_to_create = list()
 			db_eng_examples = zip(*db_examples)[0]

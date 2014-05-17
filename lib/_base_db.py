@@ -149,7 +149,7 @@ class _base_DB():
 				self.session.flush()
 			word.examples.append(WordExample(word_id = word.id, example_id = example.id))
 
-	def getExamples(self, eng):
+	def getExamplePairs(self, eng):
 		word = self.session.query(Word).filter(Word.eng == eng).one()
 		example_ids = map(lambda x: x.example_id, word.examples)
 		if not example_ids:

@@ -46,6 +46,9 @@ def shuffleList(l):
 	shuffle(l)
 	return l
 
+def sampleList(l, n):
+	return sample(l, n)
+
 def getErrors(l, checker):
 	errors = defaultdict(list)
 	cnt = Counter(l)
@@ -159,3 +162,13 @@ def printWordCount(stats):
 	values = stats.values()
 	average = sum(values) / len(values) 
 	print "average :", average
+
+def printExamples(examples):
+	print "*** Examples ***"
+	i = 0
+	for example in examples:
+		i += 1
+		eng, rus = example
+		print "%s) %s" % (i, eng)
+		print "\t%s" % rus
+	print "****************"

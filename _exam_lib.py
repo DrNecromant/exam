@@ -143,6 +143,10 @@ class Exam:
 						hints.update(other_words)
 				if hints:
 					h.printWords(hints)
+				examples = self.db.getExamples(eng)
+				if examples:
+					examples = h.sampleList(examples, min(len(examples), 3))
+					h.printExamples(examples)
 			else:
 				self.db.changeCounter(eng, "passed")
 		self.processDBChanges()
