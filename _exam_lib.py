@@ -126,8 +126,7 @@ class Exam:
 
 			if rus:
 				q_word, a_word = a_word, q_word
-			print "\n= #%s = " % (words.index(word) + 1)
-			raw_input(q_word.encode("utf8") + " (%s)" % rank)
+			raw_input("\n%s (%s)" % (q_word.encode("utf8"), rank))
 			print "%s" % fname.encode("utf8")
 			answer = raw_input("%s\nDo you know? (y)/n: " % a_word.encode("utf8"))
 			if answer == "finish":
