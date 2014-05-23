@@ -111,30 +111,25 @@ class Exam:
 		if l.ex_num:
 			self.db.updateExamples(eng, l.examples)
 
-	def doExam(self, count, rus):
+	def doExam(self, count):
 		words_to_exam = self.db.getSortedWords(max_passed = PASSED_LIMIT)
 		if not words_to_exam:
 			print "# No words to exam"
 			return
 		print "# Check %s from %s words" %(count, len(words_to_exam))
-		unknown_words = list()
 		words = h.smartSelection(words_to_exam, count)
 		for word in words:
-			q_word, a_word, fname = word
-			eng = q_word
+			eng, rus, fname = word
 			rank = self.db.getWordRank(eng)
 
-			if rus:
-				q_word, a_word = a_word, q_word
-			raw_input("\n%s (%s)" % (q_word.encode("utf8"), rank))
+			raw_input("\n%s (%s)" % (eng.encode("utf8"), rank))
 			print "%s" % fname.encode("utf8")
-			answer = raw_input("%s\nDo you know? (y)/n: " % a_word.encode("utf8"))
+			answer = raw_input("%s\nDo you know? (y)/n: " % rus.encode("utf8"))
 			if answer == "finish":
 				print "Exit from exam with saving changes"
 				break
 			if answer:
 				self.db.changeCounter(eng, "failed")
-				unknown_words.append(word)
 				hints = set()
 				for w in eng.split():
 					other_words = self.db.findWords(w)
@@ -149,33 +144,6 @@ class Exam:
 			else:
 				self.db.changeCounter(eng, "passed")
 		self.processDBChanges()
-		if unknown_words:
-			self.saveTestWords(unknown_words)
-
-	def saveTestWords(self, words):
-		if self.fake:
-			return
-		prefix = "%s_%s_" % (TESTNAME, datetime.today().strftime(TIMEFORMAT))
-		suffix = ".xls"
-		fname = self.s.mkFile(prifix = prefix, suffix = suffix, subdir = TESTDIR)
-		self.xls.dumpData(fname, words)
-
-	def joinTestFiles(self):
-		engs = set()
-		testfiles = self.s.getFiles(subdir = TESTDIR, fext = ".xls")
-		for testfile in testfiles:
-			# get third columns values to remove marked words
-			words = self.xls.loadData(testfile, column_num = 3)
-			for word in words:
-				if len(word) > 2 and word[2]:
-					continue
-				engs.add(word[0])
-		words = map(self.db.getWords, engs)
-		if words:
-			content = [word[0] for word in words if word and len(word) == 1]
-			content = h.shuffleList(content)
-			self.saveTestWords(content)
-		self.s.unlinkFiles(testfiles)
 
 	def getStats(self):
 		max_passed = self.db.getMaxPassed()
@@ -209,7 +177,7 @@ class Exam:
 			return False
 		return True
 
-	def processWordCount(self, date = h.getDateNow()):
+	def processWordCount(self, date = h.getDateNow(), max_lines = 10):
 		mindate, maxdate = self.db.getMinMaxDates()
 		dates = h.getDatesFromRange(mindate, maxdate)
 		stats = dict()
@@ -217,4 +185,4 @@ class Exam:
 			date_str = date.strftime("%Y-%m-%d")
 			count = self.db.getCountByDate(date_str)
 			stats[date_str] = count
-		h.printWordCount(stats)
+		h.printWordCount(stats, max_lines)

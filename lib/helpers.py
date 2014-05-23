@@ -160,8 +160,8 @@ def randomSleep(begin, end):
 	t = randint(begin, end)
 	sleep(t)
 
-def printWordCount(stats):
-	for date in sorted(stats)[-5:]:
+def printWordCount(stats, max_lines):
+	for date in sorted(stats)[-max_lines:]:
 		print date, ":", stats[date]
 	values = stats.values()
 	average = sum(values) / len(values) 
