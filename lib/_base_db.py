@@ -94,7 +94,7 @@ class _base_DB():
 	def getWordsByStats(self, max_passed):
 		query = self.session.query(Word.eng, Word.rus, File.name).join(File)
 		if max_passed:
-			query = query.filter(Word.passed <= max_passed)
+			query = query.filter(Word.passed < max_passed)
 		return query.order_by(Word.passed + Word.failed, Word.passed).all()
 
 	# === # Stats operations  # === #
