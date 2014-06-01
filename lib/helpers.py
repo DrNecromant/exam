@@ -64,7 +64,7 @@ def getErrors(l, checker):
 			errors["duplicates"].append(el)
 		if el.startswith(" ") or el.endswith(" ") or "  " in el:
 			errors["spaces"].append(el)
-		if el.startswith("the ") or el.startswith("a "):
+		if el.startswith("the ") or el.startswith("a ") or el.startswith("to "):
 			errors["articles"].append(el)
 		for ch in el:
 			if ord(ch) >= 128:
