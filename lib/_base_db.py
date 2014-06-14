@@ -156,7 +156,8 @@ class _base_DB():
 			return None
 		return self.session.query(Example.eng, Example.rus).filter(Example.id.in_(example_ids)).all()
 
-	def deleteWordExamples(self, eng):
-		word = self.session.query(Word).filter(Word.eng == eng).one()
+	def deleteWordExamples(self, fname, eng):
+		file_id = self.session.query(File).filter(File.name == fname).one().id
+		word = self.session.query(Word).filter((Word.eng == eng) & (Word.file == file_id)).one()
 		query = self.session.query(WordExample).filter(WordExample.word_id == word.id)
 		query.delete(synchronize_session = False)
