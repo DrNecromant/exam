@@ -9,10 +9,10 @@ from consts import *
 import helpers as h
 import config
 
-def getDropboxPath():
+def getCloudPath():
 	if platform == "linux2":
-		return "/home/%s/Dropbox/" % getuser()
+		return "/home/%s/Google Drive/" % getuser()
 	elif platform == "darwin":
-		return "/Users/%s/Dropbox/" % getuser()
+		return "/Users/%s/Google Drive/" % getuser()
 	else:
 		raise Exception("Unsupported OS %s" % sys.platform)

@@ -17,7 +17,7 @@ class Exam:
 		(self.options, self.args) = parser.parse_args()
 		if self.options.debug:
 			config.debug = True
-		self.s = Storage(getDropboxPath())
+		self.s = Storage(getCloudPath())
 		self.xls = XLS()
 		self.dbpath = self.s.getFile(DBNAME, subdir = DBDIR)
 		self.db = DB(self.dbpath, h.getDateNow)
@@ -86,7 +86,7 @@ class Exam:
 			h.printWords(words)
 
 	def processLingvoWords(self, delay):
-		outdated = h.getDateBefore(100)
+		outdated = h.getDateBefore(EXAMPLES_LIFETIME)
 		engs = self.db.getWords(output = 1, updated_before = outdated)
 		if not engs:
 			print "No word to sync"
