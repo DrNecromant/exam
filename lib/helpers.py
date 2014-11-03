@@ -33,7 +33,7 @@ def printChanges(changes):
 		if changes[ctype]:
 			print "========== %s ===========" % ctype
 		for c in changes[ctype]:
-			print "==> %s" % c
+			print "==> %s" % c.encode("utf8")
 
 def smartSelection(l, c):
 	if len(l) <= c * 3:
@@ -173,5 +173,5 @@ def printExamples(examples):
 	for example in examples:
 		i += 1
 		eng, rus = example
-		print "%s) %s" % (i, eng)
-		print "\t%s" % rus
+		print "%s) %s" % (i, eng.encode("utf8"))
+		print "\t%s" % rus.encode("utf8")
