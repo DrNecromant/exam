@@ -158,9 +158,9 @@ class Exam:
 
 	def buildPlot(self, stats):
 		f1 = self.s.getFile("quantity.png", subdir = STATSDIR)
-		h.buildPlot(f1, stats[:2])
+		h.buildPlot(f1, stats[:2], labels = ["passed", "failed"])
 		f2 = self.s.getFile("quality.png", subdir = STATSDIR)
-		h.buildPlot(f2, stats[2:])
+		h.buildPlot(f2, stats[2:], labels = ["total", "passed"])
 
 	def getDictEngWords(self):
 		if self.dict_words:

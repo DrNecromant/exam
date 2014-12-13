@@ -90,21 +90,30 @@ def getStatsFromRawData(data, max_passed):
 			stat_dict[passed] += 1
 		else:
 			stat_dict[passed] = 1
-	res = [p_sum, f_sum]
+	res = list()
 	for key in range(max_passed + 1):
 		if key in stat_dict:
-			res.append(stat_dict[key])
+			if key == 0:
+				# summarize all passed words insdead of all not passed in key 0
+				res.append(total - stat_dict[key])
+			else:
+				res.append(stat_dict[key])
 		else:
 			res.append(0)
-	res.append(total)
+	res = [p_sum, f_sum, total] + res
 	return res
 
-def buildPlot(file_to_save, stats):
+def buildPlot(file_to_save, stats, labels = []):
 	plt.figure(file_to_save)
 	plt.grid()
 	i = 0
 	for stat in stats:
-		plt.plot(stat, label = "line %s" % i)
+		x = i - len(labels) + 1
+		if x > 0:
+			label = "line %s" % x
+		else:
+			label = labels[i]
+		plt.plot(stat, label = label)
 		i += 1
 	plt.legend(loc='upper left')
 	plt.savefig(file_to_save)
