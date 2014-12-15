@@ -160,7 +160,7 @@ class Exam:
 		f1 = self.s.getFile("quantity.png", subdir = STATSDIR)
 		h.buildPlot(f1, stats[:2], labels = ["passed", "failed"])
 		f2 = self.s.getFile("quality.png", subdir = STATSDIR)
-		h.buildPlot(f2, stats[2:], labels = ["total", "passed"])
+		h.buildPlot(f2, stats[2:], labels = ["passed"])
 
 	def getDictEngWords(self):
 		if self.dict_words:

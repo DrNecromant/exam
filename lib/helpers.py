@@ -100,7 +100,7 @@ def getStatsFromRawData(data, max_passed):
 				res.append(stat_dict[key])
 		else:
 			res.append(0)
-	res = [p_sum, f_sum, total] + res
+	res = [p_sum, f_sum] + res
 	return res
 
 def buildPlot(file_to_save, stats, labels = []):
