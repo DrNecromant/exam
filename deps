@@ -1,0 +1,4 @@
+xlrd
+xlwt
+sqlalchemy
+enchant (brew install enchant)
