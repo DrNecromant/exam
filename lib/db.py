@@ -1,10 +1,11 @@
 from _base_db import _base_DB
 
 class DB(_base_DB):
-	def __init__(self, dbpath, getDateTime):
+	def __init__(self, dbpath, getDateTime, rate):
 		_base_DB.__init__(self, dbpath)
 		self.changes = self.getBlankChanges()
 		self.getDateTime = getDateTime
+		self.rate = rate
 
 	def getBlankChanges(self):
 		return {"create": list(), "update": list(), "delete": list()}
@@ -72,7 +73,7 @@ class DB(_base_DB):
 		return self.getWordsLike(eng)
 
 	def getSortedWords(self, max_passed):
-		return self.getWordsByStats(max_passed)
+		return self.getWordsByStats(max_passed, self.rate)
 
 	# === # Stats operations # === #
 
@@ -80,7 +81,7 @@ class DB(_base_DB):
 		return self.getMaxCounter("passed")
 
 	def getRawDataByDate(self, date):
-		return self.getHistoryByDate(date)
+		return self.getHistoryByStats(date, self.rate)
 
 	def getDatesMinMax(self):
 		return self.getMinDate(), self.getMaxDate()

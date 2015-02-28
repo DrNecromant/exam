@@ -10,6 +10,9 @@ parser.add_option("--debug", "-d", action = "store_true",
 	dest = "debug", help = "debug logs")
 parser.add_option("--fake", "-k", action="store_true",
 	dest="fake", help="dry run")
+parser.add_option("--rate", "-r", dest = "rate",
+	default = 0, type = "int",
+	help = "find words with rate more that rate")
 
 class Exam:
 	__metaclass__ = DecoMeta
@@ -20,7 +23,7 @@ class Exam:
 		self.s = Storage(getCloudPath())
 		self.xls = XLS()
 		self.dbpath = self.s.getFile(DBNAME, subdir = DBDIR)
-		self.db = DB(self.dbpath, h.getDateNow)
+		self.db = DB(self.dbpath, h.getDateNow, self.options.rate)
 		self.fake = self.options.fake
 		self.dict_words = list()
 

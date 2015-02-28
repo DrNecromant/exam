@@ -91,10 +91,12 @@ class _base_DB():
 		query = self.session.query(Word.eng, Word.rus, File.name).join(File)
 		return query.filter(Word.eng.like("%" + word + "%")).all()
 
-	def getWordsByStats(self, max_passed):
+	def getWordsByStats(self, max_passed, rate):
 		query = self.session.query(Word.eng, Word.rus, File.name).join(File)
 		if max_passed:
 			query = query.filter(Word.passed < max_passed)
+		if rate:
+			query = query.filter(Word.tr_num + Word.ex_num + Word.ph_num >= rate)
 		return query.order_by(Word.passed + Word.failed, Word.passed).all()
 
 	# === # Stats operations  # === #
@@ -102,9 +104,13 @@ class _base_DB():
 	def getMaxCounter(self, counter):
 		return self.session.query(func.max(getattr(Word, counter))).scalar()
 
-	def getHistoryByDate(self, date):
+	def getHistoryByStats(self, date, rate):
 		stats = self.session.query(func.max(History.date), History.passed, History.failed)
 		stats = stats.filter(History.date < date)
+		if rate:
+			word_ids = self.session.query(Word.id).filter(Word.tr_num + Word.ex_num + Word.ph_num >= rate)
+			word_ids = map(lambda x: x[0], word_ids.all())
+			stats = stats.filter(History.word.in_(word_ids))
 		stats = stats.group_by(History.word)
 		stats = stats.having(History.passed > -1)
 		return map(lambda s: s[1:], stats.all())
