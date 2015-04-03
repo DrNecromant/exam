@@ -69,7 +69,7 @@ class _base_DB():
 		if rus and rus != True:
 			query = query.filter(Word.rus == rus)
 		if updated_before:
-			query = query.filter((Word.updated == None) | (Word.updated < updated_before))
+			query = query.filter((Word.updated == None) | ((Word.updated < updated_before) & (Word.tr_num + Word.ex_num + Word.ph_num > 0)))
 		entries = query.all()
 		if not entries:
 			return None
