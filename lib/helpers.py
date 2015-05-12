@@ -5,6 +5,7 @@ from datetime import datetime, timedelta
 import re
 from time import sleep
 from consts import *
+import re
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -56,7 +57,8 @@ def sampleList(l, n):
 def getErrors(l, checker):
 	errors = defaultdict(list)
 	cnt = Counter(l)
-	dict_en = Dict("en_US")
+	dict_us = Dict("en_US")
+	dict_en = Dict("en_GB")
 	for el, c in cnt.items():
 		if len(el) < 3:
 			errors["small_word"].append(el)
@@ -74,8 +76,8 @@ def getErrors(l, checker):
 			if ch in el:
 				errors["unused_signs"].append(el)
 				break
-		for w in el.split():
-			if not dict_en.check(w) and not checker(w) and not w.isdigit():
+		for w in re.findall("[\w']+", el):
+			if not (dict_us.check(w) or dict_en.check(w) or checker(w) or w.isdigit()):
 				errors["invalid"].append(el)
 	return errors
 
