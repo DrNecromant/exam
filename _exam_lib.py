@@ -22,7 +22,7 @@ class Exam:
 			config.debug = True
 		self.s = Storage(getCloudPath())
 		self.xls = XLS()
-		self.dbpath = self.s.getFile(DBNAME, subdir = DBDIR)
+		self.dbpath = "%s/%s" % (DBDIR, DBNAME)
 		self.db = DB(self.dbpath, h.getDateNow, self.options.rate)
 		self.fake = self.options.fake
 		self.dict_words = list()
@@ -80,8 +80,6 @@ class Exam:
 		if changes != self.db.getBlankChanges():
 			h.printChanges(changes)
 			self.db.applyChanges(fake = self.fake)
-			if not self.fake:
-				self.s.mkClone(self.dbpath)
 
 	def processDBWord(self, word):
 		words = self.db.findWords(word)

@@ -56,13 +56,3 @@ class Storage():
 			name = path.join(subdir, name)
 		fpath = self.getFullPath(name)
 		return fpath
-
-	def mkClone(self, fpath, prefix = "", suffix = "_clone"):
-		dir, fullname = path.split(fpath)
-		name, ext = path.splitext(fullname)
-		new_fpath = path.join(dir, prefix + name + suffix + ext)
-		src = self.getFullPath(fpath)
-		dst = self.getFullPath(new_fpath)
-		if path.exists(dst):
-			unlink(dst)
-		copy2(src, dst)
