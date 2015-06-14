@@ -6,5 +6,5 @@ STATSDIR = "Stats"
 DICTDIR = "Dict"
 TIMEFORMAT = "%Y-%m-%d_%H-%M-%S"
 LINGVO_URL = 'http://www.lingvo-online.ru/en/Search?searchMode=Examples&searchSrcLang=en&searchDestLang=ru&searchText=%s'
-PASSED_LIMIT = 3
+PASSED_LIMIT = 2
 EXAMPLES_LIFETIME = 300
