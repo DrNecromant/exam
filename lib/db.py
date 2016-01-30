@@ -75,6 +75,9 @@ class DB(_base_DB):
 	def getSortedWords(self, max_passed):
 		return self.getWordsByStats(max_passed, self.rate)
 
+	def getSortedPhrases(self):
+		return self.getPrases()
+
 	# === # Stats operations # === #
 
 	def getMaxPassed(self):
@@ -111,6 +114,9 @@ class DB(_base_DB):
 
 	def getExamples(self, eng):
 		return self.getExamplePairs(eng)
+
+	def getWordsByExample(self, eng):
+		return self.getWordPairs(eng)
 
 	def updateExamples(self, eng, examples):
 		db_examples = self.getExamplePairs(eng)

@@ -99,6 +99,10 @@ class _base_DB():
 			query = query.filter(Word.tr_num + Word.ex_num + Word.ph_num >= rate)
 		return query.order_by(Word.passed + Word.failed, Word.passed).all()
 
+	def getPrases(self):
+		query = self.session.query(Example.eng, Example.rus)
+		return query.all()
+
 	# === # Stats operations  # === #
 
 	def getMaxCounter(self, counter):
@@ -161,6 +165,13 @@ class _base_DB():
 		if not example_ids:
 			return None
 		return self.session.query(Example.eng, Example.rus).filter(Example.id.in_(example_ids)).all()
+
+	def getWordPairs(self, eng):
+		example = self.session.query(Example).filter(Example.eng == eng).one()
+		word_ids = map(lambda x: x.word_id, example.words)
+		if not word_ids:
+			return None
+		return self.session.query(Word.eng, Word.rus).filter(Word.id.in_(word_ids)).all()
 
 	def deleteWordExamples(self, fname, eng):
 		file_id = self.session.query(File).filter(File.name == fname).one().id

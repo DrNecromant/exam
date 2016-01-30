@@ -112,7 +112,24 @@ class Exam:
 		if l.ex_num:
 			self.db.updateExamples(eng, l.examples)
 
-	def doExam(self, count):
+	def doExam(self, count, phrase = False):
+		if phrase:
+			self.testPhrases(count = count)
+		else:
+			self.testWords(count = count)
+
+	def testPhrases(self, count):
+		phrases_to_exam = self.db.getSortedPhrases()
+		phrases = h.sampleList(phrases_to_exam, count)
+		for phrase in phrases:
+			eng, rus = phrase
+			print eng.encode("utf8")
+			words = self.db.getWordsByExample(eng)
+			for word in words:
+				eng, rus = word
+				print "\t%s %s" % (eng.encode("utf8"), rus.encode("utf8"))
+
+	def testWords(self, count):
 		words_to_exam = self.db.getSortedWords(max_passed = PASSED_LIMIT)
 		if not words_to_exam:
 			print "# No words to exam"
