@@ -1,5 +1,4 @@
 import config
-import types
 import re
 from pprint import pprint
 from collections import defaultdict
@@ -10,9 +9,9 @@ class DecoMeta(type):
 		if name == "_base_DB":
 			cls.db_changes = defaultdict(int)
 		for attr_name, attr_value in attrs.iteritems():
-			if isinstance(attr_value, types.FunctionType):
+			if callable(attr_value):
 				attrs[attr_name] = cls.deco(attr_value)
-		return super(DecoMeta, cls).__new__(cls, name, bases, attrs)
+		return type.__new__(cls, name, bases, attrs)
 
 	@classmethod
 	def deco(cls, func):
