@@ -6,17 +6,6 @@ class DB(_base_DB):
 		self.getDateTime = getDateTime
 		self.rate = rate
 
-	# === # Main operations # === #
-
-	def applyChanges(self, fake = False):
-		if fake:
-			self.rollback()
-		else:
-			self.commit()
-
-	def quit(self):
-		self.close()
-
 	# === # File operations # === #
 
 	def addFile(self, name, sha, words):

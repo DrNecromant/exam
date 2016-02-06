@@ -5,3 +5,4 @@ v1.1.0
 	- Add db logging in style class
 	- style class cosmetic changes
 	- move db changes logging from db class
+	- remove main operations from _base_db

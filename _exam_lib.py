@@ -65,6 +65,12 @@ class Exam:
 				elif xls_rus != db_rus:
 					self.db.changeWord(upd_file_name, eng, db_rus, xls_rus)
 
+	def applyChanges(self):
+		if self.fake:
+			self.db.rollback()
+		else:
+			self.db.commit()
+
 	def processDBErrors(self):
 		engs = self.db.getWords(output = 1)
 		errors = h.getErrors(engs, checker = self.checkEngWord)
@@ -72,7 +78,7 @@ class Exam:
 			h.printErrors(errors, self.db.getWords)
 			return False
 		else:
-			self.db.applyChanges(fake = self.fake)
+			self.applyChanges()
 			return True
 
 	def processDBWord(self, word):
@@ -93,7 +99,7 @@ class Exam:
 			count -= 1
 			print "[ Update %s ]" % count
 			self.setWordStats(eng)
-			self.db.applyChanges(fake = self.fake)
+			self.applyChanges()
 			h.randomSleep(delay/2, delay + delay/2)
 
 	def setWordStats(self, eng):
@@ -155,7 +161,7 @@ class Exam:
 					h.printExamples(examples)
 			else:
 				self.db.changeCounter(eng, "passed")
-		self.db.applyChanges()
+		self.applyChanges()
 
 	def getStats(self):
 		max_passed = self.db.getMaxPassed()
