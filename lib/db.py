@@ -3,15 +3,8 @@ from _base_db import _base_DB
 class DB(_base_DB):
 	def __init__(self, dbpath, getDateTime, rate):
 		_base_DB.__init__(self, dbpath)
-		self.changes = self.getBlankChanges()
 		self.getDateTime = getDateTime
 		self.rate = rate
-
-	def getBlankChanges(self):
-		return {"create": list(), "update": list(), "delete": list()}
-
-	def getChanges(self):
-		return dict(self.changes)
 
 	# === # Main operations # === #
 
@@ -20,7 +13,6 @@ class DB(_base_DB):
 			self.rollback()
 		else:
 			self.commit()
-		self.changes = self.getBlankChanges()
 
 	def quit(self):
 		self.close()
@@ -32,21 +24,18 @@ class DB(_base_DB):
 		for word in words:
 			eng, rus = word
 			self.addWord(name, eng, rus)
-		self.changes["create"].append("%s" % name)
 
 	def removeFile(self, name):
 		engs = self.getWords(fname = name, output = 1)
 		for eng in engs:
 			self.removeWord(name, eng)
 		self.deleteFile(name)
-		self.changes["delete"].append("%s" % name)
 
 	def getFiles(self):
 		return self.getFileNames()
 
 	def changeSha(self, fname, sha):
 		self.updateFileSha(fname, sha)
-		self.changes["update"].append("%s | %s" % (fname, sha))
 
 	def getSha(self, fname):
 		return self.getFileSha(fname)
@@ -55,16 +44,13 @@ class DB(_base_DB):
 
 	def addWord(self, fname, eng, rus):
 		self.createWord(fname, eng, rus, self.getDateTime())
-		self.changes["create"].append("%s | %s | %s" % (fname, eng, rus))
 
 	def removeWord(self, fname, eng):
 		self.removeWordExamples(fname, eng)
 		self.deleteWord(fname, eng, self.getDateTime())
-		self.changes["delete"].append("%s | %s" % (fname, eng))
 
 	def changeWord(self, fname, eng, rus1, rus2):
 		self.updateWord(fname, eng, rus2)
-		self.changes["update"].append("%s | %s | %s -> %s" % (fname, eng, rus1, rus2))
 
 	def getWords(self, eng = None, rus = None, fname = None, output = 7, updated_before = None):
 		return self.getWordEntries(eng, rus, fname, output, updated_before)
@@ -91,7 +77,6 @@ class DB(_base_DB):
 
 	def changeCounter(self, eng, counter):
 		self.updateCounter(eng, counter, self.getDateTime())
-		self.changes["update"].append("%s %s" % (eng, counter))
 
 	def getMinMaxDates(self):
 		return self.getMinDate(), self.getMaxDate()
@@ -106,11 +91,9 @@ class DB(_base_DB):
 
 	def setLingvoCounters(self, eng, tr_num, ex_num, ph_num):
 		self.setWordStats(eng, tr_num, ex_num, ph_num, self.getDateTime())
-		self.changes["update"].append("%s | %s | %s | %s" % (eng, tr_num, ex_num, ph_num))
 
 	def addExamples(self, eng, examples):
 		self.createExamples(eng, examples)
-		self.changes["create"].append("%s | examples | %s" % (eng, len(examples)))
 
 	def getExamples(self, eng):
 		return self.getExamplePairs(eng)
@@ -140,4 +123,3 @@ class DB(_base_DB):
 
 	def removeWordExamples(self, fname, eng):
 		self.deleteWordExamples(fname, eng)
-		self.changes["delete"].append("%s | examples" % eng)

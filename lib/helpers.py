@@ -29,13 +29,6 @@ def printErrors(errors, mapper):
 		for eng in errors[error_type]:
 			printWords(mapper(eng))
 
-def printChanges(changes):
-	for ctype in changes:
-		if changes[ctype]:
-			print "========== %s ===========" % ctype
-		for c in changes[ctype]:
-			print "==> %s" % c.encode("utf8")
-
 def smartSelection(l, c):
 	if len(l) <= c * 3:
 		res = l[:c]

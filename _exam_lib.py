@@ -72,14 +72,8 @@ class Exam:
 			h.printErrors(errors, self.db.getWords)
 			return False
 		else:
-			self.processDBChanges()
-			return True
-
-	def processDBChanges(self):
-		changes = self.db.getChanges()
-		if changes != self.db.getBlankChanges():
-			h.printChanges(changes)
 			self.db.applyChanges(fake = self.fake)
+			return True
 
 	def processDBWord(self, word):
 		words = self.db.findWords(word)
@@ -99,7 +93,7 @@ class Exam:
 			count -= 1
 			print "[ Update %s ]" % count
 			self.setWordStats(eng)
-			self.processDBChanges()
+			self.db.applyChanges(fake = self.fake)
 			h.randomSleep(delay/2, delay + delay/2)
 
 	def setWordStats(self, eng):
@@ -161,7 +155,7 @@ class Exam:
 					h.printExamples(examples)
 			else:
 				self.db.changeCounter(eng, "passed")
-		self.processDBChanges()
+		self.db.applyChanges()
 
 	def getStats(self):
 		max_passed = self.db.getMaxPassed()
