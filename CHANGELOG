@@ -6,3 +6,4 @@ v1.1.0
 	- style class cosmetic changes
 	- move db changes logging from db class
 	- remove main operations from _base_db
+	- remove file operations from _base_db

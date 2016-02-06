@@ -31,25 +31,30 @@ class Exam:
 		xls_file_paths = self.s.getFiles(subdir = TRANSLATEDIR, fext = ".xls")
 		xls_file_names = map(self.s.getShortPath, xls_file_paths)
 		xls_set = set(xls_file_names)
-		db_file_names = self.db.getFiles()
+		db_file_names = self.db.getFileNames()
 		db_set = set(db_file_names)
 		old_file_names = db_set - xls_set
 		new_file_names = xls_set - db_set
 		upd_file_names = xls_set & db_set
 
 		for old_file_name in old_file_names:
-			self.db.removeFile(old_file_name)
+			engs = self.db.getWords(fname = old_file_name, output = 1)
+			for eng in engs:
+				self.db.removeWord(old_file_name, eng)
+			self.db.deleteFile(old_file_name)
 		for new_file_name in new_file_names:
 			new_file_path = self.s.getFullPath(new_file_name)
 			xls_words = self.xls.loadData(new_file_path)
 			sha = self.s.getSha(new_file_name)
-			self.db.addFile(new_file_name, sha, xls_words)
+			self.db.createFile(new_file_name, sha)
+			for eng, rus in xls_words:
+				self.db.addWord(new_file_name, eng, rus)
 		for upd_file_name in upd_file_names:
-			db_sha = self.db.getSha(upd_file_name)
+			db_sha = self.db.getFileSha(upd_file_name)
 			xls_sha = self.s.getSha(upd_file_name)
 			if db_sha == xls_sha:
 				continue
-			self.db.changeSha(upd_file_name, xls_sha)
+			self.db.updateFileSha(upd_file_name, xls_sha)
 			xls_words = self.xls.loadData(self.s.getFullPath(upd_file_name))
 			xls_dict = dict(xls_words)
 			db_words = self.db.getWords(fname = upd_file_name, output = 3)

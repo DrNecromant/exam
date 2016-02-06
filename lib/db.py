@@ -6,29 +6,6 @@ class DB(_base_DB):
 		self.getDateTime = getDateTime
 		self.rate = rate
 
-	# === # File operations # === #
-
-	def addFile(self, name, sha, words):
-		self.createFile(name, sha)
-		for word in words:
-			eng, rus = word
-			self.addWord(name, eng, rus)
-
-	def removeFile(self, name):
-		engs = self.getWords(fname = name, output = 1)
-		for eng in engs:
-			self.removeWord(name, eng)
-		self.deleteFile(name)
-
-	def getFiles(self):
-		return self.getFileNames()
-
-	def changeSha(self, fname, sha):
-		self.updateFileSha(fname, sha)
-
-	def getSha(self, fname):
-		return self.getFileSha(fname)
-
 	# === # Word operations # === #
 
 	def addWord(self, fname, eng, rus):
