@@ -126,7 +126,7 @@ def getDatesFromRange(mindate, maxdate):
 	return dates
 
 def getDateBefore(days):
-	return getDateNow() - timedelta(days)
+	return getCurrentDateTime() - timedelta(days)
 
 def incDate(date):
 	return date + timedelta(1)

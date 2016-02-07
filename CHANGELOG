@@ -1,3 +1,5 @@
+v1.1.2
+	- Fix function call in helpers
 v1.1.1
 	- remove encode('utf8') for output
 v1.1.0 (PROG-16)
