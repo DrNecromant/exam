@@ -1,7 +1,4 @@
-v1.0.0
-	- Initial version
-v1.1.0
-	- issue PROG-16
+v1.1.0 (PROG-16)
 	- Add db logging in style class
 	- style class cosmetic changes
 	- move db changes logging from db class
@@ -15,4 +12,7 @@ v1.1.0
 	- remove lingvo operations from _base_db
 	- join getPhrases and getExamples
 	- reorder functions in db module
-	- remove DB class and remane _base_DB to DB
+	- remove DB class and remane _base_DB class to DB class
+	- move file _base_DB.py to db.py
+v1.0.0
+	- Initial version

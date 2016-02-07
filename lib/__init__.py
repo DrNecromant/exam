@@ -2,7 +2,7 @@ from getpass import getuser
 from sys import platform
 from storage import Storage
 from xls import XLS
-from _base_db import DB
+from db import DB
 from lingvo import Lingvo
 from style import *
 from consts import *
