@@ -143,11 +143,11 @@ class Exam:
 		phrases = h.sampleList(phrases_to_exam, count)
 		for phrase in phrases:
 			eng, rus = phrase
-			print eng.encode("utf8")
+			print eng
 			words = self.db.getWordsByExample(eng)
 			for word in words:
 				eng, rus = word
-				print "\t%s %s" % (eng.encode("utf8"), rus.encode("utf8"))
+				print "\t%s %s" % (eng, rus)
 
 	def testWords(self, count):
 		words_to_exam = self.db.getWords(max_passed = PASSED_LIMIT, rate = self.rate)
@@ -161,9 +161,9 @@ class Exam:
 			tr, ex, ph, update_date = self.db.getLingvoStats(eng)
 			rank = tr + ex + ph if update_date else None
 
-			raw_input("\n%s (%s)" % (eng.encode("utf8"), rank))
-			print "%s" % fname.encode("utf8")
-			answer = raw_input("%s\nDo you know? (y)/n: " % rus.encode("utf8"))
+			raw_input("\n%s (%s)" % (eng, rank))
+			print "%s" % fname
+			answer = raw_input("%s\nDo you know? (y)/n: " % rus)
 			if answer == "finish":
 				print "Exit from exam with saving changes"
 				break
