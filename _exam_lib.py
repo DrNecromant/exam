@@ -114,9 +114,23 @@ class Exam:
 			raise Exception("Error in getting counters")
 		if l.ex_num and not l.examples:
 			raise Exception("Error in getting examples")
-		self.db.setLingvoCounters(eng, l.tr_num, l.ex_num, l.ph_num)
+		self.db.setLingvoStats(eng, l.tr_num, l.ex_num, l.ph_num)
 		if l.ex_num:
-			self.db.updateExamples(eng, l.examples)
+			self.updateExamples(eng, l.examples)
+
+	def updateExamples(self, eng, examples):
+		db_examples = self.db.getExamples(eng)
+		if db_examples:
+			examples_to_create = list()
+			db_eng_examples = zip(*db_examples)[0]
+			for ex_eng, ex_rus in examples:
+				if ex_eng in db_eng_examples:
+					continue
+				examples_to_create.append((ex_eng, ex_rus))
+			if examples_to_create:
+				self.db.createExamples(eng, examples_to_create)
+		else:
+			self.db.createExamples(eng, examples)
 
 	def doExam(self, count, phrase = False):
 		if phrase:
@@ -125,7 +139,7 @@ class Exam:
 			self.testWords(count = count)
 
 	def testPhrases(self, count):
-		phrases_to_exam = self.db.getPhrases()
+		phrases_to_exam = self.db.getExamples()
 		phrases = h.sampleList(phrases_to_exam, count)
 		for phrase in phrases:
 			eng, rus = phrase
@@ -144,7 +158,8 @@ class Exam:
 		words = h.smartSelection(words_to_exam, count)
 		for word in words:
 			eng, rus, fname = word
-			rank = self.db.getWordRank(eng)
+			tr, ex, ph, update_date = self.db.getLingvoStats(eng)
+			rank = tr + ex + ph if update_date else None
 
 			raw_input("\n%s (%s)" % (eng.encode("utf8"), rank))
 			print "%s" % fname.encode("utf8")
@@ -153,7 +168,7 @@ class Exam:
 				print "Exit from exam with saving changes"
 				break
 			if answer:
-				self.db.changeCounter(eng, "failed")
+				self.db.updateCounter(eng, "failed")
 				hints = set()
 				for w in eng.split():
 					other_words = self.db.getWords(eng_pattern = w)
@@ -166,16 +181,17 @@ class Exam:
 					examples = h.sampleList(examples, min(len(examples), 3))
 					h.printExamples(examples)
 			else:
-				self.db.changeCounter(eng, "passed")
+				self.db.updateCounter(eng, "passed")
 		self.applyChanges()
 
 	def getStats(self):
-		max_passed = self.db.getMaxPassed()
+		max_passed = self.db.getMaxCounter("passed")
 		all_stats = list()
-		mindate, maxdate = self.db.getMinMaxDates()
+		mindate = self.db.getMinDate()
+		maxdate = self.db.getMaxDate()
 		dates = h.getDatesFromRange(mindate, maxdate)
 		for date in dates:
-			raw_data = self.db.getRawDataByDate(h.incDate(date), self.rate)
+			raw_data = self.db.getHistory(h.incDate(date), self.rate)
 			stats = h.getStatsFromRawData(raw_data, max_passed)
 			all_stats.append(stats)
 		return zip(*all_stats)
@@ -207,6 +223,6 @@ class Exam:
 		stats = dict()
 		for date in dates:
 			date_str = date.strftime("%Y-%m-%d")
-			count = self.db.getCountByDate(date_str)
+			count = self.db.getHistoryCountByDate(date_str)
 			stats[date_str] = count
 		h.printWordCount(stats, max_lines)

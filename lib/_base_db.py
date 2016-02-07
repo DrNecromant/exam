@@ -98,16 +98,12 @@ class _base_DB():
 			result = zip(*result_zip)
 		return result
 
-	def getPhrases(self):
-		query = self.session.query(Example.eng, Example.rus)
-		return query.all()
-
-	# === # Stats operations  # === #
+	# === # Hostory operations  # === #
 
 	def getMaxCounter(self, counter):
 		return self.session.query(func.max(getattr(Word, counter))).scalar()
 
-	def getHistoryByStats(self, date, rate):
+	def getHistory(self, date, rate):
 		stats = self.session.query(func.max(History.date), History.passed, History.failed)
 		stats = stats.filter(History.date < date)
 		if rate:
@@ -131,17 +127,13 @@ class _base_DB():
 		history = History(date = getCurrentDateTime(), passed = word.passed, failed = word.failed)
 		word.history.append(history)
 
-	def getHistoryCountByDate(self, date_str):
-		query = self.session.query(func.count(History.id)).filter(History.date.like(date_str + "%"))
-		return query.filter((History.passed > 0) | (History.failed > 0)).scalar()
-
 	# === # Lingvo operations # === #
 
-	def getWordStats(self, eng):
+	def getLingvoStats(self, eng):
 		word = self.session.query(Word).filter(Word.eng == eng).one()
 		return word.tr_num, word.ex_num, word.ph_num, word.updated
 
-	def setWordStats(self, eng, tr_num, ex_num, ph_num):
+	def setLingvoStats(self, eng, tr_num, ex_num, ph_num):
 		word = self.session.query(Word).filter(Word.eng == eng).one()
 		word.tr_num = tr_num
 		word.ex_num = ex_num
@@ -158,16 +150,25 @@ class _base_DB():
 				self.session.flush()
 			word.examples.append(WordExample(word_id = word.id, example_id = example.id))
 
-	def getExamplePairs(self, eng):
-		word = self.session.query(Word).filter(Word.eng == eng).one()
-		example_ids = map(lambda x: x.example_id, word.examples)
-		if not example_ids:
-			return None
-		return self.session.query(Example.eng, Example.rus).filter(Example.id.in_(example_ids)).all()
+	def getExamples(self, eng = None):
+		query = self.session.query(Example.eng, Example.rus)
+		if eng:
+			word = self.session.query(Word).filter(Word.eng == eng).one()
+			example_ids = map(lambda x: x.example_id, word.examples)
+			if not example_ids:
+				return None
+			query = query.filter(Example.id.in_(example_ids))
+		return query.all()
 
-	def getWordPairs(self, eng):
+	# === # Other operations # === #
+
+	def getWordsByExample(self, eng):
 		example = self.session.query(Example).filter(Example.eng == eng).one()
 		word_ids = map(lambda x: x.word_id, example.words)
 		if not word_ids:
 			return None
 		return self.session.query(Word.eng, Word.rus).filter(Word.id.in_(word_ids)).all()
+
+	def getHistoryCountByDate(self, date_str):
+		query = self.session.query(func.count(History.id)).filter(History.date.like(date_str + "%"))
+		return query.filter((History.passed > 0) | (History.failed > 0)).scalar()

@@ -11,3 +11,7 @@ v1.1.0
 	- no need sync before exam
 	- remove word operations from _base_db
 	- join all getWords operations
+	- remove stats operations from _base_db
+	- remove lingvo operations from _base_db
+	- join getPhrases and getExamples
+	- reorder functions in db module
