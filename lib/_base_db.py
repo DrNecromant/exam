@@ -52,25 +52,35 @@ class _base_DB():
 
 	def deleteWord(self, fname, eng):
 		file_id = self.session.query(File).filter(File.name == fname).one().id
-		query = self.session.query(Word).filter((Word.file == file_id) & (Word.eng == eng))
-		word = query.one()
+		word_query = self.session.query(Word).filter((Word.file == file_id) & (Word.eng == eng))
+		word = word_query.one()
 		word.history.append(History(date = getCurrentDateTime(), passed = -1, failed = -1))
-		query.delete(synchronize_session = False)
+		example_query = self.session.query(WordExample).filter(WordExample.word_id == word.id)
+		example_query.delete(synchronize_session = False)
+		word_query.delete(synchronize_session = False)
 
 	def updateWord(self, fname, eng, rus):
 		query = self.session.query(Word).join(File)
 		query.filter((Word.eng == eng) & (File.name == fname)).one().rus = rus
 
-	def getWordEntries(self, eng, rus, fname, output, updated_before):
+	def getWords(self, eng = None, rus = None, fname = None, output = 7, updated_before = None, eng_pattern = None, max_passed = None, rate = None):
 		query = self.session.query(Word.eng, Word.rus, File.name).join(File)
 		if fname:
 			query = query.filter(File.name == fname)
-		if eng and eng != True:
+		if eng:
 			query = query.filter(Word.eng == eng)
-		if rus and rus != True:
+		if rus:
 			query = query.filter(Word.rus == rus)
 		if updated_before:
 			query = query.filter((Word.updated == None) | ((Word.updated < updated_before) & (Word.tr_num + Word.ex_num + Word.ph_num > 0) & (Word.ex_num < 50)))
+		if eng_pattern:
+			query = query.filter(Word.eng.like("%" + eng_pattern + "%"))
+		if max_passed:
+			query = query.filter((Word.passed + Word.failed) < max_passed)
+		if rate:
+			query = query.filter(Word.tr_num + Word.ex_num + Word.ph_num >= rate)
+		if max_passed or rate:
+			query = query.order_by(Word.passed + Word.failed, Word.passed)
 		entries = query.all()
 		if not entries:
 			return None
@@ -88,19 +98,7 @@ class _base_DB():
 			result = zip(*result_zip)
 		return result
 
-	def getWordsLike(self, word):
-		query = self.session.query(Word.eng, Word.rus, File.name).join(File)
-		return query.filter(Word.eng.like("%" + word + "%")).all()
-
-	def getWordsByStats(self, max_passed, rate):
-		query = self.session.query(Word.eng, Word.rus, File.name).join(File)
-		if max_passed:
-			query = query.filter((Word.passed + Word.failed) < max_passed)
-		if rate:
-			query = query.filter(Word.tr_num + Word.ex_num + Word.ph_num >= rate)
-		return query.order_by(Word.passed + Word.failed, Word.passed).all()
-
-	def getPrases(self):
+	def getPhrases(self):
 		query = self.session.query(Example.eng, Example.rus)
 		return query.all()
 
@@ -173,9 +171,3 @@ class _base_DB():
 		if not word_ids:
 			return None
 		return self.session.query(Word.eng, Word.rus).filter(Word.id.in_(word_ids)).all()
-
-	def deleteWordExamples(self, fname, eng):
-		file_id = self.session.query(File).filter(File.name == fname).one().id
-		word = self.session.query(Word).filter((Word.eng == eng) & (Word.file == file_id)).one()
-		query = self.session.query(WordExample).filter(WordExample.word_id == word.id)
-		query.delete(synchronize_session = False)

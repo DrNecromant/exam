@@ -20,10 +20,11 @@ class Exam:
 		(self.options, self.args) = parser.parse_args()
 		if self.options.debug:
 			config.debug = True
+		self.rate = self.options.rate
 		self.s = Storage(getCloudPath())
 		self.xls = XLS()
 		self.dbpath = "%s/%s" % (DBDIR, DBNAME)
-		self.db = DB(self.dbpath, self.options.rate)
+		self.db = DB(self.dbpath)
 		self.fake = self.options.fake
 		self.dict_words = list()
 
@@ -40,7 +41,7 @@ class Exam:
 		for old_file_name in old_file_names:
 			engs = self.db.getWords(fname = old_file_name, output = 1)
 			for eng in engs:
-				self.db.removeWord(old_file_name, eng)
+				self.db.deleteWord(old_file_name, eng)
 			self.db.deleteFile(old_file_name)
 		for new_file_name in new_file_names:
 			new_file_path = self.s.getFullPath(new_file_name)
@@ -48,7 +49,7 @@ class Exam:
 			sha = self.s.getSha(new_file_name)
 			self.db.createFile(new_file_name, sha)
 			for eng, rus in xls_words:
-				self.db.addWord(new_file_name, eng, rus)
+				self.db.createWord(new_file_name, eng, rus)
 		for upd_file_name in upd_file_names:
 			db_sha = self.db.getFileSha(upd_file_name)
 			xls_sha = self.s.getSha(upd_file_name)
@@ -64,11 +65,11 @@ class Exam:
 				xls_rus = xls_dict.get(eng)
 				db_rus = db_dict.get(eng)
 				if not xls_rus:
-					self.db.removeWord(upd_file_name, eng)
+					self.db.deleteWord(upd_file_name, eng)
 				elif not db_rus:
-					self.db.addWord(upd_file_name, eng, xls_rus)
+					self.db.createWord(upd_file_name, eng, xls_rus)
 				elif xls_rus != db_rus:
-					self.db.changeWord(upd_file_name, eng, db_rus, xls_rus)
+					self.db.updateWord(upd_file_name, eng, db_rus, xls_rus)
 
 	def applyChanges(self):
 		if self.fake:
@@ -87,7 +88,7 @@ class Exam:
 			return True
 
 	def processDBWord(self, word):
-		words = self.db.findWords(word)
+		words = self.db.getWords(eng_pattern = word)
 		if words:
 			h.printWords(words)
 
@@ -124,7 +125,7 @@ class Exam:
 			self.testWords(count = count)
 
 	def testPhrases(self, count):
-		phrases_to_exam = self.db.getSortedPhrases()
+		phrases_to_exam = self.db.getPhrases()
 		phrases = h.sampleList(phrases_to_exam, count)
 		for phrase in phrases:
 			eng, rus = phrase
@@ -135,7 +136,7 @@ class Exam:
 				print "\t%s %s" % (eng.encode("utf8"), rus.encode("utf8"))
 
 	def testWords(self, count):
-		words_to_exam = self.db.getSortedWords(max_passed = PASSED_LIMIT)
+		words_to_exam = self.db.getWords(max_passed = PASSED_LIMIT, rate = self.rate)
 		if not words_to_exam:
 			print "# No words to exam"
 			return
@@ -155,7 +156,7 @@ class Exam:
 				self.db.changeCounter(eng, "failed")
 				hints = set()
 				for w in eng.split():
-					other_words = self.db.findWords(w)
+					other_words = self.db.getWords(eng_pattern = w)
 					if len(other_words) < 10:
 						hints.update(other_words)
 				if hints:
@@ -174,7 +175,7 @@ class Exam:
 		mindate, maxdate = self.db.getMinMaxDates()
 		dates = h.getDatesFromRange(mindate, maxdate)
 		for date in dates:
-			raw_data = self.db.getRawDataByDate(h.incDate(date))
+			raw_data = self.db.getRawDataByDate(h.incDate(date), self.rate)
 			stats = h.getStatsFromRawData(raw_data, max_passed)
 			all_stats.append(stats)
 		return zip(*all_stats)

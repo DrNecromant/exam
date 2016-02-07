@@ -8,3 +8,6 @@ v1.1.0
 	- remove main operations from _base_db
 	- remove file operations from _base_db
 	- remove getting current timestamp from function parameters
+	- no need sync before exam
+	- remove word operations from _base_db
+	- join all getWords operations

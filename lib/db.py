@@ -1,41 +1,16 @@
 from _base_db import _base_DB
 
 class DB(_base_DB):
-	def __init__(self, dbpath, rate):
+	def __init__(self, dbpath):
 		_base_DB.__init__(self, dbpath)
-		self.rate = rate
-
-	# === # Word operations # === #
-
-	def addWord(self, fname, eng, rus):
-		self.createWord(fname, eng, rus)
-
-	def removeWord(self, fname, eng):
-		self.removeWordExamples(fname, eng)
-		self.deleteWord(fname, eng)
-
-	def changeWord(self, fname, eng, rus1, rus2):
-		self.updateWord(fname, eng, rus2)
-
-	def getWords(self, eng = None, rus = None, fname = None, output = 7, updated_before = None):
-		return self.getWordEntries(eng, rus, fname, output, updated_before)
-
-	def findWords(self, eng):
-		return self.getWordsLike(eng)
-
-	def getSortedWords(self, max_passed):
-		return self.getWordsByStats(max_passed, self.rate)
-
-	def getSortedPhrases(self):
-		return self.getPrases()
 
 	# === # Stats operations # === #
 
 	def getMaxPassed(self):
 		return self.getMaxCounter("passed")
 
-	def getRawDataByDate(self, date):
-		return self.getHistoryByStats(date, self.rate)
+	def getRawDataByDate(self, date, rate):
+		return self.getHistoryByStats(date, rate)
 
 	def getDatesMinMax(self):
 		return self.getMinDate(), self.getMaxDate()

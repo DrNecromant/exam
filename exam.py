@@ -7,9 +7,7 @@ parser.add_option("--phrase", "-p", action = "store_true",
 
 exam = Exam()
 options = exam.options
-exam.sync()
-if exam.processDBErrors():
-	if options.phrase:
-		exam.doExam(options.count, phrase = True)
-	else:
-		exam.doExam(options.count)
+if options.phrase:
+	exam.doExam(options.count, phrase = True)
+else:
+	exam.doExam(options.count)
