@@ -113,7 +113,7 @@ def buildPlot(file_to_save, stats, labels = []):
 	plt.legend(loc='upper left')
 	plt.savefig(file_to_save)
 
-def getDateNow():
+def getCurrentDateTime():
 	return datetime.now().replace(microsecond = 0)
 
 def getDatesFromRange(mindate, maxdate):

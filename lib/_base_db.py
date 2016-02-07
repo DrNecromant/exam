@@ -2,6 +2,7 @@ from style import *
 from model import *
 from sqlalchemy import create_engine, func
 from sqlalchemy.orm import sessionmaker
+from helpers import getCurrentDateTime
 
 class _base_DB():
 	__metaclass__ = DecoMeta
@@ -43,17 +44,17 @@ class _base_DB():
 
 	# === # Word operations # === #
 
-	def createWord(self, fname, eng, rus, date):
+	def createWord(self, fname, eng, rus):
 		f = self.session.query(File).filter(File.name == fname).one()
 		word = Word(eng = eng, rus = rus)
 		f.words.append(word)
-		word.history.append(History(date = date))
+		word.history.append(History(date = getCurrentDateTime()))
 
-	def deleteWord(self, fname, eng, date):
+	def deleteWord(self, fname, eng):
 		file_id = self.session.query(File).filter(File.name == fname).one().id
 		query = self.session.query(Word).filter((Word.file == file_id) & (Word.eng == eng))
 		word = query.one()
-		word.history.append(History(date = date, passed = -1, failed = -1))
+		word.history.append(History(date = getCurrentDateTime(), passed = -1, failed = -1))
 		query.delete(synchronize_session = False)
 
 	def updateWord(self, fname, eng, rus):
@@ -125,11 +126,11 @@ class _base_DB():
 	def getMaxDate(self):
 		return self.session.query(func.date(func.max(History.date))).scalar()
 
-	def updateCounter(self, eng, counter, date):
+	def updateCounter(self, eng, counter):
 		word = self.session.query(Word).filter(Word.eng == eng).one()
 		count = int(getattr(word, counter)) + 1
 		setattr(word, counter, count)
-		history = History(date = date, passed = word.passed, failed = word.failed)
+		history = History(date = getCurrentDateTime(), passed = word.passed, failed = word.failed)
 		word.history.append(history)
 
 	def getHistoryCountByDate(self, date_str):
@@ -142,12 +143,12 @@ class _base_DB():
 		word = self.session.query(Word).filter(Word.eng == eng).one()
 		return word.tr_num, word.ex_num, word.ph_num, word.updated
 
-	def setWordStats(self, eng, tr_num, ex_num, ph_num, updated):
+	def setWordStats(self, eng, tr_num, ex_num, ph_num):
 		word = self.session.query(Word).filter(Word.eng == eng).one()
 		word.tr_num = tr_num
 		word.ex_num = ex_num
 		word.ph_num = ph_num
-		word.updated = updated
+		word.updated = getCurrentDateTime()
 
 	def createExamples(self, eng, examples):
 		word = self.session.query(Word).filter(Word.eng == eng).one()

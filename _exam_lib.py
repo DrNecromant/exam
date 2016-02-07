@@ -23,7 +23,7 @@ class Exam:
 		self.s = Storage(getCloudPath())
 		self.xls = XLS()
 		self.dbpath = "%s/%s" % (DBDIR, DBNAME)
-		self.db = DB(self.dbpath, h.getDateNow, self.options.rate)
+		self.db = DB(self.dbpath, self.options.rate)
 		self.fake = self.options.fake
 		self.dict_words = list()
 
@@ -200,7 +200,7 @@ class Exam:
 			return False
 		return True
 
-	def processWordCount(self, date = h.getDateNow(), max_lines = 10):
+	def processWordCount(self, max_lines = 10):
 		mindate, maxdate = self.db.getMinMaxDates()
 		dates = h.getDatesFromRange(mindate, maxdate)
 		stats = dict()

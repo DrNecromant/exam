@@ -7,3 +7,4 @@ v1.1.0
 	- move db changes logging from db class
 	- remove main operations from _base_db
 	- remove file operations from _base_db
+	- remove getting current timestamp from function parameters

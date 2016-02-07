@@ -1,19 +1,18 @@
 from _base_db import _base_DB
 
 class DB(_base_DB):
-	def __init__(self, dbpath, getDateTime, rate):
+	def __init__(self, dbpath, rate):
 		_base_DB.__init__(self, dbpath)
-		self.getDateTime = getDateTime
 		self.rate = rate
 
 	# === # Word operations # === #
 
 	def addWord(self, fname, eng, rus):
-		self.createWord(fname, eng, rus, self.getDateTime())
+		self.createWord(fname, eng, rus)
 
 	def removeWord(self, fname, eng):
 		self.removeWordExamples(fname, eng)
-		self.deleteWord(fname, eng, self.getDateTime())
+		self.deleteWord(fname, eng)
 
 	def changeWord(self, fname, eng, rus1, rus2):
 		self.updateWord(fname, eng, rus2)
@@ -42,7 +41,7 @@ class DB(_base_DB):
 		return self.getMinDate(), self.getMaxDate()
 
 	def changeCounter(self, eng, counter):
-		self.updateCounter(eng, counter, self.getDateTime())
+		self.updateCounter(eng, counter)
 
 	def getMinMaxDates(self):
 		return self.getMinDate(), self.getMaxDate()
@@ -56,7 +55,7 @@ class DB(_base_DB):
 		return self.getWordStats(eng)
 
 	def setLingvoCounters(self, eng, tr_num, ex_num, ph_num):
-		self.setWordStats(eng, tr_num, ex_num, ph_num, self.getDateTime())
+		self.setWordStats(eng, tr_num, ex_num, ph_num)
 
 	def addExamples(self, eng, examples):
 		self.createExamples(eng, examples)
