@@ -6,7 +6,7 @@ from collections import defaultdict
 class DecoMeta(type):
 	def __new__(cls, name, bases, attrs):
 		cls.__name = name
-		if name == "_base_DB":
+		if name == "DB":
 			cls.db_changes = defaultdict(int)
 		for attr_name, attr_value in attrs.iteritems():
 			if callable(attr_value):
@@ -29,7 +29,7 @@ class DecoMeta(type):
 				if kwargs_to_print:
 					for items in kwargs_to_print:
 						print "\t** %s: %s" % (items[0], convert_list(items[1]))
-			if class_name == "_base_DB":
+			if class_name == "DB":
 				if re.match("create|delete|update", func_name):
 					cls.db_changes[func_name] += 1
 				if func_name in ("commit", "rollback"):

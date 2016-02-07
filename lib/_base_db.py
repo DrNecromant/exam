@@ -4,7 +4,7 @@ from sqlalchemy import create_engine, func
 from sqlalchemy.orm import sessionmaker
 from helpers import getCurrentDateTime
 
-class _base_DB():
+class DB():
 	__metaclass__ = DecoMeta
 
 	def __init__(self, dbpath):

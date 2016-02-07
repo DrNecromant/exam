@@ -15,3 +15,4 @@ v1.1.0
 	- remove lingvo operations from _base_db
 	- join getPhrases and getExamples
 	- reorder functions in db module
+	- remove DB class and remane _base_DB to DB
