@@ -162,8 +162,8 @@ class Exam:
 			rank = tr + ex + ph if update_date else None
 
 			raw_input("\n%s (%s)" % (eng, rank))
-			print "%s" % fname
-			answer = raw_input("%s\nDo you know? (y)/n: " % rus)
+			print rus, fname
+			answer = raw_input("Do you know? (y)/n: ")
 			if answer == "finish":
 				print "Exit from exam with saving changes"
 				break

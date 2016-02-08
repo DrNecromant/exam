@@ -1,3 +1,5 @@
+v1.1.3
+	- Do not use russian symbols in raw_input
 v1.1.2
 	- Fix function call in helpers
 v1.1.1
