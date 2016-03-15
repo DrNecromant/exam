@@ -72,7 +72,7 @@ class DB():
 		if rus:
 			query = query.filter(Word.rus == rus)
 		if updated_before:
-			query = query.filter((Word.updated == None) | ((Word.updated < updated_before) & (Word.tr_num + Word.ex_num + Word.ph_num > 0) & (Word.ex_num < 50)))
+			query = query.filter(Word.updated == None)
 		if eng_pattern:
 			query = query.filter(Word.eng.like("%" + eng_pattern + "%"))
 		if max_passed:
