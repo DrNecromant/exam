@@ -69,7 +69,7 @@ class Exam:
 				elif not db_rus:
 					self.db.createWord(upd_file_name, eng, xls_rus)
 				elif xls_rus != db_rus:
-					self.db.updateWord(upd_file_name, eng, db_rus, xls_rus)
+					self.db.updateWord(upd_file_name, eng, xls_rus)
 
 	def applyChanges(self):
 		if self.fake:
