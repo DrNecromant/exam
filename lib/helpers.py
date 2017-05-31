@@ -1,6 +1,6 @@
 from random import sample, shuffle, randint
 from collections import Counter, defaultdict
-from enchant import Dict
+#from enchant import Dict
 from datetime import datetime, timedelta
 import re
 from time import sleep
@@ -50,8 +50,8 @@ def sampleList(l, n):
 def getErrors(l, checker):
 	errors = defaultdict(list)
 	cnt = Counter(l)
-	dict_us = Dict("en_US")
-	dict_en = Dict("en_GB")
+	#dict_us = Dict("en_US")
+	#dict_en = Dict("en_GB")
 	for el, c in cnt.items():
 		if len(el) < 3:
 			errors["small_word"].append(el)
@@ -69,9 +69,9 @@ def getErrors(l, checker):
 			if ch in el:
 				errors["unused_signs"].append(el)
 				break
-		for w in re.findall("[\w']+", el):
-			if not (dict_us.check(w) or dict_en.check(w) or checker(w) or w.isdigit()):
-				errors["invalid"].append(el)
+		#for w in re.findall("[\w']+", el):
+		#	if not (dict_us.check(w) or dict_en.check(w) or checker(w) or w.isdigit()):
+		#		errors["invalid"].append(el)
 	return errors
 
 def getStatsFromRawData(data, max_passed):
